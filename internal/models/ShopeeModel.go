@@ -1,7 +1,7 @@
 package models
 
 //要寫成 csv 的 production 資料結構
-type CsvModel struct {
+type ShopeeDataModel struct {
 	ProductId   int64
 	Name        string
 	Description string

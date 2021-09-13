@@ -2,13 +2,10 @@ package http
 
 import (
 	"componentmod/internal/utils/log"
-	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 type UtilHttp struct {
@@ -25,11 +22,16 @@ const (
 )
 
 //http get 擷取api
-func (uh UtilHttp) HttpGet(url string) string {
+func (uh UtilHttp) HttpGet(url string) (string, error) {
 	client := &http.Client{
 		Timeout: TimeoutSecond * time.Second,
 	}
 	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Warn(err)
+		return "", err
+	}
+
 	request.Header.Set("Content-type", "application/json")
 	request.Header.Set("Origin", Domain)
 
@@ -41,14 +43,11 @@ func (uh UtilHttp) HttpGet(url string) string {
 	resp, err := client.Do(request)
 
 	if err != nil {
-		// 寫入 log 紀錄
-		errData := errors.New(fmt.Sprintf("連線錯誤,url:%v"))
-		errors := errors.WithMessage(err, errData.Error())
-		log.Warn(errors)
-		// return "", err
+		log.Warn(err)
+		return "", err
 	}
 
 	body, _ := ioutil.ReadAll(resp.Body)
-	return string(body)
+	return string(body), nil
 
 }

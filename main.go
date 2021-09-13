@@ -1,7 +1,10 @@
 package main
 
 import (
+	"componentmod/internal/utils/excel"
 	"componentmod/internal/utils/log"
+	"fmt"
+	"os"
 	"sync"
 )
 
@@ -18,40 +21,23 @@ func main() {
 	// skipCount := 0
 
 	// shopeeService := shopee.NewShopeeService()
-	// shopeeService.RunShopeeService(shopId, skipCount)
+	// err:=shopeeService.RunShopeeService(shopId, skipCount)
+	// if err != nil {
+	// 	// 寫入 log 紀錄
+	// 	errContent := errors.New(fmt.Sprintf("Shopee 網址錯誤"))
+	// 	errorData:=errors.WithMessage(err, errContent.Error())
+	// log.Error(fmt.Sprintf("%+v", errorData))
+	// }
 
-	//log 測試
-	// errorData := errors.New("１２３４")
-	// err := errors.WithMessage(errorData, errorData.Error())
-	// log.Fatal("1234")
+	// err := errors.New(fmt.Sprintf("錯誤"))
+	// errContent := errors.New(fmt.Sprintf("Shopee 網址錯誤"))
+	// errorData := errors.WithMessage(err, errContent.Error())
+	// log.Error(fmt.Sprintf("%+v", errorData))
 
-	for {
-		// if x >= 100 {
-		// 	break
-		// }
-		// x++
-		// wg.Add(1)
-		go func() {
-			// defer wg.Done()
-			x := aa()
-			log.Info("asd")
-			if x > 1000 {
-				return
-			}
-		}()
-	}
-
-	// file.WriteFile(mydir+"/log", "log.log", "testGlen12345678945654231123", 0)
 	//todo 寫入 exce  utils/excel
-
-	// 	cause := errors.New("whoops")
-	// err := errors.WithMessage(cause, err.Error())
-	// log.Fatal(fmt.Sprintf("%+v", err))
-}
-
-var x = 0
-
-func aa() int {
-	x = x + 1
-	return x
+	mydir, _ := os.Getwd()
+	err := excel.WriteExcel(mydir + "/excel")
+	if err != nil {
+		log.Error(fmt.Sprintf("%+v", err))
+	}
 }

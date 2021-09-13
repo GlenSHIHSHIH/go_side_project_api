@@ -1,14 +1,15 @@
 package shopee
 
 import (
+	"componentmod/internal/models"
+	"componentmod/internal/utils/http"
+	"componentmod/internal/utils/log"
 	"fmt"
 	"strconv"
 	"strings"
 	"sync"
 
-	"componentmod/internal/models"
-	"componentmod/internal/utils/http"
-
+	"github.com/pkg/errors"
 	"github.com/tidwall/gjson"
 )
 
@@ -34,20 +35,32 @@ const (
 )
 
 //蝦皮執行 抓取商品資料
-func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) {
+func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) error {
 	utilHttp := http.NewUtilHttp()
 
 	productListUrl := fmt.Sprintf(PListApi, strconv.Itoa(shopId), strconv.Itoa(skipCount))
-	productList := utilHttp.HttpGet(productListUrl)
+	productList, err := utilHttp.HttpGet(productListUrl)
+	if err != nil {
+		return err
+	}
+
 	count := Shopee.GetProductCount(productList)
 	productId := Shopee.GetProductIdList(productList)
 	ProductIdGroup = append(ProductIdGroup, productId[0:]...)
+
 	for i := PageCount; i < count; i = i + PageCount {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
 			productListUrl := fmt.Sprintf(PListApi, strconv.Itoa(shopId), strconv.Itoa(i+skipCount))
-			productList := utilHttp.HttpGet(productListUrl)
+			productList, err := utilHttp.HttpGet(productListUrl)
+			if err != nil {
+				// 寫入 log 紀錄
+				errContent := errors.New(fmt.Sprintf("連線錯誤,url:%v", productListUrl))
+				errData := errors.WithMessage(err, errContent.Error())
+				log.Error(fmt.Sprintf("%+v", errData))
+				return
+			}
 			productId := Shopee.GetProductIdList(productList)
 			setProductIdToGroup(productId)
 		}(i)
@@ -61,14 +74,22 @@ func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) {
 		go func(pId string) {
 			defer wg.Done()
 			productUrl := fmt.Sprintf(PApi, pId, strconv.Itoa(shopId))
-			product := utilHttp.HttpGet(productUrl)
+			product, err := utilHttp.HttpGet(productUrl)
+			if err != nil {
+				// 寫入 log 紀錄
+				errContent := errors.New(fmt.Sprintf("連線錯誤,url:%v", productUrl))
+				errData := errors.WithMessage(err, errContent.Error())
+				log.Error(fmt.Sprintf("%+v", errData))
+				return
+			}
 			productData := Shopee.GetProductData(product)
+			// file.WriteExcel()
 			fmt.Println(productData)
 		}(val)
 
 	}
 	wg.Wait()
-
+	return nil
 }
 
 // //鎖 多執行緒 讀取後刪除當筆
@@ -103,7 +124,7 @@ func (Shopee *ShopeeService) GetProductIdList(data string) []string {
 	return id
 }
 
-func (Shopee *ShopeeService) GetProductData(data string) *models.CsvModel {
+func (Shopee *ShopeeService) GetProductData(data string) *models.ShopeeDataModel {
 	itemid := gjson.Get(data, "data.itemid").String()
 	shopid := gjson.Get(data, "data.shopid").String()
 	name := gjson.Get(data, "data.name").String()
@@ -151,7 +172,7 @@ func (Shopee *ShopeeService) GetProductData(data string) *models.CsvModel {
 	// 	panic("err: itemid not a interger")
 	// }
 
-	return &models.CsvModel{
+	return &models.ShopeeDataModel{
 		ProductId:   productId,
 		Name:        name,
 		Description: description,
