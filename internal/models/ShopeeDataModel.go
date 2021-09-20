@@ -5,7 +5,7 @@ type ShopeeDataModel struct {
 	ProductId   int64
 	Name        string
 	Description string
-	Option      []Options
+	Options     []Options
 	Categories  string
 	Image       string
 	Images      string

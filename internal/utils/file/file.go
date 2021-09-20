@@ -35,7 +35,7 @@ func CreateFile(folderPath, fileName string, count int) *os.File {
 		} else {
 			newFileName = fileName + strCount
 		}
-		fmt.Println(newFileName)
+		// fmt.Println(newFileName)
 		filePath = fmt.Sprintf("%v/%v", folderPath, newFileName)
 	}
 

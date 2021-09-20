@@ -21,9 +21,10 @@ func NewShopeeService() *ShopeeService {
 }
 
 var (
-	rwLock         sync.RWMutex
-	wg             sync.WaitGroup
-	ProductIdGroup []string
+	rwLock           sync.RWMutex
+	wg               sync.WaitGroup
+	ProductIdGroup   []string
+	ShopeeModelGroup []*models.ShopeeDataModel
 )
 
 const (
@@ -35,13 +36,13 @@ const (
 )
 
 //蝦皮執行 抓取商品資料
-func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) error {
+func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) ([]*models.ShopeeDataModel, error) {
 	utilHttp := http.NewUtilHttp()
 
 	productListUrl := fmt.Sprintf(PListApi, strconv.Itoa(shopId), strconv.Itoa(skipCount))
 	productList, err := utilHttp.HttpGet(productListUrl)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	count := Shopee.GetProductCount(productList)
@@ -59,7 +60,7 @@ func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) error {
 				errContent := errors.New(fmt.Sprintf("連線錯誤,url:%v", productListUrl))
 				errData := errors.WithMessage(err, errContent.Error())
 				log.Error(fmt.Sprintf("%+v", errData))
-				return
+				// return nil, err
 			}
 			productId := Shopee.GetProductIdList(productList)
 			setProductIdToGroup(productId)
@@ -80,26 +81,24 @@ func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) error {
 				errContent := errors.New(fmt.Sprintf("連線錯誤,url:%v", productUrl))
 				errData := errors.WithMessage(err, errContent.Error())
 				log.Error(fmt.Sprintf("%+v", errData))
-				return
+				// return shopeeModel, err
 			}
-			productData := Shopee.GetProductData(product)
-			// file.WriteExcel()
-			fmt.Println(productData)
+			setShopeeModelToGroup(Shopee.GetProductData(product))
+			// fmt.Println(shopeeModel)
 		}(val)
 
 	}
 	wg.Wait()
-	return nil
+
+	return ShopeeModelGroup, nil
 }
 
-// //鎖 多執行緒 讀取後刪除當筆
-// func getProductIdToGroup() string {
-// 	rwLock.Lock()
-// 	defer rwLock.Lock()
-// 	ProductId := ProductIdGroup[0]
-// 	ProductIdGroup = ProductIdGroup[1:]
-// 	return ProductId
-// }
+//鎖 多執行緒 寫入資料
+func setShopeeModelToGroup(shopeeModel *models.ShopeeDataModel) {
+	rwLock.Lock()
+	defer rwLock.Unlock()
+	ShopeeModelGroup = append(ShopeeModelGroup, shopeeModel)
+}
 
 //鎖 多執行緒 寫入資料
 func setProductIdToGroup(productId []string) {
@@ -176,7 +175,7 @@ func (Shopee *ShopeeService) GetProductData(data string) *models.ShopeeDataModel
 		ProductId:   productId,
 		Name:        name,
 		Description: description,
-		Option:      option,
+		Options:     option,
 		Image:       image,
 		Images:      images,
 		Categories:  Categories,
