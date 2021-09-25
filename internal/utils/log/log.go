@@ -2,6 +2,7 @@ package log
 
 import (
 	"componentmod/internal/utils/file"
+	"io"
 	"os"
 
 	nested "github.com/antonfisher/nested-logrus-formatter"
@@ -18,7 +19,7 @@ func init() {
 	dateTime := carbon.Now(carbon.Taipei).Format("Y-m-d")
 	mydir, _ := os.Getwd()
 	f := file.CreateFile(mydir+"/log", dateTime+".log", 0)
-	L.SetOutput(f)
+	L.SetOutput(io.MultiWriter(f, os.Stdout))
 	L.SetFormatter(&nested.Formatter{
 		TimestampFormat: "2006-01-02 15:04:05",
 		HideKeys:        true,
@@ -38,6 +39,7 @@ var (
 	Error LoggerFunc
 	Panic LoggerFunc
 	Fatal LoggerFunc
+	Print LoggerFunc
 )
 
 func initLog() {
@@ -47,4 +49,5 @@ func initLog() {
 	Error = L.Error
 	Panic = L.Panic
 	Fatal = L.Fatal
+	Print = L.Print
 }

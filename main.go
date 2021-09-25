@@ -1,24 +1,29 @@
 package main
 
 import (
-	"componentmod/internal/services/shopee"
-	"componentmod/internal/utils/excel"
+	"componentmod/internal/cmd"
 	"componentmod/internal/utils/log"
-	"fmt"
 	"os"
 
-	"github.com/pkg/errors"
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
 
 	//－－－－－－－－－－主程式－－－－－－－－－－
-	// app := cmd.SetShopeeDataByCli(RunAction)
+	app := cli.NewApp()
+	app.Name = "Shopee"
+	app.Usage = "Setting basic configuration"
+	app.Version = "0.0.1"
+	app.Commands = []*cli.Command{
+		cmd.SetShopeeCommand(),
+		cmd.SetShopeeApiCommand(),
+	}
 
-	// err := app.Run(os.Args)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	//－－－－－－－－－－主程式資料 測試－－－－－－－－－－
 
@@ -45,10 +50,9 @@ func main() {
 
 	// －－－－－－－－－－error 測試－－－－－－－－－－
 
-	err := errors.New(fmt.Sprintf("錯誤"))
-	errContent := errors.New(fmt.Sprintf("Shopee 網址錯誤"))
-	errorData := errors.WithMessage(err, errContent.Error())
-	log.Error(fmt.Sprintf("%+v", errorData))
+	// err := errors.New(fmt.Sprintf("錯誤"))
+	// errorData := errors.WithStack(err)
+	// log.Error(fmt.Sprintf("%+v", errorData))
 
 	// －－－－－－－－－－excel 測試－－－－－－－－－－
 
@@ -71,25 +75,4 @@ func main() {
 	// 	log.Error(fmt.Sprintf("%+v", err))
 	// }
 
-}
-
-func RunAction(shopeeId, skipCount int) error {
-	shopeeService := shopee.NewShopeeService()
-	shopeeModelGroup, err := shopeeService.RunShopeeService(shopeeId, skipCount)
-	if err != nil {
-		// 寫入 log 紀錄
-		errContent := errors.New(fmt.Sprintf("Shopee 網址錯誤"))
-		errorData := errors.WithMessage(err, errContent.Error())
-		log.Error(fmt.Sprintf("%+v", errorData))
-		return err
-	}
-
-	mydir, _ := os.Getwd()
-	err = excel.WriteExcel(mydir+"/excel", shopeeModelGroup)
-	if err != nil {
-		log.Error(fmt.Sprintf("%+v", err))
-		return err
-	}
-
-	return nil
 }

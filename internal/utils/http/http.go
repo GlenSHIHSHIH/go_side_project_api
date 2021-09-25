@@ -1,7 +1,6 @@
 package http
 
 import (
-	"componentmod/internal/utils/log"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -28,7 +27,6 @@ func (uh UtilHttp) HttpGet(url string) (string, error) {
 	}
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Warn(err)
 		return "", err
 	}
 
@@ -43,7 +41,6 @@ func (uh UtilHttp) HttpGet(url string) (string, error) {
 	resp, err := client.Do(request)
 
 	if err != nil {
-		log.Warn(err)
 		return "", err
 	}
 

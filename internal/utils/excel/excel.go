@@ -30,15 +30,14 @@ var (
 )
 
 func WriteExcel(folderPath string, DataModelList []*models.ShopeeDataModel) error {
-	// func WriteExcel(folderPath string) error {
 	dateTime := carbon.Now(carbon.Taipei).Format("Y-m-d")
 	filePath := folderPath + "/" + dateTime + extensionName
 
 	//建立
 	if file.FileIsExist(folderPath) == false {
-		errDir := os.MkdirAll(folderPath, 0755)
-		if errDir != nil {
-			return errDir
+		err := os.MkdirAll(folderPath, 0755)
+		if err != nil {
+			return err
 		}
 	}
 

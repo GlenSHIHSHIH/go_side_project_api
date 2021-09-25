@@ -57,10 +57,8 @@ func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) ([]*models.
 			productList, err := utilHttp.HttpGet(productListUrl)
 			if err != nil {
 				// 寫入 log 紀錄
-				errContent := errors.New(fmt.Sprintf("連線錯誤,url:%v", productListUrl))
-				errData := errors.WithMessage(err, errContent.Error())
-				log.Error(fmt.Sprintf("%+v", errData))
-				// return nil, err
+				errData := errors.WithMessage(errors.WithStack(err), fmt.Sprintf("頁面連線錯誤,url:%v", productListUrl))
+				log.Fatal(fmt.Sprintf("%+v", errData))
 			}
 			productId := Shopee.GetProductIdList(productList)
 			setProductIdToGroup(productId)
@@ -78,10 +76,8 @@ func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) ([]*models.
 			product, err := utilHttp.HttpGet(productUrl)
 			if err != nil {
 				// 寫入 log 紀錄
-				errContent := errors.New(fmt.Sprintf("連線錯誤,url:%v", productUrl))
-				errData := errors.WithMessage(err, errContent.Error())
-				log.Error(fmt.Sprintf("%+v", errData))
-				// return shopeeModel, err
+				errData := errors.WithMessage(errors.WithStack(err), fmt.Sprintf("商品連線錯誤,url:%v", productListUrl))
+				log.Fatal(fmt.Sprintf("%+v", errData))
 			}
 			setShopeeModelToGroup(Shopee.GetProductData(product))
 			// fmt.Println(shopeeModel)
@@ -164,12 +160,11 @@ func (Shopee *ShopeeService) GetProductData(data string) *models.ShopeeDataModel
 		Categories += (gjson.Get(val.String(), "display_name")).String()
 	}
 
-	productId, _ := strconv.ParseInt(itemid, 10, 64)
+	productId, err := strconv.ParseInt(itemid, 10, 64)
 
-	// if err != nil {
-	// 	fmt.Println("err: itemid not a interger")
-	// 	panic("err: itemid not a interger")
-	// }
+	if err != nil {
+		log.Error(fmt.Sprintf("%+v", errors.WithStack(err)))
+	}
 
 	return &models.ShopeeDataModel{
 		ProductId:   productId,
