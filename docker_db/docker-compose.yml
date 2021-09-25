@@ -1,0 +1,24 @@
+version: '3.1'
+
+services:
+  db:
+    image: mysql:8.0.26
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 1qaz@WSX
+      MYSQL_USER: glen
+      MYSQL_PASSWORD: 1qaz@WSX
+      MYSQL_DATABASE: jiyoung_shopee
+    volumes:
+      - ./db_dump:/var/lib/mysql
+  
+  redis:
+    image: redis:6.2.5
+    restart: always
+    ports: 
+      - 6379:6379
+    volumes:
+      - ./config/redis:/usr/local/etc/redis
+  
