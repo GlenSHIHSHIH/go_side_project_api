@@ -2,3 +2,4 @@ go.sum
 .vscode/
 /log/
 excel/
+docker_db/db_dump/
