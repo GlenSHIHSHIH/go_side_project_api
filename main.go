@@ -16,8 +16,9 @@ func main() {
 	app.Usage = "Setting basic configuration"
 	app.Version = "0.0.1"
 	app.Commands = []*cli.Command{
-		cmd.SetShopeeCommand(),
-		cmd.SetShopeeApiCommand(),
+		cmd.SetShopeeCommand(),    //資料擷取 (從蝦皮)
+		cmd.SetShopeeApiCommand(), //api 輸出
+		cmd.ImportExcelToDB(),     //資料寫入DB
 	}
 
 	err := app.Run(os.Args)

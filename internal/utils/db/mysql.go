@@ -3,6 +3,10 @@ package db
 import (
 	"fmt"
 
+	"componentmod/internal/utils/db/migration"
+	"componentmod/internal/utils/log"
+
+	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -46,14 +50,20 @@ var DBConfig = []cli.Flag{
 	},
 }
 
-func DBInit() error {
+var ormDB *gorm.DB
+
+func DBInit() {
 	// 参考 https://github.com/go-sql-driver/mysql#dsn-data-source-name 获取详情
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, host, port, dbname)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	// log.Fatal(dsn)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
+	})
+
 	if err != nil {
-		return err
+		log.Fatal(errors.WithStack(err))
 	}
-	// db.AutoMigrate()
-	// db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&User{})
+
+	db.AutoMigrate(&migration.Production{})
 
 }

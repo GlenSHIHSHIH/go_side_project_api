@@ -17,17 +17,6 @@ var (
 	skipCount string
 )
 
-func SetShopeeCommand() *cli.Command {
-	Command := &cli.Command{
-		Name:   "Shopee Data",
-		Usage:  "Get Shopee Data and setting shopee's Id and page skip count",
-		Flags:  BuildUpFlag(shopeeConfig), //參數
-		Action: execShopee,                //執行logic
-	}
-
-	return Command
-}
-
 //cli v2 參數設定
 var shopeeConfig = []cli.Flag{
 	&cli.StringFlag{
@@ -44,6 +33,17 @@ var shopeeConfig = []cli.Flag{
 		Value:       "0",
 		Destination: &skipCount,
 	},
+}
+
+func SetShopeeCommand() *cli.Command {
+	Command := &cli.Command{
+		Name:   "shopee-data",
+		Usage:  "get shopee data and setting shopee's id and page skip count",
+		Flags:  BuildUpFlag(shopeeConfig), //參數
+		Action: execShopee,                //執行logic
+	}
+
+	return Command
 }
 
 func execShopee(c *cli.Context) error {

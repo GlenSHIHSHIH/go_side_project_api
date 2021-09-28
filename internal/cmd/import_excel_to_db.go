@@ -6,18 +6,18 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func SetShopeeApiCommand() *cli.Command {
+func ImportExcelToDB() *cli.Command {
 	Command := &cli.Command{
-		Name:   "shopee-api",
-		Usage:  "Api data for frontend",
+		Name:   "import-excel-to-db",
+		Usage:  "Import excel to db",
 		Flags:  BuildUpFlag(db.DBConfig), //參數
-		Action: execShopeeApi,            //執行logic與初始化
+		Action: execImport,               //執行logic與初始化
 	}
 
 	return Command
 }
 
-func execShopeeApi(c *cli.Context) error {
+func execImport(c *cli.Context) error {
 
 	//建置
 	// 1.db

@@ -12,6 +12,7 @@ require (
 	github.com/urfave/cli v1.22.5
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/xuri/excelize/v2 v2.4.1
+	golang.org/x/text v0.3.6
 	gorm.io/driver/mysql v1.1.2
 	gorm.io/gorm v1.21.15
 )
