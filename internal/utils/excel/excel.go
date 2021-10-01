@@ -1,24 +1,25 @@
 package excel
 
 import (
-	"componentmod/internal/models"
-	"componentmod/internal/utils/log"
-	"encoding/json"
+	"componentmod/internal/utils/file"
 	"fmt"
 	"os"
 
 	"github.com/golang-module/carbon"
-	"github.com/tidwall/gjson"
+	"github.com/urfave/cli/v2"
 	"github.com/xuri/excelize/v2"
+)
 
-	"componentmod/internal/utils/file"
+const (
+	FOLDER_PATH       = "./excel"
+	FILE_PATH         = FOLDER_PATH + "/%s.xlsx"
+	SHEET_NAME_SHOPEE = "shopee"
 )
 
 var (
-	extensionName = ".xls"
-	sheetName     = "shopee"
+	FileName string
 	// header        = []string{"產品ID(蝦皮ID)", "產品名稱", "敘述", "其他(勿調整)", "分類", "主圖片", "圖片(逗號區隔)", "蝦皮連結"}
-	headerList = []map[string]string{ //依照寫入順序 對照代號
+	HeaderList = []map[string]string{ //依照寫入"順序" 對照代號,map 本身無順序
 		{"ProductId": "產品ID(蝦皮ID)"},
 		{"Name": "產品名稱"},
 		{"Description": "敘述"},
@@ -29,15 +30,49 @@ var (
 		{"Url": "蝦皮連結"}}
 )
 
-func WriteExcel(folderPath string, DataModelList []*models.ShopeeDataModel) error {
-	dateTime := carbon.Now(carbon.Taipei).Format("Y-m-d")
-	filePath := folderPath + "/" + dateTime + extensionName
+//file name 設定
+var ExcelConfig = []cli.Flag{
+	&cli.StringFlag{
+		Name:        "excel-file-name",
+		Usage:       "excel file name",
+		Value:       "",
+		Destination: &FileName,
+	},
+}
 
+func filePath() string {
+	if len(FileName) == 0 {
+		dateTime := carbon.Now(carbon.Taipei).Format("Y-m-d")
+		return fmt.Sprintf(FILE_PATH, dateTime)
+	} else {
+		return fmt.Sprintf(FILE_PATH, FileName)
+	}
+}
+
+func GetExcelDataBySheet(sheetName string) ([][]string, error) {
+	filePath := filePath()
+
+	file, err := excelize.OpenFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	// 獲取 shopee 上所有儲存格
+	rows, err := file.GetRows(sheetName)
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
+}
+
+func GetExcelPath() (string, error) {
+
+	filePath := filePath()
 	//建立
-	if file.FileIsExist(folderPath) == false {
-		err := os.MkdirAll(folderPath, 0755)
+	if file.FileIsExist(FOLDER_PATH) == false {
+		err := os.MkdirAll(FOLDER_PATH, 0755)
 		if err != nil {
-			return err
+			return "", err
 		}
 	}
 
@@ -45,104 +80,9 @@ func WriteExcel(folderPath string, DataModelList []*models.ShopeeDataModel) erro
 	if file.FileIsExist(filePath) == true {
 		err := os.Remove(filePath)
 		if err != nil {
-			return err
+			return "", err
 		}
 	}
 
-	//創建檔案、寫入標題
-	f := excelize.NewFile()
-	f.SetSheetName("Sheet1", sheetName)
-
-	streamWriter, err := f.NewStreamWriter(sheetName)
-	if err != nil {
-		return err
-	}
-	defer streamWriter.Flush()
-
-	//寫入標題
-	err = writeExcelData(filePath, streamWriter, func() ([][]string, int, int) {
-		var content [][]string
-		var detail []string
-
-		for _, mapValue := range headerList {
-			for _, v := range mapValue {
-				detail = append(detail, v)
-			}
-		}
-
-		content = append(content, detail)
-		rowCount := 1
-		rowStart := 1
-		return content, rowCount + rowStart, rowStart
-	})
-
-	if err != nil {
-		return err
-	}
-
-	//資料excel 寫入
-	err = writeExcelData(filePath, streamWriter, func() ([][]string, int, int) {
-		//寫入順序
-		var content [][]string
-		var detail []string
-
-		for _, DataMode := range DataModelList {
-			jsData, err := json.Marshal(DataMode)
-
-			// fmt.Printf("json: %#v", string(jsData))
-
-			if err != nil {
-				log.Warn(fmt.Sprintf("轉型錯誤,ProductId:%v , Name:%v", DataMode.ProductId, DataMode.Name))
-				continue
-			}
-
-			detail = nil
-			for _, mapValue := range headerList {
-				for k, _ := range mapValue {
-					// if k == "Options" {
-					// 	fmt.Printf("\n %v \n", gjson.Get(string(jsData), k).String())
-					// 	fmt.Printf("\n %v \n", gjson.Get(string(jsData), k).String())
-					// }
-					detail = append(detail, gjson.Get(string(jsData), k).String())
-				}
-			}
-
-			content = append(content, detail)
-		}
-		rowCount := len(DataModelList)
-		rowStart := 2
-		return content, rowCount + rowStart, rowStart
-	})
-
-	if err != nil {
-		return err
-	}
-
-	if err := f.SaveAs(filePath); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func writeExcelData(filePath string, streamWriter *excelize.StreamWriter, fun func() ([][]string, int, int)) error {
-
-	content, rowCount, rowStart := fun()
-	var rowData []interface{}
-	var arrcounter int = -1
-
-	for row := rowStart; row < rowCount; row++ {
-		rowData = nil
-		arrcounter++
-		for _, v := range content[arrcounter] {
-			rowData = append(rowData, v)
-		}
-
-		cell, _ := excelize.CoordinatesToCellName(1, row)
-		if err := streamWriter.SetRow(cell, rowData); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return filePath, nil
 }

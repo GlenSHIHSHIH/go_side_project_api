@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"componentmod/internal/dto"
 	"componentmod/internal/services/shopee"
 	"componentmod/internal/utils/excel"
 	"fmt"
-	"os"
 	"strconv"
 
 	"github.com/pkg/errors"
@@ -20,14 +20,14 @@ var (
 //cli v2 參數設定
 var shopeeConfig = []cli.Flag{
 	&cli.StringFlag{
-		Name:        "shopeeId",
+		Name:        "shopee-id",
 		Usage:       "shopee id",
 		Aliases:     []string{"Id", "I"},
 		Value:       "32286362",
 		Destination: &shopeeId,
 	},
 	&cli.StringFlag{
-		Name:        "skipCount",
+		Name:        "skip-count",
 		Usage:       "page skip count",
 		Aliases:     []string{"Skip", "S"},
 		Value:       "0",
@@ -39,8 +39,9 @@ func SetShopeeCommand() *cli.Command {
 	Command := &cli.Command{
 		Name:   "shopee-data",
 		Usage:  "get shopee data and setting shopee's id and page skip count",
-		Flags:  BuildUpFlag(shopeeConfig), //參數
-		Action: execShopee,                //執行logic
+		Flags:  BuildUpFlag(shopeeConfig, excel.ExcelConfig), //參數
+		Action: executFackData,                               //執行logic
+		// Action: execShopee,                                   //執行logic
 	}
 
 	return Command
@@ -65,11 +66,46 @@ func execShopee(c *cli.Context) error {
 		return errors.WithMessage(errors.WithStack(err), "Shopee 網址錯誤")
 	}
 
-	mydir, _ := os.Getwd()
-	err = excel.WriteExcel(mydir+"/excel", shopeeModelGroup)
+	filePath, err := excel.GetExcelPath()
 	if err != nil {
-		return errors.WithMessage(errors.WithStack(err), fmt.Sprintf(" Write Excel Paht:%s/excel", mydir))
+		return errors.WithStack(err)
 	}
 
+	shopeeExcel := shopee.NewShopeeExcelService()
+	err = shopeeExcel.WriteExcel(filePath, excel.SHEET_NAME_SHOPEE, shopeeModelGroup, excel.HeaderList)
+	if err != nil {
+		return errors.WithMessage(errors.WithStack(err), fmt.Sprintf(" Write Excel Paht:"+excel.FILE_PATH, excel.FileName))
+	}
+
+	return nil
+}
+
+func executFackData(c *cli.Context) error {
+
+	var DataModelList []*dto.ShopeeDataDTO
+
+	data := &dto.ShopeeDataDTO{
+		ProductId:   1248984949,
+		Name:        "name",
+		Description: "description",
+		Options:     []dto.Options{dto.Options{Name: "size", Option: []string{"x", "m", "l"}}},
+		Image:       "image",
+		Images:      "images",
+		Categories:  "Categories",
+		Url:         "github.com.tw",
+	}
+
+	DataModelList = append(DataModelList, data)
+
+	filePath, err := excel.GetExcelPath()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	shopeeExcel := shopee.NewShopeeExcelService()
+	err = shopeeExcel.WriteExcel(filePath, excel.SHEET_NAME_SHOPEE, DataModelList, excel.HeaderList)
+	if err != nil {
+		return errors.WithMessage(errors.WithStack(err), fmt.Sprintf(" Write Excel Paht:"+excel.FILE_PATH, excel.FileName))
+	}
 	return nil
 }

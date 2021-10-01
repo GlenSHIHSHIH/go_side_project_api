@@ -3,6 +3,7 @@ module componentmod
 go 1.15
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/antonfisher/nested-logrus-formatter v1.3.1
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/golang-module/carbon v1.5.3
@@ -12,7 +13,6 @@ require (
 	github.com/urfave/cli v1.22.5
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/xuri/excelize/v2 v2.4.1
-	golang.org/x/text v0.3.6
 	gorm.io/driver/mysql v1.1.2
 	gorm.io/gorm v1.21.15
 )

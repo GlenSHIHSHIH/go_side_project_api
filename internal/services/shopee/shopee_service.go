@@ -1,7 +1,7 @@
 package shopee
 
 import (
-	"componentmod/internal/models"
+	"componentmod/internal/dto"
 	"componentmod/internal/utils/http"
 	"componentmod/internal/utils/log"
 	"fmt"
@@ -24,7 +24,7 @@ var (
 	rwLock           sync.RWMutex
 	wg               sync.WaitGroup
 	ProductIdGroup   []string
-	ShopeeModelGroup []*models.ShopeeDataModel
+	ShopeeModelGroup []*dto.ShopeeDataDTO
 )
 
 const (
@@ -36,7 +36,7 @@ const (
 )
 
 //蝦皮執行 抓取商品資料
-func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) ([]*models.ShopeeDataModel, error) {
+func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) ([]*dto.ShopeeDataDTO, error) {
 	utilHttp := http.NewUtilHttp()
 
 	productListUrl := fmt.Sprintf(PListApi, strconv.Itoa(shopId), strconv.Itoa(skipCount))
@@ -90,7 +90,7 @@ func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) ([]*models.
 }
 
 //鎖 多執行緒 寫入資料
-func setShopeeModelToGroup(shopeeModel *models.ShopeeDataModel) {
+func setShopeeModelToGroup(shopeeModel *dto.ShopeeDataDTO) {
 	rwLock.Lock()
 	defer rwLock.Unlock()
 	ShopeeModelGroup = append(ShopeeModelGroup, shopeeModel)
@@ -119,7 +119,7 @@ func (Shopee *ShopeeService) GetProductIdList(data string) []string {
 	return id
 }
 
-func (Shopee *ShopeeService) GetProductData(data string) *models.ShopeeDataModel {
+func (Shopee *ShopeeService) GetProductData(data string) *dto.ShopeeDataDTO {
 	itemid := gjson.Get(data, "data.itemid").String()
 	shopid := gjson.Get(data, "data.shopid").String()
 	name := gjson.Get(data, "data.name").String()
@@ -135,8 +135,8 @@ func (Shopee *ShopeeService) GetProductData(data string) *models.ShopeeDataModel
 	}
 
 	variations := gjson.Get(data, "data.tier_variations").Array()
-	optionData := models.Options{}
-	option := []models.Options{}
+	optionData := dto.Options{}
+	option := []dto.Options{}
 	for _, val := range variations {
 		optionName := gjson.Get(val.String(), "name").String()
 		if optionName == "" {
@@ -166,7 +166,7 @@ func (Shopee *ShopeeService) GetProductData(data string) *models.ShopeeDataModel
 		log.Error(fmt.Sprintf("%+v", errors.WithStack(err)))
 	}
 
-	return &models.ShopeeDataModel{
+	return &dto.ShopeeDataDTO{
 		ProductId:   productId,
 		Name:        name,
 		Description: description,

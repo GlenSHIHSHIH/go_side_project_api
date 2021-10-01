@@ -50,7 +50,7 @@ var DBConfig = []cli.Flag{
 	},
 }
 
-var ormDB *gorm.DB
+var OrmDB *gorm.DB
 
 func DBInit() {
 	// 参考 https://github.com/go-sql-driver/mysql#dsn-data-source-name 获取详情
@@ -65,5 +65,7 @@ func DBInit() {
 	}
 
 	db.AutoMigrate(&migration.Production{})
+	db.AutoMigrate(&migration.ProductionTemp{})
 
+	OrmDB = db
 }

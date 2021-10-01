@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"componentmod/internal/services/shopee"
 	"componentmod/internal/utils/db"
+	"componentmod/internal/utils/excel"
 
 	"github.com/urfave/cli/v2"
 )
@@ -10,8 +12,8 @@ func ImportExcelToDB() *cli.Command {
 	Command := &cli.Command{
 		Name:   "import-excel-to-db",
 		Usage:  "Import excel to db",
-		Flags:  BuildUpFlag(db.DBConfig), //參數
-		Action: execImport,               //執行logic與初始化
+		Flags:  BuildUpFlag(db.DBConfig, excel.ExcelConfig), //參數
+		Action: execImport,                                  //執行logic與初始化
 	}
 
 	return Command
@@ -20,9 +22,15 @@ func ImportExcelToDB() *cli.Command {
 func execImport(c *cli.Context) error {
 
 	//建置
-	// 1.db
-	db.DBInit()
-	// 2.gin
+	db.DBInit() // 1.db
+
+	// 2.執行匯入
+	shopeeExcelReader := shopee.NewShopeeExcelReaderService()
+	err := shopeeExcelReader.ImportExcelShopeeDataToDB(excel.SHEET_NAME_SHOPEE, db.OrmDB)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
