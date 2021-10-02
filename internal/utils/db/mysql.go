@@ -64,8 +64,16 @@ func DBInit() {
 		log.Fatal(errors.WithStack(err))
 	}
 
-	db.AutoMigrate(&migration.Production{})
-	db.AutoMigrate(&migration.ProductionTemp{})
-
 	OrmDB = db
+
+	initTableAndProcedure()
+}
+func initTableAndProcedure() {
+
+	//create table
+	OrmDB.AutoMigrate(&migration.Production{})
+	OrmDB.AutoMigrate(&migration.ProductionTemp{})
+
+	//create procedure
+	OrmDB.Exec(migration.PROCEDURE_GET_PROD_CATEGORIES)
 }

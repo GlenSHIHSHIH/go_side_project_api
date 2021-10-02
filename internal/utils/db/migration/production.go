@@ -2,6 +2,25 @@ package migration
 
 import "time"
 
+const (
+	PROCEDURE_GET_PROD_CATEGORIES = `DROP PROCEDURE IF EXISTS get_prod_categories;
+										DELIMITER //
+										CREATE PROCEDURE get_prod_categories()
+										BEGIN
+										
+										set @str_categories=  TRIM( BOTH  ',' FROM  (select  replace(GROUP_CONCAT(categories),'、',',') from productions));
+
+										select  distinct substring_index(substring_index(@str_categories,',',help_topic_id+1),',',-1) as categories
+										from mysql.help_topic
+										where help_topic_id < (length(@str_categories)-length(replace(@str_categories,',',''))+1) 
+										order by categories asc;
+
+										END 
+										//
+										DELIMITER ;`
+	GET_PROD_CATEGORIES = `CALL get_prod_categories();`
+)
+
 type Production struct {
 	Id          int       `gorm:"primaryKey" json:"id"`
 	ProductId   uint32    `gorm:"comment:產品ID(蝦皮ID);unique" json:"productId"`                                      //產品ID(蝦皮ID)
