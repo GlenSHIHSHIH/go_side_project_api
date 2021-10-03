@@ -10,8 +10,8 @@ func SetShopeeApiCommand() *cli.Command {
 	Command := &cli.Command{
 		Name:   "shopee-api",
 		Usage:  "Api data for frontend",
-		Flags:  BuildUpFlag(db.DBConfig), //參數
-		Action: execShopeeApi,            //執行logic與初始化
+		Flags:  BuildUpFlag(db.DBConfig, db.RedisConfig), //參數
+		Action: execShopeeApi,                            //執行logic與初始化
 	}
 
 	return Command
@@ -20,9 +20,14 @@ func SetShopeeApiCommand() *cli.Command {
 func execShopeeApi(c *cli.Context) error {
 
 	//建置
+
 	// 1.db
 	db.DBInit()
-	// 2.gin
+
+	// 2.redis
+	db.ReidsInit()
+
+	// 3.gin
 
 	return nil
 }

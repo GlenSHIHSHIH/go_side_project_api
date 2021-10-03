@@ -40,8 +40,8 @@ func SetShopeeCommand() *cli.Command {
 		Name:   "shopee-data",
 		Usage:  "get shopee data and setting shopee's id and page skip count",
 		Flags:  BuildUpFlag(shopeeConfig, excel.ExcelConfig), //參數
-		Action: executFackData,                               //執行logic
-		// Action: execShopee,                                   //執行logic
+		Action: execShopee,                                   //執行logic
+		// Action: executFackData,                               //執行logic
 	}
 
 	return Command
@@ -88,7 +88,7 @@ func executFackData(c *cli.Context) error {
 		ProductId:   1248984949,
 		Name:        "name",
 		Description: "description",
-		Options:     []dto.Options{dto.Options{Name: "size", Option: []string{"x", "m", "l"}}},
+		Options:     []dto.Options{{Name: "size", Option: []string{"x", "m", "l"}}},
 		Image:       "image",
 		Images:      "images",
 		Categories:  "Categories",

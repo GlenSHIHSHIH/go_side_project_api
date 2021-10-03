@@ -2,9 +2,9 @@ package db
 
 import (
 	"fmt"
+	"log"
 
-	"componentmod/internal/utils/db/migration"
-	"componentmod/internal/utils/log"
+	"componentmod/internal/utils/db/model"
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	host, port, dbname, username, password string
+	dbHost, dbPort, dbName, dbUserName, dbPassword string
 )
 
 //db 參數設定
@@ -22,31 +22,31 @@ var DBConfig = []cli.Flag{
 		Name:        "db-host",
 		Usage:       "db host",
 		Value:       "127.0.0.1",
-		Destination: &host,
+		Destination: &dbHost,
 	},
 	&cli.StringFlag{
 		Name:        "db-port",
-		Usage:       "page skip count",
+		Usage:       "db port",
 		Value:       "3306",
-		Destination: &port,
+		Destination: &dbPort,
 	},
 	&cli.StringFlag{
 		Name:        "db-name",
-		Usage:       "page skip count",
+		Usage:       "db name",
 		Value:       "jiyoung_shopee",
-		Destination: &dbname,
+		Destination: &dbName,
 	},
 	&cli.StringFlag{
 		Name:        "db-username",
-		Usage:       "page skip count",
+		Usage:       "db username",
 		Value:       "glen",
-		Destination: &username,
+		Destination: &dbUserName,
 	},
 	&cli.StringFlag{
 		Name:        "db-password",
-		Usage:       "page skip count",
+		Usage:       "db password",
 		Value:       "1qaz@WSX",
-		Destination: &password,
+		Destination: &dbPassword,
 	},
 }
 
@@ -54,14 +54,14 @@ var OrmDB *gorm.DB
 
 func DBInit() {
 	// 参考 https://github.com/go-sql-driver/mysql#dsn-data-source-name 获取详情
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, host, port, dbname)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUserName, dbPassword, dbHost, dbPort, dbName)
 	// log.Fatal(dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 
 	if err != nil {
-		log.Fatal(errors.WithStack(err))
+		log.Fatal(fmt.Sprintf("%+v", errors.WithStack(err)))
 	}
 
 	OrmDB = db
@@ -71,9 +71,9 @@ func DBInit() {
 func initTableAndProcedure() {
 
 	//create table
-	OrmDB.AutoMigrate(&migration.Production{})
-	OrmDB.AutoMigrate(&migration.ProductionTemp{})
+	OrmDB.AutoMigrate(&model.Production{})
+	OrmDB.AutoMigrate(&model.ProductionTemp{})
 
 	//create procedure
-	OrmDB.Exec(migration.PROCEDURE_GET_PROD_CATEGORIES)
+	OrmDB.Exec(model.PROCEDURE_GET_PROD_CATEGORIES)
 }

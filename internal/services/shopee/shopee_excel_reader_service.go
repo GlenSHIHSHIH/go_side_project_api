@@ -2,7 +2,7 @@ package shopee
 
 import (
 	"componentmod/internal/utils"
-	"componentmod/internal/utils/db/migration"
+	"componentmod/internal/utils/db/model"
 	"componentmod/internal/utils/excel"
 	"strconv"
 
@@ -23,11 +23,11 @@ func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string
 	}
 
 	content := rows[1:] //內容
-	var shopeeModelList []*migration.ProductionTemp
+	var shopeeModelList []*model.ProductionTemp
 	for _, columnValue := range content {
 
 		id, _ := strconv.Atoi(columnValue[0])
-		dataModel := &migration.ProductionTemp{
+		dataModel := &model.ProductionTemp{
 			ProductId:   uint32(id),
 			Name:        columnValue[1],
 			Description: columnValue[2],

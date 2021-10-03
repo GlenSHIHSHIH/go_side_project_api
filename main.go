@@ -3,6 +3,7 @@ package main
 import (
 	"componentmod/internal/cmd"
 	"componentmod/internal/utils/log"
+	"fmt"
 	"os"
 
 	"github.com/urfave/cli/v2"
@@ -23,7 +24,7 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(fmt.Sprintf("%+v", err))
 	}
 
 }

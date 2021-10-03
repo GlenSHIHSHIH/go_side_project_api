@@ -3,7 +3,7 @@ version: '3.1'
 services:
   db:
     image: mysql:8.0.26
-    # restart: always
+    restart: always
     ports:
       - 3306:3306
     environment:
@@ -13,13 +13,14 @@ services:
       MYSQL_DATABASE: jiyoung_shopee
     volumes:
       - ./db_dump:/var/lib/mysql
-      - ./mysql_init:/docker-entrypoint-initdb.d
+      - ./config/mysql_init:/docker-entrypoint-initdb.d
   
   redis:
     image: redis:6.2.5
-    restart: always
+    # restart: always
     ports: 
       - 6379:6379
     volumes:
       - ./config/redis:/usr/local/etc/redis
-  
+    command: redis-server /usr/local/etc/redis/redis.conf
+    
