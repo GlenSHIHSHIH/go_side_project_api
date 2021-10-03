@@ -1,8 +1,8 @@
 package db
 
 import (
+	"componentmod/internal/utils/log"
 	"fmt"
-	"log"
 	"strconv"
 
 	"github.com/go-redis/redis"

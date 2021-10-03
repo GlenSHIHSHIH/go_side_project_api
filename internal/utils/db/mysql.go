@@ -1,8 +1,8 @@
 package db
 
 import (
+	"componentmod/internal/utils/log"
 	"fmt"
-	"log"
 
 	"componentmod/internal/utils/db/model"
 
@@ -73,7 +73,7 @@ func initTableAndProcedure() {
 	//create table
 	OrmDB.AutoMigrate(&model.Production{})
 	OrmDB.AutoMigrate(&model.ProductionTemp{})
-
 	//create procedure
+	OrmDB.Exec(model.DROP_PROCEDURE_IF_EXISTS)
 	OrmDB.Exec(model.PROCEDURE_GET_PROD_CATEGORIES)
 }
