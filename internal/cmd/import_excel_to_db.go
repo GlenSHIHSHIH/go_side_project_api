@@ -26,7 +26,7 @@ func execImport(c *cli.Context) error {
 
 	// 2.執行匯入
 	shopeeExcelReader := shopee.NewShopeeExcelReaderService()
-	err := shopeeExcelReader.ImportExcelShopeeDataToDB(excel.SHEET_NAME_SHOPEE, db.OrmDB)
+	err := shopeeExcelReader.ImportExcelShopeeDataToDB(excel.SHEET_NAME_SHOPEE)
 
 	if err != nil {
 		return err

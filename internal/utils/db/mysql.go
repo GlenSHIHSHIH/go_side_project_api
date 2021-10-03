@@ -50,7 +50,15 @@ var DBConfig = []cli.Flag{
 	},
 }
 
-var OrmDB *gorm.DB
+func GetMySqlDB() MySqlDB {
+	return mySqlDB
+}
+
+var mySqlDB MySqlDB
+
+type MySqlDB struct {
+	*gorm.DB
+}
 
 func DBInit() {
 	// 参考 https://github.com/go-sql-driver/mysql#dsn-data-source-name 获取详情
@@ -64,16 +72,17 @@ func DBInit() {
 		log.Fatal(fmt.Sprintf("%+v", errors.WithStack(err)))
 	}
 
-	OrmDB = db
+	mySqlDB = MySqlDB{db}
 
 	initTableAndProcedure()
 }
+
 func initTableAndProcedure() {
 
 	//create table
-	OrmDB.AutoMigrate(&model.Production{})
-	OrmDB.AutoMigrate(&model.ProductionTemp{})
+	mySqlDB.AutoMigrate(&model.Production{})
+	mySqlDB.AutoMigrate(&model.ProductionTemp{})
 	//create procedure
-	OrmDB.Exec(model.DROP_PROCEDURE_IF_EXISTS)
-	OrmDB.Exec(model.PROCEDURE_GET_PROD_CATEGORIES)
+	mySqlDB.Exec(model.DROP_PROCEDURE_IF_EXISTS)
+	mySqlDB.Exec(model.PROCEDURE_GET_PROD_CATEGORIES)
 }

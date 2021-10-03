@@ -2,11 +2,10 @@ package shopee
 
 import (
 	"componentmod/internal/utils"
+	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
 	"componentmod/internal/utils/excel"
 	"strconv"
-
-	"gorm.io/gorm"
 )
 
 type ShopeeExcelReaderService struct {
@@ -16,7 +15,7 @@ func NewShopeeExcelReaderService() *ShopeeExcelReaderService {
 	return &ShopeeExcelReaderService{}
 }
 
-func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string, db *gorm.DB) error {
+func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string) error {
 	rows, err := excel.GetExcelDataBySheet(sheetName)
 	if err != nil {
 		return err
@@ -40,14 +39,16 @@ func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string
 		shopeeModelList = append(shopeeModelList, dataModel)
 	}
 
+	myDB := db.GetMySqlDB()
+
 	//新增到 temp table
-	db.Exec("truncate table  production_temps")
-	db.CreateInBatches(shopeeModelList, 1000)
+	myDB.Exec("truncate table  production_temps")
+	myDB.CreateInBatches(shopeeModelList, 1000)
 
 	//insert 與 update
 	//update
-	db.Exec(`SET SQL_SAFE_UPDATES=0`)
-	db.Exec(`update productions as pd  INNER join production_temps as temp on pd.product_id = temp.product_id 
+	myDB.Exec(`SET SQL_SAFE_UPDATES=0`)
+	myDB.Exec(`update productions as pd  INNER join production_temps as temp on pd.product_id = temp.product_id 
 			set 
 				pd.name=temp.name,
 				pd.description=temp.description,
@@ -57,10 +58,10 @@ func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string
 				pd.images=temp.images,
 				pd.url=temp.url,
 				pd.update_time=temp.update_time `)
-	db.Exec(`SET SQL_SAFE_UPDATES=1`)
+	myDB.Exec(`SET SQL_SAFE_UPDATES=1`)
 
 	// insert
-	db.Exec(`insert into productions(product_id,name,description,options,categories,image,images,url,create_time,update_time)
+	myDB.Exec(`insert into productions(product_id,name,description,options,categories,image,images,url,create_time,update_time)
 		select 
 			temp.product_id,temp.name,temp.description,temp.options,temp.categories,
 			temp.image,temp.images,temp.url,temp.create_time,temp.update_time

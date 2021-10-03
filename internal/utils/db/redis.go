@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	redisHost, redisPort, redisPassword, redisDB string
+	redisHost, redisPort, redisPassword, redisDBNumber string
 )
 
 //db 參數設定
@@ -38,14 +38,24 @@ var RedisConfig = []cli.Flag{
 		Name:        "redis-db",
 		Usage:       "redis db",
 		Value:       "0",
-		Destination: &redisDB,
+		Destination: &redisDBNumber,
 	},
+}
+
+func GetRedisDB() RedisDB {
+	return redisDB
+}
+
+var redisDB RedisDB
+
+type RedisDB struct {
+	*redis.Client
 }
 
 var Rdb *redis.Client
 
 func ReidsInit() {
-	redisDb, err := strconv.Atoi(redisDB)
+	rdbNumber, err := strconv.Atoi(redisDBNumber)
 
 	if err != nil {
 		log.Fatal(fmt.Sprintf("%+v", errors.WithStack(err)))
@@ -54,7 +64,7 @@ func ReidsInit() {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", redisHost, redisPort), //"localhost:6379"
 		Password: redisPassword,                              // no password set
-		DB:       redisDb,                                    // use default DB
+		DB:       rdbNumber,                                  // use default DB
 	})
 
 	_, err = rdb.Ping().Result()
@@ -62,6 +72,6 @@ func ReidsInit() {
 		log.Fatal(fmt.Sprintf("%+v", errors.WithStack(err)))
 	}
 
-	Rdb = rdb
+	redisDB = RedisDB{rdb}
 
 }
