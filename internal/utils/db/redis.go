@@ -14,7 +14,7 @@ var (
 	redisHost, redisPort, redisPassword, redisDBNumber string
 )
 
-//db 參數設定
+//rdb 參數設定
 var RedisConfig = []cli.Flag{
 	&cli.StringFlag{
 		Name:        "redis-host",
