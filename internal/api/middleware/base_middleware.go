@@ -59,15 +59,7 @@ func WebApiInit() {
 	log.Info(fmt.Sprintf("default setting listen 0.0.0.0:%s is localhost", webPort))
 }
 
-// func WebRun() {
-// 	err := ginEngine.Run(fmt.Sprintf(":%s", webPort))
-
-// 	log.Info(fmt.Sprintf("default setting listen 0.0.0.0:%s is localhost", webPort))
-
-// 	if err != nil {
-// 		log.Fatal(fmt.Sprintf("%+v", errors.WithStack(err)))
-// 	}
-// }
+type HandlerFunc gin.HandlerFunc
 
 func middlewareInit(r *gin.Engine) {
 	// Global middleware
@@ -77,5 +69,7 @@ func middlewareInit(r *gin.Engine) {
 
 	// Recovery middleware recovers from any panics and writes a 500 if there was one.
 	r.Use(gin.Recovery())
+
+	r.NoRoute(direction404)
 
 }
