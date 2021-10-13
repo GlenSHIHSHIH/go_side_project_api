@@ -10,7 +10,8 @@ func Router(r *gin.Engine) {
 	root := r.Group("/")
 	{
 
-		root.Any("", controller.ProductionList)
+		root.GET("production/list", controller.ProductionList)
+		root.GET("categoriesList/list", controller.CategoriesList)
 		// root.GET("", controller.ProductionList)
 	}
 	// root.Use(middleware){	}

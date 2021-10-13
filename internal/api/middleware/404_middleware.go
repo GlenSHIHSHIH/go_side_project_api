@@ -5,5 +5,5 @@ import (
 )
 
 func direction404(c *gin.Context) {
-	c.Redirect(301, "/")
+	c.Redirect(301, "/production/list")
 }

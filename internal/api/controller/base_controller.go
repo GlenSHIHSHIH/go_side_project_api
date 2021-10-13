@@ -17,7 +17,7 @@ func Handler(hf HandlerFunc) func(*gin.Context) {
 		respMap := gin.H{}
 		data, err := hf(c)
 		code := 200
-		msg := "successful"
+		msg := "success"
 
 		if err != nil {
 			//error string 切割
