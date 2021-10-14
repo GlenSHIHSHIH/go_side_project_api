@@ -125,6 +125,10 @@ func (Shopee *ShopeeService) GetProductData(data string) *dto.ShopeeDataDTO {
 	itemid := gjson.Get(data, "data.itemid").String()
 	shopid := gjson.Get(data, "data.shopid").String()
 	name := gjson.Get(data, "data.name").String()
+	price := gjson.Get(data, "data.price").Int()
+	price = priceCalculate(price)
+	priceMin := gjson.Get(data, "data.price_min").Int()
+	priceMin = priceCalculate(priceMin)
 	description := gjson.Get(data, "data.description").String()
 	image := ImgUrl + gjson.Get(data, "data.image").String()
 	imgData := gjson.Get(data, "data.images").Array()
@@ -177,5 +181,14 @@ func (Shopee *ShopeeService) GetProductData(data string) *dto.ShopeeDataDTO {
 		Images:      images,
 		Categories:  Categories,
 		Url:         fmt.Sprintf(PUrl, name, shopid, itemid),
+		Price:       price,
+		PriceMin:    priceMin,
 	}
+}
+
+func priceCalculate(price int64) int64 {
+	if price > 100000 {
+		return price / 100000
+	}
+	return price
 }

@@ -24,5 +24,7 @@ type ShopeeProductionOutDTO struct {
 	Image       string `json:"image"`
 	Images      string `json:"images"`
 	Url         string `json:"url"`
+	Price       int64  `json:"price"`
+	PriceMin    int64  `json:"priceMin"`
 	CreateTime  string `json:"createTime"`
 }

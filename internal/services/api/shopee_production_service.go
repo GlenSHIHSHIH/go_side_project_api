@@ -69,7 +69,7 @@ func (s *Shopee) getProductionData(shProduction *dto.ShopeeProductionInDTO) ([]*
 	}
 
 	var ShopeeProductionOutDTO []*dto.ShopeeProductionOutDTO
-	sql.Select("product_id,name,description,options,categories,image,images,url,create_time").Scan(&ShopeeProductionOutDTO)
+	sql.Select("product_id,name,description,options,categories,image,images,url,price,price_min,create_time").Scan(&ShopeeProductionOutDTO)
 
 	return ShopeeProductionOutDTO, count, nil
 }

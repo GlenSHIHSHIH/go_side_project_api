@@ -41,6 +41,8 @@ type Production struct {
 	Image       string    `gorm:"comment:主圖片;type:text" json:"image"`                                              //主圖片
 	Images      string    `gorm:"comment:圖片(逗號區隔);type:text" json:"images"`                                        //圖片(逗號區隔)
 	Url         string    `gorm:"comment:蝦皮連結;type:text" json:"url"`                                               //蝦皮連結
+	Price       int64     `gorm:"comment:產品價格;type:int" json:"price"`                                              //產品價格
+	PriceMin    int64     `gorm:"comment:產品價格低標;type:int" json:"priceMin"`                                         //產品價格低標
 	CreateTime  time.Time `gorm:"comment:新增時間;type:datetime;not null;default:CURRENT_TIMESTAMP" json:"createTime"` //新增時間
 	UpdateTime  time.Time `gorm:"comment:更新時間;type:datetime;not null;default:CURRENT_TIMESTAMP" json:"updateTime"` //更新時間
 }

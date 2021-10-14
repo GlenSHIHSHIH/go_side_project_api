@@ -26,6 +26,8 @@ func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string
 	for _, columnValue := range content {
 
 		id, _ := strconv.Atoi(columnValue[0])
+		price, _ := strconv.Atoi(columnValue[8])
+		priceMin, _ := strconv.Atoi(columnValue[9])
 		dataModel := &model.ProductionTemp{
 			ProductId:   uint32(id),
 			Name:        columnValue[1],
@@ -35,6 +37,8 @@ func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string
 			Image:       columnValue[5],
 			Images:      columnValue[6],
 			Url:         columnValue[7],
+			Price:       int64(price),
+			PriceMin:    int64(priceMin),
 		}
 		shopeeModelList = append(shopeeModelList, dataModel)
 	}
@@ -42,31 +46,17 @@ func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string
 	myDB := db.GetMySqlDB()
 
 	//新增到 temp table
-	myDB.Exec("truncate table  production_temps")
+	myDB.Exec(model.TRUNACTE_PRODUCTION_TEMP)
 	myDB.CreateInBatches(shopeeModelList, 1000)
 
 	//insert 與 update
 	//update
-	myDB.Exec(`SET SQL_SAFE_UPDATES=0`)
-	myDB.Exec(`update productions as pd  INNER join production_temps as temp on pd.product_id = temp.product_id 
-			set 
-				pd.name=temp.name,
-				pd.description=temp.description,
-				pd.options=temp.options,
-				pd.categories=temp.categories,
-				pd.image=temp.image,
-				pd.images=temp.images,
-				pd.url=temp.url,
-				pd.update_time=temp.update_time `)
-	myDB.Exec(`SET SQL_SAFE_UPDATES=1`)
+	myDB.Exec(model.UPDATE_SQL_SAFE_CLOSE)
+	myDB.Exec(model.UPDATE_PRODUCTION)
+	myDB.Exec(model.UPDATE_SQL_SAFE_OPEN)
 
 	// insert
-	myDB.Exec(`insert into productions(product_id,name,description,options,categories,image,images,url,create_time,update_time)
-		select 
-			temp.product_id,temp.name,temp.description,temp.options,temp.categories,
-			temp.image,temp.images,temp.url,temp.create_time,temp.update_time
-		from production_temps as temp left join productions as pd on pd.product_id = temp.product_id 
-		where  pd.id is null`)
+	myDB.Exec(model.INSERT_PRODUCTION)
 
 	return nil
 }

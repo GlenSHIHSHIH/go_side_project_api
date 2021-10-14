@@ -10,6 +10,8 @@ type ShopeeDataDTO struct {
 	Image       string
 	Images      string
 	Url         string
+	Price       int64
+	PriceMin    int64
 }
 
 type Options struct {

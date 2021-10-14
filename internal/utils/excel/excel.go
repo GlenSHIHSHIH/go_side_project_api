@@ -27,7 +27,9 @@ var (
 		{"Categories": "分類"},
 		{"Image": "主圖片"},
 		{"Images": "圖片(逗號區隔)"},
-		{"Url": "蝦皮連結"}}
+		{"Url": "蝦皮連結"},
+		{"Price": "產品價格"},
+		{"PriceMin": "產品價格低標"}}
 )
 
 //file name 設定
