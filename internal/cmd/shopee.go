@@ -48,7 +48,18 @@ func SetShopeeCommand() *cli.Command {
 }
 
 func execShopee(c *cli.Context) error {
+	err := executGetShopeeData()
 
+	// err := executFackData()  假資料
+
+	if err != nil {
+		return errors.WithMessage(errors.WithStack(err), fmt.Sprintf(" Write Excel Paht:"+excel.FILE_PATH, excel.FileName))
+	}
+
+	return nil
+}
+
+func executGetShopeeData() error {
 	id, err := strconv.Atoi(shopeeId)
 	if err != nil {
 		return errors.WithStack(err)
@@ -80,7 +91,7 @@ func execShopee(c *cli.Context) error {
 	return nil
 }
 
-func executFackData(c *cli.Context) error {
+func executFackData() error {
 
 	var DataModelList []*dto.ShopeeDataDTO
 

@@ -58,10 +58,11 @@ func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) ([]*dto.Sho
 			if err != nil {
 				// 寫入 log 紀錄
 				errData := errors.WithMessage(errors.WithStack(err), fmt.Sprintf("頁面連線錯誤,url:%v", productListUrl))
-				log.Fatal(fmt.Sprintf("%+v", errData))
+				log.Error(fmt.Sprintf("%+v", errData))
+			} else {
+				productId := Shopee.GetProductIdList(productList)
+				setProductIdToGroup(productId)
 			}
-			productId := Shopee.GetProductIdList(productList)
-			setProductIdToGroup(productId)
 		}(i)
 	}
 	wg.Wait()
@@ -77,9 +78,10 @@ func (Shopee *ShopeeService) RunShopeeService(shopId, skipCount int) ([]*dto.Sho
 			if err != nil {
 				// 寫入 log 紀錄
 				errData := errors.WithMessage(errors.WithStack(err), fmt.Sprintf("商品連線錯誤,url:%v", productListUrl))
-				log.Fatal(fmt.Sprintf("%+v", errData))
+				log.Error(fmt.Sprintf("%+v", errData))
+			} else {
+				setShopeeModelToGroup(Shopee.GetProductData(product))
 			}
-			setShopeeModelToGroup(Shopee.GetProductData(product))
 			// fmt.Println(shopeeModel)
 		}(val)
 

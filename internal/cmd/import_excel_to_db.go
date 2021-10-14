@@ -25,12 +25,21 @@ func execImport(c *cli.Context) error {
 	db.DBInit() // 1.db
 
 	// 2.執行匯入
+	err := execImportExcel()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func execImportExcel() error {
 	shopeeExcelReader := shopee.NewShopeeExcelReaderService()
 	err := shopeeExcelReader.ImportExcelShopeeDataToDB(excel.SHEET_NAME_SHOPEE)
 
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

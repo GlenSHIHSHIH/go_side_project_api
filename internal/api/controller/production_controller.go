@@ -20,6 +20,7 @@ var (
 func GetProduction(c *gin.Context) (Data, error) {
 	var shopeeProduction *dto.ShopeeProductionInDTO
 	err := c.Bind(&shopeeProduction)
+
 	if err != nil {
 		errData := errors.WithMessage(errors.WithStack(err), errorCode.PARAMETER_ERROR)
 		log.Warn(fmt.Sprintf("%+v", errData))
@@ -32,6 +33,6 @@ func GetProduction(c *gin.Context) (Data, error) {
 }
 
 func GetCategories(c *gin.Context) (Data, error) {
-
-	return nil, utils.CreateApiErr(118881, "未定義錯誤")
+	shService := api.GetShopeeService()
+	return shService.Category()
 }
