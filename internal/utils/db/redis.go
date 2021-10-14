@@ -2,16 +2,23 @@ package db
 
 import (
 	"componentmod/internal/utils/log"
+	"context"
 	"fmt"
 	"strconv"
+	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/cache/v8"
+	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 )
 
 var (
 	redisHost, redisPort, redisPassword, redisDBNumber string
+)
+
+const (
+	CACHE_MISS = "cache: key is missing"
 )
 
 //rdb 參數設定
@@ -46,10 +53,23 @@ func GetRedisDB() RedisDB {
 	return redisDB
 }
 
-var redisDB RedisDB
+func GetCacheRDB() CacheRDB {
+	return cacheRDB
+}
+
+var (
+	redisDB  RedisDB
+	cacheRDB CacheRDB
+)
 
 type RedisDB struct {
 	*redis.Client
+	Ctx context.Context
+}
+
+type CacheRDB struct {
+	*cache.Cache
+	Ctx context.Context
 }
 
 var Rdb *redis.Client
@@ -67,11 +87,28 @@ func ReidsInit() {
 		DB:       rdbNumber,                                  // use default DB
 	})
 
-	_, err = rdb.Ping().Result()
+	var ctx = context.Background()
+
+	_, err = rdb.Ping(ctx).Result()
 	if err != nil {
 		log.Fatal(fmt.Sprintf("%+v", errors.WithStack(err)))
 	}
 
-	redisDB = RedisDB{rdb}
+	cacher := cache.New(&cache.Options{
+		Redis: rdb,
+	})
 
+	redisDB = RedisDB{rdb, ctx}
+	cacheRDB = CacheRDB{cacher, ctx}
+
+}
+
+func (c *CacheRDB) SetItemByCache(ctx context.Context, key string, value interface{}, time time.Duration) error {
+
+	return c.Set(&cache.Item{
+		Ctx:   ctx,
+		Key:   key,
+		Value: value,
+		TTL:   time,
+	})
 }

@@ -6,7 +6,9 @@ require (
 	github.com/antonfisher/nested-logrus-formatter v1.3.1
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/gin-gonic/gin v1.7.4
+	github.com/go-redis/cache/v8 v8.4.3
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/go-redis/redis/v8 v8.11.4
 	github.com/golang-module/carbon v1.5.3
 	github.com/onsi/gomega v1.16.0 // indirect
 	github.com/pkg/errors v0.9.1
