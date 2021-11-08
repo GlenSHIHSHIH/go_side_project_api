@@ -26,7 +26,7 @@ func GetProduction(c *gin.Context) (Data, error) {
 		Search:         "",
 		SearchCategory: "",
 	}
-	err := c.Bind(&shopeeProduction)
+	err := c.Bind(shopeeProduction)
 	if err != nil {
 		errData := errors.WithMessage(errors.WithStack(err), errorCode.PARAMETER_ERROR)
 		log.Warn(fmt.Sprintf("%+v", errData))
