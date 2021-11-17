@@ -6,22 +6,15 @@ import (
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
-	"componentmod/internal/utils/log"
 	"fmt"
 	"strings"
-	"time"
 )
 
 var (
 	colume = map[string]string{"PName": "name", "PId": "product_id", "PCategory": "categories", "PCreTime": "create_time"}
 )
 
-const (
-	CACHE_CATEGORY      = "cache_category"
-	CACHE_CATEGORY_TIME = 60 * time.Minute
-)
-
-func (s *Shopee) Production(shProduction *dto.ShopeeProductionInDTO) (map[string]interface{}, error) {
+func (s *Shopee) Production(shProduction *dto.ShopeePageDTO) (interface{}, error) {
 
 	//頁數預設 矯正
 	page, pageLimit := pageParameter(shProduction.Page, shProduction.PageLimit, 1, 10)
@@ -32,16 +25,17 @@ func (s *Shopee) Production(shProduction *dto.ShopeeProductionInDTO) (map[string
 	if err != nil {
 		return nil, err
 	}
-	resMap := make(map[string]interface{}, 0)
-	resMap["productionList"] = productionList
-	resMap["count"] = count
-	resMap["page"] = page
-	resMap["pageLimit"] = pageLimit
 
-	return resMap, nil
+	shProduction.Count = count
+
+	res := &dto.ShopeeProductionOutDTO{
+		ProductionList: productionList,
+		PageData:       shProduction,
+	}
+	return res, nil
 }
 
-func (s *Shopee) getProductionData(shProduction *dto.ShopeeProductionInDTO) ([]*dto.ShopeeProductionOutDTO, int64, error) {
+func (s *Shopee) getProductionData(shProduction *dto.ShopeePageDTO) ([]*dto.ShopeeProductionData, int64, error) {
 	sqldb := db.GetMySqlDB()
 
 	sql := sqldb.Model(&model.Production{})
@@ -74,41 +68,8 @@ func (s *Shopee) getProductionData(shProduction *dto.ShopeeProductionInDTO) ([]*
 		sql = sql.Order(fmt.Sprintf("%v %v", scolumne, shProduction.Sort))
 	}
 
-	var ShopeeProductionOutDTO []*dto.ShopeeProductionOutDTO
-	sql.Select("product_id,name,description,options,categories,image,images,url,price,price_min,create_time").Scan(&ShopeeProductionOutDTO)
+	var ShopeeProductionData []*dto.ShopeeProductionData
+	sql.Select("product_id,name,description,options,categories,image,images,url,price,price_min,create_time").Scan(&ShopeeProductionData)
 
-	return ShopeeProductionOutDTO, count, nil
-}
-
-func (s *Shopee) Category() (map[string]interface{}, error) {
-
-	//get Category 先從cache拿 看看有沒有資料
-	var category []string
-	cacheRDB := db.GetCacheRDB()
-	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_CATEGORY, &category)
-
-	if err == nil {
-		resMap := make(map[string]interface{}, 0)
-		resMap["category"] = category
-		return resMap, nil
-	}
-
-	if err.Error() != db.CACHE_MISS {
-		log.Error(fmt.Sprintf("cache %s not save,%+v", CACHE_CATEGORY, err))
-	}
-
-	sqldb := db.GetMySqlDB()
-	sqldb.Raw(model.GET_PROD_CATEGORIES).Scan(&category)
-
-	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, CACHE_CATEGORY, category, CACHE_CATEGORY_TIME)
-	// err = rdb.Set(rdb.Ctx, CACHE_CATEGORY, category, CACHE_CATEGORY_TIME).Err()
-
-	if err != nil {
-		log.Error(fmt.Sprintf("cache %s not save,%+v", CACHE_CATEGORY, err))
-	}
-
-	resMap := make(map[string]interface{}, 0)
-	resMap["category"] = category
-
-	return resMap, nil
+	return ShopeeProductionData, count, nil
 }

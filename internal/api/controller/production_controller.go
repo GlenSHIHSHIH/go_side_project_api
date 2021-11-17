@@ -14,11 +14,11 @@ import (
 
 var (
 	ProductionList = Handler(GetProduction)
-	CategoriesList = Handler(GetCategories)
+	ProductionById = Handler(GetProductionById)
 )
 
 func GetProduction(c *gin.Context) (Data, error) {
-	var shopeeProduction = &dto.ShopeeProductionInDTO{
+	var shopeePageDTO = &dto.ShopeePageDTO{
 		Page:           1,
 		PageLimit:      20,
 		Sort:           "asc",
@@ -26,7 +26,7 @@ func GetProduction(c *gin.Context) (Data, error) {
 		Search:         "",
 		SearchCategory: "",
 	}
-	err := c.Bind(shopeeProduction)
+	err := c.Bind(shopeePageDTO)
 	if err != nil {
 		errData := errors.WithMessage(errors.WithStack(err), errorCode.PARAMETER_ERROR)
 		log.Warn(fmt.Sprintf("%+v", errData))
@@ -34,10 +34,11 @@ func GetProduction(c *gin.Context) (Data, error) {
 	}
 
 	shService := api.GetShopeeService()
-	return shService.Production(shopeeProduction)
+	return shService.Production(shopeePageDTO)
 }
 
-func GetCategories(c *gin.Context) (Data, error) {
-	shService := api.GetShopeeService()
-	return shService.Category()
+func GetProductionById(c *gin.Context) (Data, error) {
+	// err := c.Param("name")
+
+	return nil, nil
 }

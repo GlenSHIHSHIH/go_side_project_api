@@ -7,13 +7,19 @@ import (
 )
 
 func Router(r *gin.Engine) {
-	root := r.Group("/")
+	production := r.Group("/production")
 	{
 
-		root.GET("production/list", controller.ProductionList)
-		root.GET("categoriesList/list", controller.CategoriesList)
-		// root.GET("", controller.ProductionList)
+		production.GET("/list", controller.ProductionList)
+		production.GET("/:id", controller.ProductionById)
 	}
-	// root.Use(middleware){	}
+
+	carousel := r.Group("/carousel")
+	{
+		carousel.GET("/list")
+		carousel.GET("/:id")
+	}
+
+	r.GET("/categoriesList/list", controller.CategoriesList)
 
 }
