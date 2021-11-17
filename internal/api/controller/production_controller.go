@@ -38,7 +38,7 @@ func GetProduction(c *gin.Context) (Data, error) {
 }
 
 func GetProductionById(c *gin.Context) (Data, error) {
-	// err := c.Param("name")
-
-	return nil, nil
+	id := c.Param("id")
+	shService := api.GetShopeeService()
+	return shService.ProductionById(id)
 }

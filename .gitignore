@@ -3,3 +3,4 @@ go.sum
 /log/
 excel/
 docker_db/db_dump/
+__debug_bin

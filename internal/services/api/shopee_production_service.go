@@ -73,3 +73,17 @@ func (s *Shopee) getProductionData(shProduction *dto.ShopeePageDTO) ([]*dto.Shop
 
 	return ShopeeProductionData, count, nil
 }
+
+func (s *Shopee) ProductionById(id string) (interface{}, error) {
+	sqldb := db.GetMySqlDB()
+	sql := sqldb.Model(&model.Production{})
+	sql = sql.Where("id = ?", id)
+	var ShopeeProductionData []*dto.ShopeeProductionData
+	sql.Select("product_id,name,description,options,categories,image,images,url,price,price_min,create_time").First(&ShopeeProductionData)
+
+	if len(ShopeeProductionData) == 0 {
+		return nil, nil
+	}
+
+	return ShopeeProductionData, nil
+}
