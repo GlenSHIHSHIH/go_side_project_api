@@ -6,12 +6,19 @@ import (
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
+	"componentmod/internal/utils/log"
 	"fmt"
 	"strings"
+	"time"
 )
 
 var (
 	colume = map[string]string{"PName": "name", "PId": "product_id", "PCategory": "categories", "PCreTime": "create_time"}
+)
+
+const (
+	CACHE_PRODUCTION      = "cache_production"
+	CACHE_PRODUCTION_TIME = 10 * time.Minute
 )
 
 func (s *Shopee) Production(shProduction *dto.ShopeePageDTO) (interface{}, error) {
@@ -75,14 +82,33 @@ func (s *Shopee) getProductionData(shProduction *dto.ShopeePageDTO) ([]*dto.Shop
 }
 
 func (s *Shopee) ProductionById(id string) (interface{}, error) {
+
+	var ShopeeProductionData *dto.ShopeeProductionData
+	cacheName := CACHE_PRODUCTION + id
+	cacheRDB := db.GetCacheRDB()
+	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &ShopeeProductionData)
+
+	if err == nil {
+		return ShopeeProductionData, nil
+	}
+
+	if err.Error() != db.CACHE_MISS {
+		log.Error(fmt.Sprintf("cache %s not save,%+v", cacheName, err))
+	}
+
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Production{})
 	sql = sql.Where("id = ?", id)
-	var ShopeeProductionData []*dto.ShopeeProductionData
 	sql.Select("product_id,name,description,options,categories,image,images,url,price,price_min,create_time").First(&ShopeeProductionData)
 
-	if len(ShopeeProductionData) == 0 {
+	if ShopeeProductionData == nil {
 		return nil, nil
+	}
+
+	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, cacheName, ShopeeProductionData, CACHE_PRODUCTION_TIME)
+
+	if err != nil {
+		log.Error(fmt.Sprintf("cache %s not save,%+v", CACHE_CAROUSELS, err))
 	}
 
 	return ShopeeProductionData, nil
