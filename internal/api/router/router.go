@@ -16,10 +16,9 @@ func Router(r *gin.Engine) {
 
 	carousel := r.Group("/carousel")
 	{
-		carousel.GET("/list")
-		carousel.GET("/:id")
+		carousel.GET("/list", controller.CarouselList)
 	}
 
-	r.GET("/categoriesList/list", controller.CategoriesList)
+	r.GET("/categories/list", controller.CategoryList)
 
 }

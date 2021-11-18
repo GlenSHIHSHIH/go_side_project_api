@@ -14,7 +14,7 @@ const (
 	CACHE_CATEGORY_TIME = 60 * time.Minute
 )
 
-func (s *Shopee) Category() (interface{}, error) {
+func (s *Shopee) GetCategoryList() (interface{}, error) {
 
 	//get Category 先從cache拿 看看有沒有資料
 	var category []string
