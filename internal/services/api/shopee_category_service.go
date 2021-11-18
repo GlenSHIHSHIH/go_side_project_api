@@ -1,6 +1,7 @@
 package api
 
 import (
+	"componentmod/internal/dto"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
 	"componentmod/internal/utils/log"
@@ -13,7 +14,7 @@ const (
 	CACHE_CATEGORY_TIME = 60 * time.Minute
 )
 
-func (s *Shopee) Category() (map[string]interface{}, error) {
+func (s *Shopee) Category() (interface{}, error) {
 
 	//get Category 先從cache拿 看看有沒有資料
 	var category []string
@@ -21,9 +22,10 @@ func (s *Shopee) Category() (map[string]interface{}, error) {
 	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_CATEGORY, &category)
 
 	if err == nil {
-		resMap := make(map[string]interface{}, 0)
-		resMap["category"] = category
-		return resMap, nil
+		categoryDTO := &dto.ShopeeCategoryDTO{
+			Category: category,
+		}
+		return categoryDTO, nil
 	}
 
 	if err.Error() != db.CACHE_MISS {
@@ -34,14 +36,14 @@ func (s *Shopee) Category() (map[string]interface{}, error) {
 	sqldb.Raw(model.GET_PROD_CATEGORIES).Scan(&category)
 
 	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, CACHE_CATEGORY, category, CACHE_CATEGORY_TIME)
-	// err = rdb.Set(rdb.Ctx, CACHE_CATEGORY, category, CACHE_CATEGORY_TIME).Err()
 
 	if err != nil {
 		log.Error(fmt.Sprintf("cache %s not save,%+v", CACHE_CATEGORY, err))
 	}
 
-	resMap := make(map[string]interface{}, 0)
-	resMap["category"] = category
+	categoryDTO := &dto.ShopeeCategoryDTO{
+		Category: category,
+	}
 
-	return resMap, nil
+	return categoryDTO, nil
 }
