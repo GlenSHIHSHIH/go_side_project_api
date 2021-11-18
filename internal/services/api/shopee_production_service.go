@@ -35,11 +35,11 @@ func (s *Shopee) Production(shProduction *dto.ShopeePageDTO) (interface{}, error
 
 	shProduction.Count = count
 
-	res := &dto.ShopeeProductionOutDTO{
+	productionDTO := &dto.ShopeeProductionDTO{
 		ProductionList: productionList,
 		PageData:       shProduction,
 	}
-	return res, nil
+	return productionDTO, nil
 }
 
 func (s *Shopee) getProductionData(shProduction *dto.ShopeePageDTO) ([]*dto.ShopeeProductionData, int64, error) {
@@ -89,7 +89,10 @@ func (s *Shopee) ProductionById(id string) (interface{}, error) {
 	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &ShopeeProductionData)
 
 	if err == nil {
-		return ShopeeProductionData, nil
+		productionByIdDTO := &dto.ShopeeProductionByIdDTO{
+			Production: ShopeeProductionData,
+		}
+		return productionByIdDTO, nil
 	}
 
 	if err.Error() != db.CACHE_MISS {
@@ -111,5 +114,9 @@ func (s *Shopee) ProductionById(id string) (interface{}, error) {
 		log.Error(fmt.Sprintf("cache %s not save,%+v", CACHE_CAROUSELS, err))
 	}
 
-	return ShopeeProductionData, nil
+	productionByIdDTO := &dto.ShopeeProductionByIdDTO{
+		Production: ShopeeProductionData,
+	}
+
+	return productionByIdDTO, nil
 }

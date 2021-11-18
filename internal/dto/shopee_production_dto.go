@@ -1,8 +1,12 @@
 package dto
 
-type ShopeeProductionOutDTO struct {
+type ShopeeProductionDTO struct {
 	ProductionList []*ShopeeProductionData `json:"productionList"`
 	PageData       *ShopeePageDTO          `json:"pageData"`
+}
+
+type ShopeeProductionByIdDTO struct {
+	Production *ShopeeProductionData `json:"production"`
 }
 
 type ShopeeProductionData struct {
