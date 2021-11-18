@@ -111,7 +111,7 @@ func (s *Shopee) ProductionById(id string) (interface{}, error) {
 	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, cacheName, ShopeeProductionData, CACHE_PRODUCTION_TIME)
 
 	if err != nil {
-		log.Error(fmt.Sprintf("cache %s not save,%+v", CACHE_CAROUSELS, err))
+		log.Error(fmt.Sprintf("cache %s not save,%+v", cacheName, err))
 	}
 
 	productionByIdDTO := &dto.ShopeeProductionByIdDTO{
