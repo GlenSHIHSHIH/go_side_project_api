@@ -1,9 +1,10 @@
-package controller
+package forestage
 
 import (
+	"componentmod/internal/api/controller"
 	errorCode "componentmod/internal/api/error_code"
 	"componentmod/internal/dto"
-	"componentmod/internal/services/api"
+	"componentmod/internal/services/api/forestage"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/log"
 	"fmt"
@@ -13,12 +14,12 @@ import (
 )
 
 var (
-	ProductionList = Handler(GetProduction)
-	ProductionById = Handler(GetProductionById)
+	ProductionList = controller.Handler(GetProduction)
+	ProductionById = controller.Handler(GetProductionById)
 )
 
-func GetProduction(c *gin.Context) (Data, error) {
-	var shopeePageDTO = &dto.ShopeePageDTO{
+func GetProduction(c *gin.Context) (controller.Data, error) {
+	var shopeePageDTO = &dto.PageDTO{
 		Page:           1,
 		PageLimit:      20,
 		Sort:           "asc",
@@ -33,12 +34,12 @@ func GetProduction(c *gin.Context) (Data, error) {
 		return nil, utils.CreateApiErr(errorCode.PARAMETER_ERROR_CODE, errorCode.PARAMETER_ERROR)
 	}
 
-	shService := api.GetShopeeService()
-	return shService.GetProductionList(shopeePageDTO)
+	productionService := forestage.GetProductionService()
+	return productionService.GetProductionList(shopeePageDTO)
 }
 
-func GetProductionById(c *gin.Context) (Data, error) {
+func GetProductionById(c *gin.Context) (controller.Data, error) {
 	id := c.Param("id")
-	shService := api.GetShopeeService()
-	return shService.GetProductionById(id)
+	productionService := forestage.GetProductionService()
+	return productionService.GetProductionById(id)
 }

@@ -1,8 +1,10 @@
-package api
+package forestage
 
 import (
 	errorCode "componentmod/internal/api/error_code"
 	"componentmod/internal/dto"
+	"componentmod/internal/dto/forestage"
+	"componentmod/internal/services/api"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
@@ -21,28 +23,37 @@ const (
 	CACHE_PRODUCTION_TIME = 10 * time.Minute
 )
 
-func (s *Shopee) GetProductionList(shProduction *dto.ShopeePageDTO) (interface{}, error) {
+type ProductionService struct {
+}
+
+func GetProductionService() *ProductionService {
+	return &ProductionService{}
+}
+
+func (p *ProductionService) GetProductionList(shProduction *dto.PageDTO) (interface{}, error) {
+
+	baseApiService := api.GetBaseApiService()
 
 	//頁數預設 矯正
-	page, pageLimit := pageParameter(shProduction.Page, shProduction.PageLimit, 1, 10)
+	page, pageLimit := baseApiService.PageParameter(shProduction.Page, shProduction.PageLimit, 1, 10)
 
 	shProduction.Page = page
 	shProduction.PageLimit = pageLimit
-	productionList, count, err := s.getProductionData(shProduction)
+	productionList, count, err := p.getProductionData(shProduction)
 	if err != nil {
 		return nil, err
 	}
 
 	shProduction.Count = count
 
-	productionDTO := &dto.ShopeeProductionDTO{
+	productionDTO := &forestage.ProductionDTO{
 		ProductionList: productionList,
 		PageData:       shProduction,
 	}
 	return productionDTO, nil
 }
 
-func (s *Shopee) getProductionData(shProduction *dto.ShopeePageDTO) ([]*dto.ShopeeProductionData, int64, error) {
+func (p *ProductionService) getProductionData(shProduction *dto.PageDTO) ([]*forestage.ProductionData, int64, error) {
 	sqldb := db.GetMySqlDB()
 
 	sql := sqldb.Model(&model.Production{})
@@ -75,21 +86,21 @@ func (s *Shopee) getProductionData(shProduction *dto.ShopeePageDTO) ([]*dto.Shop
 		sql = sql.Order(fmt.Sprintf("%v %v", scolumne, shProduction.Sort))
 	}
 
-	var ShopeeProductionData []*dto.ShopeeProductionData
+	var ShopeeProductionData []*forestage.ProductionData
 	sql.Select("product_id,name,description,options,categories,image,images,url,price,price_min,create_time").Scan(&ShopeeProductionData)
 
 	return ShopeeProductionData, count, nil
 }
 
-func (s *Shopee) GetProductionById(id string) (interface{}, error) {
+func (p *ProductionService) GetProductionById(id string) (interface{}, error) {
 
-	var ShopeeProductionData *dto.ShopeeProductionData
+	var ShopeeProductionData *forestage.ProductionData
 	cacheName := CACHE_PRODUCTION + id
 	cacheRDB := db.GetCacheRDB()
 	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &ShopeeProductionData)
 
 	if err == nil {
-		productionByIdDTO := &dto.ShopeeProductionByIdDTO{
+		productionByIdDTO := &forestage.ProductionByIdDTO{
 			Production: ShopeeProductionData,
 		}
 		return productionByIdDTO, nil
@@ -114,7 +125,7 @@ func (s *Shopee) GetProductionById(id string) (interface{}, error) {
 		log.Error(fmt.Sprintf("cache %s not save,%+v", cacheName, err))
 	}
 
-	productionByIdDTO := &dto.ShopeeProductionByIdDTO{
+	productionByIdDTO := &forestage.ProductionByIdDTO{
 		Production: ShopeeProductionData,
 	}
 

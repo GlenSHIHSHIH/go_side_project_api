@@ -1,14 +1,14 @@
 package api
 
-type Shopee struct {
+type BaseApiService struct {
 }
 
-func GetShopeeService() *Shopee {
-	return &Shopee{}
+func GetBaseApiService() *BaseApiService {
+	return &BaseApiService{}
 }
 
 //分頁預設值
-func pageParameter(page, pageLimit, defaultPage, defaultPageLimit int) (int, int) {
+func (b *BaseApiService) PageParameter(page, pageLimit, defaultPage, defaultPageLimit int) (int, int) {
 	if defaultPage <= 1 {
 		defaultPage = 1
 	}

@@ -1,7 +1,7 @@
-package api
+package forestage
 
 import (
-	"componentmod/internal/dto"
+	"componentmod/internal/dto/forestage"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
 	"componentmod/internal/utils/log"
@@ -14,7 +14,14 @@ const (
 	CACHE_CATEGORY_TIME = 60 * time.Minute
 )
 
-func (s *Shopee) GetCategoryList() (interface{}, error) {
+type CategoryService struct {
+}
+
+func GetCategoryService() *CategoryService {
+	return &CategoryService{}
+}
+
+func (c *CategoryService) GetCategoryList() (interface{}, error) {
 
 	//get Category 先從cache拿 看看有沒有資料
 	var category []string
@@ -22,7 +29,7 @@ func (s *Shopee) GetCategoryList() (interface{}, error) {
 	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_CATEGORY, &category)
 
 	if err == nil {
-		categoryDTO := &dto.ShopeeCategoryDTO{
+		categoryDTO := &forestage.CategoryDTO{
 			Category: category,
 		}
 		return categoryDTO, nil
@@ -41,7 +48,7 @@ func (s *Shopee) GetCategoryList() (interface{}, error) {
 		log.Error(fmt.Sprintf("cache %s not save,%+v", CACHE_CATEGORY, err))
 	}
 
-	categoryDTO := &dto.ShopeeCategoryDTO{
+	categoryDTO := &forestage.CategoryDTO{
 		Category: category,
 	}
 

@@ -1,15 +1,17 @@
-package dto
+package forestage
 
-type ShopeeProductionDTO struct {
-	ProductionList []*ShopeeProductionData `json:"productionList"`
-	PageData       *ShopeePageDTO          `json:"pageData"`
+import "componentmod/internal/dto"
+
+type ProductionDTO struct {
+	ProductionList []*ProductionData `json:"productionList"`
+	PageData       *dto.PageDTO      `json:"pageData"`
 }
 
-type ShopeeProductionByIdDTO struct {
-	Production *ShopeeProductionData `json:"production"`
+type ProductionByIdDTO struct {
+	Production *ProductionData `json:"production"`
 }
 
-type ShopeeProductionData struct {
+type ProductionData struct {
 	ProductId   int64  `json:"productId"`
 	Name        string `json:"name"`
 	Description string `json:"description"`

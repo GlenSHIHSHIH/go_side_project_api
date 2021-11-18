@@ -1,10 +1,10 @@
-package dto
+package forestage
 
-type ShopeeCarouselDTO struct {
-	Carousel []*ShopeeCarouselData `json:"carousels"`
+type CarouselDTO struct {
+	Carousel []*CarouselData `json:"carousels"`
 }
 
-type ShopeeCarouselData struct {
+type CarouselData struct {
 	Id     int    `json:"id"`
 	Name   string `json:"name"`
 	Image  string `json:"image"`

@@ -1,7 +1,7 @@
-package api
+package forestage
 
 import (
-	"componentmod/internal/dto"
+	"componentmod/internal/dto/forestage"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
 	"componentmod/internal/utils/log"
@@ -14,15 +14,22 @@ const (
 	CACHE_CAROUSEL_TIME = 10 * time.Minute
 )
 
-func (s *Shopee) GetCarouselList() (interface{}, error) {
+type CarouselService struct {
+}
+
+func GetCarouselService() *CarouselService {
+	return &CarouselService{}
+}
+
+func (c *CarouselService) GetCarouselList() (interface{}, error) {
 
 	//get Carousels 先從cache拿 看看有沒有資料
-	var carousel []*dto.ShopeeCarouselData
+	var carousel []*forestage.CarouselData
 	cacheRDB := db.GetCacheRDB()
 	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_CAROUSEL, &carousel)
 
 	if err == nil {
-		carouselDTO := dto.ShopeeCarouselDTO{
+		carouselDTO := forestage.CarouselDTO{
 			Carousel: carousel,
 		}
 		return carouselDTO, nil
@@ -44,7 +51,7 @@ func (s *Shopee) GetCarouselList() (interface{}, error) {
 		log.Error(fmt.Sprintf("cache %s not save,%+v", CACHE_CAROUSEL, err))
 	}
 
-	carouselsDTO := dto.ShopeeCarouselDTO{
+	carouselsDTO := forestage.CarouselDTO{
 		Carousel: carousel,
 	}
 

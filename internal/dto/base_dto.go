@@ -1,6 +1,6 @@
 package dto
 
-type ShopeePageDTO struct {
+type PageDTO struct {
 	Page           int    `form:"page" json:"page"`
 	PageLimit      int    `form:"pageLimit" json:"pageLimit"`
 	Count          int64  `form:"count" json:"count"`

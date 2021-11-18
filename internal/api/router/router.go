@@ -1,7 +1,7 @@
 package router
 
 import (
-	"componentmod/internal/api/controller"
+	"componentmod/internal/api/controller/forestage"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,15 +10,15 @@ func Router(r *gin.Engine) {
 	production := r.Group("/production")
 	{
 
-		production.GET("/list", controller.ProductionList)
-		production.GET("/:id", controller.ProductionById)
+		production.GET("/list", forestage.ProductionList)
+		production.GET("/:id", forestage.ProductionById)
 	}
 
 	carousel := r.Group("/carousel")
 	{
-		carousel.GET("/list", controller.CarouselList)
+		carousel.GET("/list", forestage.CarouselList)
 	}
 
-	r.GET("/categories/list", controller.CategoryList)
+	r.GET("/categories/list", forestage.CategoryList)
 
 }
