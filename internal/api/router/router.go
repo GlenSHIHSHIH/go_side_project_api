@@ -19,6 +19,6 @@ func Router(r *gin.Engine) {
 		carousel.GET("/list", forestage.CarouselList)
 	}
 
-	r.GET("/categories/list", forestage.CategoryList)
+	r.GET("/category/list", forestage.CategoryList)
 
 }
