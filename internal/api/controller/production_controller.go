@@ -34,11 +34,11 @@ func GetProduction(c *gin.Context) (Data, error) {
 	}
 
 	shService := api.GetShopeeService()
-	return shService.Production(shopeePageDTO)
+	return shService.GetProductionList(shopeePageDTO)
 }
 
 func GetProductionById(c *gin.Context) (Data, error) {
 	id := c.Param("id")
 	shService := api.GetShopeeService()
-	return shService.ProductionById(id)
+	return shService.GetProductionById(id)
 }

@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	CategoriesList = Handler(GetCategories)
+	CategoryList = Handler(GetCategory)
 )
 
-func GetCategories(c *gin.Context) (Data, error) {
+func GetCategory(c *gin.Context) (Data, error) {
 	shService := api.GetShopeeService()
-	return shService.Category()
+	return shService.GetCategoryList()
 }

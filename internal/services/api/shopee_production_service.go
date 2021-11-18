@@ -21,7 +21,7 @@ const (
 	CACHE_PRODUCTION_TIME = 10 * time.Minute
 )
 
-func (s *Shopee) Production(shProduction *dto.ShopeePageDTO) (interface{}, error) {
+func (s *Shopee) GetProductionList(shProduction *dto.ShopeePageDTO) (interface{}, error) {
 
 	//頁數預設 矯正
 	page, pageLimit := pageParameter(shProduction.Page, shProduction.PageLimit, 1, 10)
@@ -81,7 +81,7 @@ func (s *Shopee) getProductionData(shProduction *dto.ShopeePageDTO) ([]*dto.Shop
 	return ShopeeProductionData, count, nil
 }
 
-func (s *Shopee) ProductionById(id string) (interface{}, error) {
+func (s *Shopee) GetProductionById(id string) (interface{}, error) {
 
 	var ShopeeProductionData *dto.ShopeeProductionData
 	cacheName := CACHE_PRODUCTION + id
