@@ -87,7 +87,8 @@ func (p *ProductionService) getProductionData(shProduction *dto.PageDTO) ([]*for
 	}
 
 	var ShopeeProductionData []*forestage.ProductionData
-	sql.Select("product_id,name,description,options,categories,image,images,url,price,price_min,create_time").Scan(&ShopeeProductionData)
+	sql.Scan(&ShopeeProductionData)
+	// sql.Select("id,product_id,name,description,options,categories,image,images,url,price,price_min,create_time").Scan(&ShopeeProductionData)
 
 	return ShopeeProductionData, count, nil
 }
@@ -113,7 +114,8 @@ func (p *ProductionService) GetProductionById(id string) (interface{}, error) {
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Production{})
 	sql = sql.Where("id = ?", id)
-	sql.Select("product_id,name,description,options,categories,image,images,url,price,price_min,create_time").First(&ShopeeProductionData)
+	sql.First(&ShopeeProductionData)
+	// sql.Select("id,product_id,name,description,options,categories,image,images,url,price,price_min,create_time").First(&ShopeeProductionData)
 
 	if ShopeeProductionData == nil {
 		return nil, nil

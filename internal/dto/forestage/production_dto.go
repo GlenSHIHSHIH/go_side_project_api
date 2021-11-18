@@ -12,6 +12,7 @@ type ProductionByIdDTO struct {
 }
 
 type ProductionData struct {
+	Id          int    `json:"id"`
 	ProductId   int64  `json:"productId"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
