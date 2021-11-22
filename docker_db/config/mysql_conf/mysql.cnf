@@ -1,0 +1,31 @@
+[mysqld]
+back_log = 3000
+character_set_server = utf8mb4
+collation_server = utf8mb4_general_ci
+max_connect_errors = 100
+max_connections = 16050
+max_user_connections = 16050
+max_heap_table_size = 64M
+max_allowed_packet = 1024M
+sort_buffer_size = 848KB
+read_buffer_size = 848KB
+read_rnd_buffer_size = 432KB
+join_buffer_size = 432KB
+net_buffer_length = 16K
+transaction_isolation = READ-COMMITTED
+lower_case_table_names = 1
+auto_increment_increment = 1
+auto_increment_offset = 1
+bulk_insert_buffer_size = 4M
+innodb_buffer_pool_size = 2048M
+innodb_log_file_size = 256M
+innodb_flush_method = O_DIRECT
+sql_mode = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
+default-time-zone = '+08:00'
+skip-name-resolve
+wait_timeout=600
+log_output=file
+slow_query_log=ON
+slow_query_log_file=/var/lib/mysql/sqls-slow.log
+log_queries_not_using_indexes=OFF
+long_query_time=3
