@@ -114,8 +114,8 @@ func (p *ProductionService) GetProductionById(id string) (interface{}, error) {
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Production{})
 	sql = sql.Where("id = ?", id)
-	sql.First(&ShopeeProductionData)
-	// sql.Select("id,product_id,name,description,options,categories,image,images,url,price,price_min,create_time").First(&ShopeeProductionData)
+	// sql.First(&ShopeeProductionData)
+	sql.Select("REPLACE(description, CHAR(10) , '<br>') as description,id,product_id,name,options,categories,image,images,url,price,price_min,create_time").First(&ShopeeProductionData)
 
 	if ShopeeProductionData == nil {
 		return nil, nil

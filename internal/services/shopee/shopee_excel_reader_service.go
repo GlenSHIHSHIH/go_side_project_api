@@ -6,6 +6,8 @@ import (
 	"componentmod/internal/utils/db/model"
 	"componentmod/internal/utils/excel"
 	"strconv"
+
+	"gorm.io/gorm"
 )
 
 type ShopeeExcelReaderService struct {
@@ -46,21 +48,37 @@ func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string
 	}
 
 	myDB := db.GetMySqlDB()
+	err = myDB.Transaction(func(myDB *gorm.DB) error {
 
-	//新增到 temp table
-	myDB.Exec(model.TRUNACTE_PRODUCTION_TEMP)
-	myDB.CreateInBatches(shopeeModelList, 1000)
+		//新增到 temp table
+		if err := myDB.Exec(model.TRUNACTE_PRODUCTION_TEMP).Error; err != nil {
+			return err
+		}
 
-	//insert 與 update
-	//update
-	myDB.Exec(model.UPDATE_SQL_SAFE_CLOSE)
-	myDB.Exec(model.UPDATE_PRODUCTION)
-	myDB.Exec(model.UPDATE_SQL_SAFE_OPEN)
+		if err := myDB.CreateInBatches(shopeeModelList, 1000).Error; err != nil {
+			return err
+		}
 
-	// insert
-	myDB.Exec(model.INSERT_PRODUCTION)
+		//insert 與 update
+		//update
+		if err := myDB.Exec(model.UPDATE_SQL_SAFE_CLOSE).Error; err != nil {
+			return err
+		}
+		if err := myDB.Exec(model.UPDATE_PRODUCTION).Error; err != nil {
+			return err
+		}
+		if err := myDB.Exec(model.UPDATE_SQL_SAFE_OPEN).Error; err != nil {
+			return err
+		}
 
-	return nil
+		// insert
+		if err := myDB.Exec(model.INSERT_PRODUCTION).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+
+	return err
 }
 
 func (sers *ShopeeExcelReaderService) getExcelMap(rows [][]string, headerList *[]map[string]string) {
