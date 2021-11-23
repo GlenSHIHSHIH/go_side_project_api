@@ -29,7 +29,12 @@ var (
 		{"Images": "圖片(逗號區隔)"},
 		{"Url": "蝦皮連結"},
 		{"Price": "產品價格"},
-		{"PriceMin": "產品價格低標"}}
+		{"PriceMin": "產品價格低標"},
+		{"Attribute": "其他商品資訊"},
+		{"LikedCount": "喜歡的人數"},
+		{"HistoricalSold": "銷售數量"},
+		{"Stock": "商品庫存"},
+	}
 )
 
 //file name 設定

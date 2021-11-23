@@ -30,19 +30,26 @@ func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string
 		id, _ := strconv.Atoi(columnValue[0])
 		price, _ := strconv.Atoi(columnValue[8])
 		priceMin, _ := strconv.Atoi(columnValue[9])
+		likedCount, _ := strconv.Atoi(columnValue[11])
+		historicalSold, _ := strconv.Atoi(columnValue[12])
+		stock, _ := strconv.Atoi(columnValue[13])
 		dataModel := &model.ProductionTemp{
-			ProductId:    uint32(id),
-			Name:         columnValue[1],
-			Description:  columnValue[2],
-			Options:      columnValue[3],
-			Categories:   columnValue[4],
-			Image:        columnValue[5],
-			Images:       columnValue[6],
-			Url:          columnValue[7],
-			Price:        int64(price),
-			PriceMin:     int64(priceMin),
-			CreateUserId: 0,
-			UpdateUserId: 0,
+			ProductId:      uint32(id),
+			Name:           columnValue[1],
+			Description:    columnValue[2],
+			Options:        columnValue[3],
+			Categories:     columnValue[4],
+			Image:          columnValue[5],
+			Images:         columnValue[6],
+			Url:            columnValue[7],
+			Price:          int64(price),
+			PriceMin:       int64(priceMin),
+			CreateUserId:   0,
+			UpdateUserId:   0,
+			Attribute:      columnValue[10],
+			LikedCount:     likedCount,
+			HistoricalSold: historicalSold,
+			Stock:          stock,
 		}
 		shopeeModelList = append(shopeeModelList, dataModel)
 	}

@@ -91,19 +91,26 @@ func executGetShopeeData() error {
 	return nil
 }
 
+// 假資料
 func executFackData() error {
 
 	var DataModelList []*dto.ShopeeDataDTO
 
+	attributeData := "[{\"name\": \"產地\",\"value\": \"韓國\",\"id\": 100037,\"is_timestamp\": false,\"brand_option\": null,\"val_id\": null},{\"name\": \"有機\",\"value\": \"是\",\"id\": 100126,\"is_timestamp\": false,\"brand_option\": null,\"val_id\": null}]"
+
 	data := &dto.ShopeeDataDTO{
-		ProductId:   1248984949,
-		Name:        "name",
-		Description: "description",
-		Options:     []dto.Options{{Name: "size", Option: []string{"x", "m", "l"}}},
-		Image:       "image",
-		Images:      "images",
-		Categories:  "Categories",
-		Url:         "github.com.tw",
+		ProductId:      1248984949,
+		Name:           "name",
+		Description:    "description",
+		Options:        []dto.Options{{Name: "size", Option: []string{"x", "m", "l"}}},
+		Image:          "image",
+		Images:         "images",
+		Categories:     "Categories",
+		Url:            "github.com.tw",
+		Attribute:      attributeData,
+		LikedCount:     3,
+		HistoricalSold: 10,
+		Stock:          20,
 	}
 
 	DataModelList = append(DataModelList, data)
