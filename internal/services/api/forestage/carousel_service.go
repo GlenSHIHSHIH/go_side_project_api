@@ -25,13 +25,11 @@ func (c *CarouselService) GetCarouselList() (interface{}, error) {
 
 	//get Carousels 先從cache拿 看看有沒有資料
 	var carousel []*forestage.CarouselData
+	var carouselDTO *forestage.CarouselDTO
 	cacheRDB := db.GetCacheRDB()
-	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_CAROUSEL, &carousel)
+	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_CAROUSEL, &carouselDTO)
 
 	if err == nil {
-		carouselDTO := forestage.CarouselDTO{
-			Carousel: carousel,
-		}
 		return carouselDTO, nil
 	}
 
@@ -45,15 +43,15 @@ func (c *CarouselService) GetCarouselList() (interface{}, error) {
 	sql = sql.Order("weight desc")
 	sql.Select("id,name,image,url,weight").Scan(&carousel)
 
-	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, CACHE_CAROUSEL, carousel, CACHE_CAROUSEL_TIME)
+	carouselDTO = &forestage.CarouselDTO{
+		Carousel: carousel,
+	}
+
+	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, CACHE_CAROUSEL, carouselDTO, CACHE_CAROUSEL_TIME)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("cache %s not save,%+v", CACHE_CAROUSEL, err))
 	}
 
-	carouselsDTO := forestage.CarouselDTO{
-		Carousel: carousel,
-	}
-
-	return carouselsDTO, nil
+	return carouselDTO, nil
 }

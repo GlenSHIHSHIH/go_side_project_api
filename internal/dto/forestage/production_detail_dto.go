@@ -1,10 +1,10 @@
 package forestage
 
-type ProductionByIdDTO struct {
-	Production *ProductionDetailDto `json:"production"`
+type ProductionDetailDTO struct {
+	Production *ProductionDetailData `json:"production"`
 }
 
-type ProductionDetailDto struct {
+type ProductionDetailData struct {
 	Id             int    `json:"id"`
 	ProductId      int64  `json:"productId"`
 	Name           string `json:"name"`

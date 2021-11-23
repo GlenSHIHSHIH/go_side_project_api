@@ -95,16 +95,14 @@ func (p *ProductionService) getProductionData(shProduction *dto.PageDTO) ([]*for
 
 func (p *ProductionService) GetProductionById(id string) (interface{}, error) {
 
-	var ShopeeProductionDetailDto *forestage.ProductionDetailDto
+	var productionDetailData *forestage.ProductionDetailData
+	var productionDetailDTO *forestage.ProductionDetailDTO
 	cacheName := CACHE_PRODUCTION + id
 	cacheRDB := db.GetCacheRDB()
-	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &ShopeeProductionDetailDto)
+	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &productionDetailDTO)
 
 	if err == nil {
-		productionByIdDTO := &forestage.ProductionByIdDTO{
-			Production: ShopeeProductionDetailDto,
-		}
-		return productionByIdDTO, nil
+		return productionDetailDTO, nil
 	}
 
 	if err.Error() != db.CACHE_MISS {
@@ -114,23 +112,19 @@ func (p *ProductionService) GetProductionById(id string) (interface{}, error) {
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Production{})
 	sql = sql.Where("id = ?", id)
-	// sql.First(&ShopeeProductionDetailDto)
+	// sql.First(&productionDetailData)
 	sql.Select("REPLACE(description, CHAR(10) , '<br>') as description,id,product_id,name,options,categories," +
-		"image,images,url,price,price_min,liked_count,historical_sold,attribute,stock,create_time").First(&ShopeeProductionDetailDto)
+		"image,images,url,price,price_min,liked_count,historical_sold,attribute,stock,create_time").First(&productionDetailData)
 
-	if ShopeeProductionDetailDto == nil {
-		return nil, nil
+	productionDetailDTO = &forestage.ProductionDetailDTO{
+		Production: productionDetailData,
 	}
 
-	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, cacheName, ShopeeProductionDetailDto, CACHE_PRODUCTION_TIME)
+	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, cacheName, productionDetailDTO, CACHE_PRODUCTION_TIME)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("cache %s not save,%+v", cacheName, err))
 	}
 
-	productionByIdDTO := &forestage.ProductionByIdDTO{
-		Production: ShopeeProductionDetailDto,
-	}
-
-	return productionByIdDTO, nil
+	return productionDetailDTO, nil
 }

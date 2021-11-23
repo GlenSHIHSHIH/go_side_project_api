@@ -25,13 +25,11 @@ func (c *CategoryService) GetCategoryList() (interface{}, error) {
 
 	//get Category 先從cache拿 看看有沒有資料
 	var category []string
+	var categoryDTO *forestage.CategoryDTO
 	cacheRDB := db.GetCacheRDB()
-	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_CATEGORY, &category)
+	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_CATEGORY, &categoryDTO)
 
 	if err == nil {
-		categoryDTO := &forestage.CategoryDTO{
-			Category: category,
-		}
 		return categoryDTO, nil
 	}
 
@@ -42,14 +40,14 @@ func (c *CategoryService) GetCategoryList() (interface{}, error) {
 	sqldb := db.GetMySqlDB()
 	sqldb.Raw(model.GET_PROD_CATEGORIES).Scan(&category)
 
-	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, CACHE_CATEGORY, category, CACHE_CATEGORY_TIME)
+	categoryDTO = &forestage.CategoryDTO{
+		Category: category,
+	}
+
+	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, CACHE_CATEGORY, categoryDTO, CACHE_CATEGORY_TIME)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("cache %s not save,%+v", CACHE_CATEGORY, err))
-	}
-
-	categoryDTO := &forestage.CategoryDTO{
-		Category: category,
 	}
 
 	return categoryDTO, nil
