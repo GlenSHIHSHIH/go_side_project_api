@@ -47,6 +47,7 @@ type Production struct {
 	LikedCount     int       `gorm:"comment:喜歡的人數;type:int" json:"likedCount"`                                        //喜歡的人數
 	HistoricalSold int       `gorm:"comment:銷售數量;type:int" json:"historicalSold"`                                     //銷售數量
 	Stock          int       `gorm:"comment:商品庫存;type:int" json:"stock"`                                              //商品庫存
+	Weight         int       `gorm:"comment:權重(優先順序 重=高);type:int;default:0" json:"weight"`                           //權重
 	CreateTime     time.Time `gorm:"comment:新增時間;type:datetime;not null;default:CURRENT_TIMESTAMP" json:"createTime"` //新增時間
 	UpdateTime     time.Time `gorm:"comment:更新時間;type:datetime;not null;default:CURRENT_TIMESTAMP" json:"updateTime"` //更新時間
 	CreateUserId   int       `gorm:"comment:新增人員Id;type:int; json:"createUserId"`                                     //新增人員
