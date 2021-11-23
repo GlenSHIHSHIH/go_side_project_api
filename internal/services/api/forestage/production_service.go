@@ -95,14 +95,14 @@ func (p *ProductionService) getProductionData(shProduction *dto.PageDTO) ([]*for
 
 func (p *ProductionService) GetProductionById(id string) (interface{}, error) {
 
-	var ShopeeProductionData *forestage.ProductionData
+	var ShopeeProductionDetailDto *forestage.ProductionDetailDto
 	cacheName := CACHE_PRODUCTION + id
 	cacheRDB := db.GetCacheRDB()
-	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &ShopeeProductionData)
+	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &ShopeeProductionDetailDto)
 
 	if err == nil {
 		productionByIdDTO := &forestage.ProductionByIdDTO{
-			Production: ShopeeProductionData,
+			Production: ShopeeProductionDetailDto,
 		}
 		return productionByIdDTO, nil
 	}
@@ -114,21 +114,22 @@ func (p *ProductionService) GetProductionById(id string) (interface{}, error) {
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Production{})
 	sql = sql.Where("id = ?", id)
-	// sql.First(&ShopeeProductionData)
-	sql.Select("REPLACE(description, CHAR(10) , '<br>') as description,id,product_id,name,options,categories,image,images,url,price,price_min,create_time").First(&ShopeeProductionData)
+	// sql.First(&ShopeeProductionDetailDto)
+	sql.Select("REPLACE(description, CHAR(10) , '<br>') as description,id,product_id,name,options,categories," +
+		"image,images,url,price,price_min,liked_count,historical_sold,attribute,stock,create_time").First(&ShopeeProductionDetailDto)
 
-	if ShopeeProductionData == nil {
+	if ShopeeProductionDetailDto == nil {
 		return nil, nil
 	}
 
-	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, cacheName, ShopeeProductionData, CACHE_PRODUCTION_TIME)
+	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, cacheName, ShopeeProductionDetailDto, CACHE_PRODUCTION_TIME)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("cache %s not save,%+v", cacheName, err))
 	}
 
 	productionByIdDTO := &forestage.ProductionByIdDTO{
-		Production: ShopeeProductionData,
+		Production: ShopeeProductionDetailDto,
 	}
 
 	return productionByIdDTO, nil

@@ -7,10 +7,6 @@ type ProductionDTO struct {
 	PageData       *dto.PageDTO      `json:"pageData"`
 }
 
-type ProductionByIdDTO struct {
-	Production *ProductionData `json:"production"`
-}
-
 type ProductionData struct {
 	Id          int    `json:"id"`
 	ProductId   int64  `json:"productId"`
