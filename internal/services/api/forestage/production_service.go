@@ -112,9 +112,10 @@ func (p *ProductionService) GetProductionById(id string) (interface{}, error) {
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Production{})
 	sql = sql.Where("id = ?", id)
+	sql = sql.Limit(1)
 	// sql.First(&productionDetailData)
 	sql.Select("REPLACE(description, CHAR(10) , '<br>') as description,id,product_id,name,options,categories," +
-		"image,images,url,price,price_min,liked_count,historical_sold,attribute,stock,create_time").First(&productionDetailData)
+		"image,images,url,price,price_min,liked_count,historical_sold,attribute,stock,create_time").Scan(&productionDetailData)
 
 	productionDetailDTO = &forestage.ProductionDetailDTO{
 		Production: productionDetailData,
