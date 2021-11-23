@@ -30,7 +30,7 @@ func GetProduction(c *gin.Context) (controller.Data, error) {
 	err := c.Bind(shopeePageDTO)
 	if err != nil {
 		errData := errors.WithMessage(errors.WithStack(err), errorCode.PARAMETER_ERROR)
-		log.Warn(fmt.Sprintf("%+v", errData))
+		log.Error(fmt.Sprintf("%+v", errData))
 		return nil, utils.CreateApiErr(errorCode.PARAMETER_ERROR_CODE, errorCode.PARAMETER_ERROR)
 	}
 

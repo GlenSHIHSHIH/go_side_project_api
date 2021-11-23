@@ -13,8 +13,8 @@ func (b *BaseApiService) PageParameter(page, pageLimit, defaultPage, defaultPage
 		defaultPage = 1
 	}
 
-	if defaultPageLimit <= 10 {
-		defaultPageLimit = 10
+	if defaultPageLimit <= 15 {
+		defaultPageLimit = 15
 	}
 
 	if defaultPage < page {
