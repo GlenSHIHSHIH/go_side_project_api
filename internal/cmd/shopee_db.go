@@ -11,44 +11,20 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var (
-	// wg        sync.WaitGroup
-	shopeeId  string
-	skipCount string
-)
-
-//cli v2 參數設定
-var shopeeConfig = []cli.Flag{
-	&cli.StringFlag{
-		Name:        "shopee-id",
-		Usage:       "shopee id",
-		Aliases:     []string{"Id", "I"},
-		Value:       "32286362",
-		Destination: &shopeeId,
-	},
-	&cli.StringFlag{
-		Name:        "skip-count",
-		Usage:       "page skip count",
-		Aliases:     []string{"Skip", "S"},
-		Value:       "0",
-		Destination: &skipCount,
-	},
-}
-
-func SetShopeeCommand() *cli.Command {
+func SetShopeeDataToDBCommand() *cli.Command {
 	Command := &cli.Command{
-		Name:   "shopee-data",
-		Usage:  "get shopee data and setting shopee's id and page skip count, export to excel",
-		Flags:  BuildUpFlag(shopeeConfig, excel.ExcelConfig), //參數
-		Action: execShopee,                                   //執行logic
-		// Action: executFackData,                               //執行logic
+		Name:  "shopee-data-db",
+		Usage: "get shopee data and setting shopee's id and page skip count, save to db",
+		Flags: BuildUpFlag(shopeeConfig, excel.ExcelConfig), //參數
+		// Action: execShopeeSaveDB,                             //執行logic
+		Action: FackData, //執行logic
 	}
 
 	return Command
 }
 
-func execShopee(c *cli.Context) error {
-	err := executGetShopeeData()
+func execShopeeSaveDB(c *cli.Context) error {
+	err := GetShopeeData()
 
 	// err := executFackData()  假資料
 
@@ -59,7 +35,7 @@ func execShopee(c *cli.Context) error {
 	return nil
 }
 
-func executGetShopeeData() error {
+func GetShopeeData() error {
 	id, err := strconv.Atoi(shopeeId)
 	if err != nil {
 		return errors.WithStack(err)
@@ -92,7 +68,7 @@ func executGetShopeeData() error {
 }
 
 // 假資料
-func executFackData() error {
+func FackData(c *cli.Context) error {
 
 	var DataModelList []*dto.ShopeeDataDTO
 
@@ -115,15 +91,7 @@ func executFackData() error {
 
 	DataModelList = append(DataModelList, data)
 
-	filePath, err := excel.GetExcelPath()
-	if err != nil {
-		return errors.WithStack(err)
-	}
+	//寫入db 測試
 
-	shopeeExcel := shopee.NewShopeeExcelService()
-	err = shopeeExcel.WriteExcel(filePath, excel.SHEET_NAME_SHOPEE, DataModelList, excel.HeaderList)
-	if err != nil {
-		return errors.WithMessage(errors.WithStack(err), fmt.Sprintf(" Write Excel Paht:"+excel.FILE_PATH, excel.FileName))
-	}
 	return nil
 }
