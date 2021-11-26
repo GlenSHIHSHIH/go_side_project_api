@@ -3,9 +3,7 @@ package shopee
 import (
 	"componentmod/internal/dto"
 	"componentmod/internal/utils/db/model"
-	"fmt"
-
-	mapper "github.com/stroiman/go-automapper"
+	"encoding/json"
 )
 
 type ShopeeSaveDBService struct {
@@ -16,16 +14,31 @@ func NewShopeeSaveDBService() *ShopeeSaveDBService {
 }
 
 func (sDB *ShopeeSaveDBService) ShopeeSaveDBService(ShopeeDataDTO []*dto.ShopeeDataDTO) error {
-	var shopeeModelList []*model.ProductionTemp
-	// myDB := db.GetMySqlDB()
-	mapper.Map(ShopeeDataDTO, shopeeModelList)
-	fmt.Printf("%+v", shopeeModelList)
-	// err := myDB.Transaction(func(myDB *gorm.DB) error {
-	// 	if err := myDB.CreateInBatches(shopeeModelList, 1000).Error; err != nil {
-	// 		return err
-	// 	}
-	// 	return nil
-	// })
 
-	return nil
+	var shopeeModelList []*model.ProductionTemp
+	for _, shopeeData := range ShopeeDataDTO {
+		option, _ := json.Marshal(shopeeData.Options)
+		shopeeMode := &model.ProductionTemp{
+			ProductId:      uint32(shopeeData.ProductId),
+			Name:           shopeeData.Name,
+			Description:    shopeeData.Description,
+			Options:        string(option),
+			Categories:     shopeeData.Categories,
+			Image:          shopeeData.Image,
+			Images:         shopeeData.Images,
+			Url:            shopeeData.Url,
+			Price:          shopeeData.Price,
+			PriceMin:       shopeeData.PriceMin,
+			Attribute:      shopeeData.Attribute,
+			LikedCount:     int(shopeeData.LikedCount),
+			HistoricalSold: int(shopeeData.HistoricalSold),
+			Stock:          int(shopeeData.Stock),
+		}
+
+		shopeeModelList = append(shopeeModelList, shopeeMode)
+	}
+
+	shopeeExcelReaderService := NewShopeeExcelReaderService()
+
+	return shopeeExcelReaderService.WriteShopeeDataToDB(shopeeModelList)
 }

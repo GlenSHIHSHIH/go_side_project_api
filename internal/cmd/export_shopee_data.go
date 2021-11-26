@@ -40,16 +40,21 @@ func SetShopeeCommand() *cli.Command {
 		Name:   "shopee-data",
 		Usage:  "get shopee data and setting shopee's id and page skip count, export to excel",
 		Flags:  BuildUpFlag(shopeeConfig, excel.ExcelConfig), //參數
-		Action: execShopee,                                   //執行logic
+		Action: exportShopeeDataToExcel,                      //執行logic
 		// Action: executFackData,                               //執行logic
 	}
 
 	return Command
 }
 
-func execShopee(c *cli.Context) error {
-	err := executGetShopeeData()
+func exportShopeeDataToExcel(c *cli.Context) error {
+	ShopeeDataDTO, err := GetShopeeData()
 
+	if err != nil {
+		return errors.WithMessage(errors.WithStack(err), fmt.Sprintf("Get Shopee Data error"))
+	}
+
+	err = exportDataToExcel(ShopeeDataDTO)
 	// err := executFackData()  假資料
 
 	if err != nil {
@@ -59,35 +64,38 @@ func execShopee(c *cli.Context) error {
 	return nil
 }
 
-func executGetShopeeData() error {
+func GetShopeeData() ([]*dto.ShopeeDataDTO, error) {
 	id, err := strconv.Atoi(shopeeId)
 	if err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	skip, err := strconv.Atoi(skipCount)
 	if err != nil {
-		return errors.WithStack(err)
+		return nil, errors.WithStack(err)
 	}
 
 	shopeeService := shopee.NewShopeeService()
-	shopeeModelGroup, err := shopeeService.RunShopeeService(id, skip)
+	shopeeDataDTO, err := shopeeService.RunShopeeService(id, skip)
 	if err != nil {
 		// 寫入 log 紀錄
-		return errors.WithMessage(errors.WithStack(err), "Shopee 網址錯誤")
+		return nil, errors.WithMessage(errors.WithStack(err), "Shopee 網址錯誤")
 	}
 
+	return shopeeDataDTO, nil
+}
+
+func exportDataToExcel(shopeeDataDTO []*dto.ShopeeDataDTO) error {
 	filePath, err := excel.GetExcelPath()
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	shopeeExcel := shopee.NewShopeeExcelService()
-	err = shopeeExcel.WriteExcel(filePath, excel.SHEET_NAME_SHOPEE, shopeeModelGroup, excel.HeaderList)
+	err = shopeeExcel.WriteExcel(filePath, excel.SHEET_NAME_SHOPEE, shopeeDataDTO, excel.HeaderList)
 	if err != nil {
 		return errors.WithMessage(errors.WithStack(err), fmt.Sprintf(" Write Excel Paht:"+excel.FILE_PATH, excel.FileName))
 	}
-
 	return nil
 }
 

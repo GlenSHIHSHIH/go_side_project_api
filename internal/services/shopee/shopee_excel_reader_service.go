@@ -24,7 +24,7 @@ func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string
 	}
 
 	content := rows[1:] //內容
-	var shopeeModelList []*model.ProductionTemp
+	var shopeeTempModelList []*model.ProductionTemp
 	for _, columnValue := range content {
 
 		id, _ := strconv.Atoi(columnValue[0])
@@ -51,18 +51,22 @@ func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string
 			HistoricalSold: historicalSold,
 			Stock:          stock,
 		}
-		shopeeModelList = append(shopeeModelList, dataModel)
+		shopeeTempModelList = append(shopeeTempModelList, dataModel)
 	}
 
+	return sers.WriteShopeeDataToDB(shopeeTempModelList)
+}
+
+func (sers *ShopeeExcelReaderService) WriteShopeeDataToDB(shopeeTempModelList []*model.ProductionTemp) error {
 	myDB := db.GetMySqlDB()
-	err = myDB.Transaction(func(myDB *gorm.DB) error {
+	err := myDB.Transaction(func(myDB *gorm.DB) error {
 
 		//新增到 temp table
 		if err := myDB.Exec(model.TRUNACTE_PRODUCTION_TEMP).Error; err != nil {
 			return err
 		}
 
-		if err := myDB.CreateInBatches(shopeeModelList, 1000).Error; err != nil {
+		if err := myDB.CreateInBatches(shopeeTempModelList, 1000).Error; err != nil {
 			return err
 		}
 
@@ -84,7 +88,6 @@ func (sers *ShopeeExcelReaderService) ImportExcelShopeeDataToDB(sheetName string
 		}
 		return nil
 	})
-
 	return err
 }
 

@@ -3,9 +3,9 @@ package cmd
 import (
 	"componentmod/internal/dto"
 	"componentmod/internal/services/shopee"
+	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/excel"
 	"fmt"
-	"strconv"
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
@@ -13,53 +13,30 @@ import (
 
 func SetShopeeDataToDBCommand() *cli.Command {
 	Command := &cli.Command{
-		Name:  "shopee-data-db",
-		Usage: "get shopee data and setting shopee's id and page skip count, save to db",
-		Flags: BuildUpFlag(shopeeConfig, excel.ExcelConfig), //參數
-		// Action: execShopeeSaveDB,                             //執行logic
-		Action: FackData, //執行logic
+		Name:   "shopee-data-to-db",
+		Usage:  "get shopee data and setting shopee's id and page skip count, save to db",
+		Flags:  BuildUpFlag(db.DBConfig, shopeeConfig), //參數
+		Action: execShopeeSaveDB,                       //執行logic
+		// Action: FackData, //執行logic
 	}
 
 	return Command
 }
 
 func execShopeeSaveDB(c *cli.Context) error {
-	err := GetShopeeData()
 
-	// err := executFackData()  假資料
+	//建置
+	db.DBInit() // 1.db
+
+	ShopeeDataDTO, err := GetShopeeData()
 
 	if err != nil {
-		return errors.WithMessage(errors.WithStack(err), fmt.Sprintf(" Write Excel Paht:"+excel.FILE_PATH, excel.FileName))
+		return errors.WithMessage(errors.WithStack(err), fmt.Sprintf("Get Shopee Data error"))
 	}
 
-	return nil
-}
+	shopeeSaveDBService := shopee.NewShopeeSaveDBService()
+	shopeeSaveDBService.ShopeeSaveDBService(ShopeeDataDTO)
 
-func GetShopeeData() error {
-	id, err := strconv.Atoi(shopeeId)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	skip, err := strconv.Atoi(skipCount)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	shopeeService := shopee.NewShopeeService()
-	shopeeModelGroup, err := shopeeService.RunShopeeService(id, skip)
-	if err != nil {
-		// 寫入 log 紀錄
-		return errors.WithMessage(errors.WithStack(err), "Shopee 網址錯誤")
-	}
-
-	filePath, err := excel.GetExcelPath()
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	shopeeExcel := shopee.NewShopeeExcelService()
-	err = shopeeExcel.WriteExcel(filePath, excel.SHEET_NAME_SHOPEE, shopeeModelGroup, excel.HeaderList)
 	if err != nil {
 		return errors.WithMessage(errors.WithStack(err), fmt.Sprintf(" Write Excel Paht:"+excel.FILE_PATH, excel.FileName))
 	}
@@ -69,6 +46,9 @@ func GetShopeeData() error {
 
 // 假資料
 func FackData(c *cli.Context) error {
+
+	//建置
+	db.DBInit() // 1.db
 
 	var DataModelList []*dto.ShopeeDataDTO
 
@@ -92,6 +72,7 @@ func FackData(c *cli.Context) error {
 	DataModelList = append(DataModelList, data)
 
 	//寫入db 測試
-
+	shopeeSaveDBService := shopee.NewShopeeSaveDBService()
+	shopeeSaveDBService.ShopeeSaveDBService(DataModelList)
 	return nil
 }
