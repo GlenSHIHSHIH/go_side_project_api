@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"componentmod/internal/api/config"
 	"componentmod/internal/api/middleware"
 	"componentmod/internal/utils/db"
 
@@ -11,8 +12,8 @@ func SetShopeeApiCommand() *cli.Command {
 	Command := &cli.Command{
 		Name:   "shopee-api",
 		Usage:  "Api data for frontend",
-		Flags:  BuildUpFlag(db.DBConfig, db.RedisConfig, middleware.WebConfig), //參數
-		Action: execShopeeApi,                                                  //執行logic與初始化
+		Flags:  BuildUpFlag(db.DBConfig, db.RedisConfig, config.WebConfig), //參數
+		Action: execShopeeApi,                                              //執行logic與初始化
 	}
 
 	return Command

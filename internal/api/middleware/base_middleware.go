@@ -1,34 +1,14 @@
 package middleware
 
 import (
+	"componentmod/internal/api/config"
 	"componentmod/internal/api/router"
 	"componentmod/internal/utils/log"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"github.com/urfave/cli/v2"
 )
-
-var (
-	webHost, webPort string
-)
-
-//db 參數設定
-var WebConfig = []cli.Flag{
-	&cli.StringFlag{
-		Name:        "web-host",
-		Usage:       "web host",
-		Value:       "kumkum.com",
-		Destination: &webHost,
-	},
-	&cli.StringFlag{
-		Name:        "web-port",
-		Usage:       "web port",
-		Value:       "80",
-		Destination: &webPort,
-	},
-}
 
 // func GetGinEngine() GinEngine {
 // 	return ginEngine
@@ -51,12 +31,12 @@ func WebApiInit() {
 
 	// ginEngine = GinEngine{r}
 
-	err := r.Run(fmt.Sprintf(":%s", webPort))
+	err := r.Run(fmt.Sprintf(":%s", config.WebPort))
 	if err != nil {
 		log.Fatal(fmt.Sprintf("%+v", errors.WithStack(err)))
 	}
 
-	log.Info(fmt.Sprintf("default setting listen 0.0.0.0:%s is localhost", webPort))
+	log.Info(fmt.Sprintf("default setting listen 0.0.0.0:%s is localhost", config.WebPort))
 }
 
 type HandlerFunc gin.HandlerFunc

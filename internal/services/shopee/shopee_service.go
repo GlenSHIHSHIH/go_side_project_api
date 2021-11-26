@@ -2,6 +2,7 @@ package shopee
 
 import (
 	"componentmod/internal/dto"
+	"componentmod/internal/utils"
 	"componentmod/internal/utils/http"
 	"componentmod/internal/utils/log"
 	"fmt"
@@ -28,7 +29,6 @@ var (
 )
 
 const (
-	ImgUrl    = "https://cf.shopee.tw/file/"
 	PUrl      = "https://shopee.tw/%s-i.%s.%s"
 	PListApi  = "https://shopee.tw/api/v4/search/search_items?by=pop&limit=30&match_id=%s&newest=%s&order=desc&page_type=shop&scenario=PAGE_OTHERS&version=2"
 	PApi      = "https://shopee.tw/api/v4/item/get?itemid=%s&shopid=%s"
@@ -134,15 +134,9 @@ func (Shopee *ShopeeService) GetProductData(data string) *dto.ShopeeDataDTO {
 	likedCount := gjson.Get(data, "data.liked_count").Int()
 	historicalSold := gjson.Get(data, "data.historical_sold").Int()
 	stock := gjson.Get(data, "data.normal_stock").Int()
-	image := ImgUrl + gjson.Get(data, "data.image").String()
+	image := gjson.Get(data, "data.image").String()
 	imgData := gjson.Get(data, "data.images").Array()
-	images := ""
-	for _, val := range imgData {
-		if images != "" {
-			images += ","
-		}
-		images += ImgUrl + val.String()
-	}
+	images := utils.ChangeGjsonArrayToString(imgData)
 
 	variations := gjson.Get(data, "data.tier_variations").Array()
 	optionData := dto.Options{}

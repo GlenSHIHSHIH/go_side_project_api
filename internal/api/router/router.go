@@ -20,5 +20,6 @@ func Router(r *gin.Engine) {
 	}
 
 	r.GET("/category/list", forestage.CategoryList)
+	r.GET("/forestage/config", forestage.BaseForestageConfig)
 
 }
