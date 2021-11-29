@@ -33,7 +33,8 @@ services:
     go_run_linux:
         image: centos:8
         depends_on:
-            - go_build
+          go_build:
+            condition: service_completed_successfully
         container_name: go_linux
         volumes:
             - "./compiler:/opt/golang-shopee/compiler"

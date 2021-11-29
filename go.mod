@@ -11,7 +11,6 @@ require (
 	github.com/golang-module/carbon v1.5.3
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.1
-	github.com/stroiman/go-automapper v0.0.0-20200419053654-7c63d5bb0eb4 // indirect
 	github.com/tidwall/gjson v1.11.0
 	github.com/urfave/cli/v2 v2.3.0
 	github.com/xuri/excelize/v2 v2.4.1
