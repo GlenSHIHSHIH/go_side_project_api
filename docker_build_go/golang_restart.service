@@ -1,0 +1,20 @@
+#path: /usr/lib/systemd/system
+#file_name: golang_restart.service
+#role: chmod 754 golang_restart.service
+
+[Unit]
+Description=golang_cron
+After=golang_cron.target
+
+[Service]
+ExecStart=/go/golang-shopee/docker_build_go/run_golang_files.sh
+ExecReload=/go/golang-shopee/docker_build_go/run_golang_files.sh
+ExecStop=/go/golang-shopee/docker_build_go/run_golang_files.sh
+Type=forking
+#NotifyAccess=all
+#KillSignal=SIGQUIT
+#StandardError=syslog
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

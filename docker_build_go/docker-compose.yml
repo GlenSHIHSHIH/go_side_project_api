@@ -1,0 +1,68 @@
+version: "3.7"
+services:
+    go_build:
+        image: golang:1.16
+        container_name: golang_compiler
+        volumes:
+            - "${opt_path}:/go/golang-shopee"
+        working_dir: "/go/golang-shopee"
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10240k"
+                max-file: "10"
+        environment:
+            - GO111MODULE=auto
+            - GOPATH=/go
+            - GOOS=linux
+            - GOARCH=amd64
+        command:
+            - /bin/bash
+            - -c
+            - |
+              go mod tidy
+              go install
+              mkdir -p ${go_compiler_folder}
+              go build -o golang_file main.go
+              sleep 1
+              mv golang_file ${go_compiler_folder}
+        network_mode: "host"
+        stdin_open: true
+        tty: true
+
+    go_run_linux:
+        image: centos:8
+        depends_on:
+            - go_build
+        container_name: go_linux
+        volumes:
+            - "./compiler:/opt/golang-shopee/compiler"
+            # - "./run_golang_files.sh:/opt/golang-shopee/run_golang_files.sh"
+            # - "./initial.sh:/opt/golang-shopee/initial.sh"
+        restart: always
+        working_dir: "/opt/golang-shopee"
+        ports:
+            - 80:80
+        networks:
+          shopee-network:
+            ipv4_address: 172.21.0.10
+        privileged: true
+        stdin_open: true
+        tty: true
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10240k"
+                max-file: "10"
+        command:
+            - /bin/bash
+            - -c
+            - |
+              chmod 755 ./compiler/golang_file
+              nohup ./compiler/golang_file shopee-api --web-port 80 --redis-host 172.21.0.3 --db-host 172.21.0.2 &
+              tail -f /dev/null
+
+networks:
+  shopee-network:
+      external: true
+      name: shopee-network

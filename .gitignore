@@ -4,3 +4,4 @@ go.sum
 excel/
 docker_db/db_dump/
 __debug_bin
+docker_build_go/compiler/*

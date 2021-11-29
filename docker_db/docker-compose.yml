@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.7'
 
 services:
   db:
@@ -15,6 +15,9 @@ services:
       - ./db_dump:/var/lib/mysql
       - ./mysql_conf:/etc/mysql/conf.d
       - ./config/mysql_init:/docker-entrypoint-initdb.d
+    networks:
+      shopee-network:
+        ipv4_address: 172.21.0.2
 
   redis:
     image: redis:6.2.5
@@ -24,3 +27,16 @@ services:
     volumes:
       - ./config/redis:/usr/local/etc/redis
     command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      shopee-network:
+        ipv4_address: 172.21.0.3
+
+networks:
+  shopee-network:
+    name: shopee-network
+    driver: bridge
+    ipam:
+        driver: default
+        config:
+            - subnet: 172.21.0.0/16
+              gateway: 172.21.0.1
