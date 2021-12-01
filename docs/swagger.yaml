@@ -1,0 +1,19 @@
+info:
+  contact: {}
+paths:
+  /production/{id}:
+    get:
+      operationId: "1"
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: json
+      summary: Production Id
+swagger: "2.0"

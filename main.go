@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	_ "componentmod/docs"
+
 	"github.com/urfave/cli/v2"
 )
 
