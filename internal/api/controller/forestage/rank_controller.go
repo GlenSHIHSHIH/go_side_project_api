@@ -16,6 +16,11 @@ var (
 	ProductionRank = controller.Handler(GetProductionRank)
 )
 
+// @Summary Production rank
+// @Id 10
+// @Success 200 {json} json
+// @param count path int true "count"
+// @Router /production/rank/{count} [get]
 func GetProductionRank(c *gin.Context) (controller.Data, error) {
 	count, err := strconv.ParseInt(c.Param("count"), 10, 0)
 

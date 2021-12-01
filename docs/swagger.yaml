@@ -1,6 +1,30 @@
 info:
   contact: {}
 paths:
+  /carousel/list:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: json
+      summary: Carousel
+  /category/list:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: json
+      summary: Category
+  /forestage/config:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: json
+      summary: Forestage config
   /production/{id}:
     get:
       operationId: "1"
@@ -15,5 +39,74 @@ paths:
           description: OK
           schema:
             type: json
-      summary: Production Id
+      summary: Production detail
+  /production/list:
+    get:
+      parameters:
+      - default: 1
+        description: int default
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: int enums
+        enum:
+        - 15
+        - 20
+        - 30
+        - 40
+        - 50
+        in: query
+        name: pageLimit
+        required: true
+        type: integer
+      - description: string enums
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        required: true
+        type: string
+      - description: string enums
+        enum:
+        - PName
+        - PId
+        - PCategory
+        - PCreTime
+        in: query
+        name: sortColumn
+        required: true
+        type: string
+      - default: ""
+        description: string default
+        in: query
+        name: search
+        type: string
+      - default: ""
+        description: string default
+        in: query
+        name: searchCategory
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: json
+      summary: Production list
+  /production/rank/{count}:
+    get:
+      operationId: "10"
+      parameters:
+      - description: count
+        in: path
+        name: count
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: json
+      summary: Production rank
 swagger: "2.0"

@@ -18,6 +18,15 @@ var (
 	ProductionById = controller.Handler(GetProductionById)
 )
 
+// @Summary Production list
+// @Success 200 {json} json
+// @Param page query int true "int default" default(1)
+// @Param pageLimit query int true "int enums" Enums(15,20,30,40,50)
+// @Param sort query string true "string enums" Enums(asc,desc)
+// @Param sortColumn query string true "string enums" Enums(PName,PId,PCategory,PCreTime)
+// @Param search query string false "string default" default()
+// @Param searchCategory query string false "string default" default()
+// @Router /production/list [get]
 func GetProduction(c *gin.Context) (controller.Data, error) {
 	var shopeePageDTO = &dto.PageDTO{
 		Page:           1,
@@ -38,6 +47,11 @@ func GetProduction(c *gin.Context) (controller.Data, error) {
 	return productionService.GetProductionList(shopeePageDTO)
 }
 
+// @Summary Production detail
+// @Id 1
+// @Success 200 {json} json
+// @param id path int true "id"
+// @Router /production/{id} [get]
 func GetProductionById(c *gin.Context) (controller.Data, error) {
 	id := c.Param("id")
 	productionService := forestage.GetProductionService()
