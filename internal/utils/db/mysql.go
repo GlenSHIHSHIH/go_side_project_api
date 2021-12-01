@@ -83,6 +83,9 @@ func initTableAndProcedure() {
 	mySqlDB.AutoMigrate(&model.Production{})
 	mySqlDB.AutoMigrate(&model.ProductionTemp{})
 	mySqlDB.AutoMigrate(&model.Carousel{})
+	mySqlDB.AutoMigrate(&model.User{})
+	mySqlDB.AutoMigrate(&model.Role{})
+	mySqlDB.AutoMigrate(&model.Menu{})
 	//create procedure
 	mySqlDB.Exec(model.DROP_PROCEDURE_IF_EXISTS)
 	mySqlDB.Exec(model.PROCEDURE_GET_PROD_CATEGORIES)
