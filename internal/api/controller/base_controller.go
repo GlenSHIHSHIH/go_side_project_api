@@ -18,6 +18,12 @@ func Handler(hf HandlerFunc) func(*gin.Context) {
 		data, err := hf(c)
 		msg := "success"
 
+		if err == nil {
+			respMap["data"] = data
+			respMap["msg"] = msg
+			c.JSON(http.StatusOK, respMap)
+		}
+
 		if err != nil {
 			//error string 切割
 			code := 500
@@ -29,11 +35,9 @@ func Handler(hf HandlerFunc) func(*gin.Context) {
 				code = errCode
 				msg = errData[1]
 			}
+			respMap["data"] = data
+			respMap["msg"] = msg
 			c.JSON(code, respMap)
 		}
-
-		respMap["data"] = data
-		respMap["msg"] = msg
-		c.JSON(http.StatusOK, respMap)
 	}
 }
