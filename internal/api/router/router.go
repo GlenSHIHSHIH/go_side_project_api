@@ -1,6 +1,7 @@
 package router
 
 import (
+	"componentmod/internal/api/controller/backstage"
 	"componentmod/internal/api/controller/forestage"
 
 	"github.com/gin-gonic/gin"
@@ -23,6 +24,13 @@ func Router(r *gin.Engine) {
 
 	r.GET("/category/list", forestage.CategoryList)
 	r.GET("/forestage/config", forestage.BaseForestageConfig)
+
+	backstagePage := r.Group("/backstage")
+	{
+		backstagePage.POST("/user/create", backstage.UserCreate)
+
+		// r.GET("/backstage/login", backstage.UserLogin)
+	}
 
 	// @title Gin Swagger Demo
 	// @version 2.0
