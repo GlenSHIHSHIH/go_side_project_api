@@ -23,11 +23,11 @@ func Router(r *gin.Engine) {
 	}
 
 	r.GET("/category/list", forestagectl.CategoryList)
-	r.GET("/forestage/config", forestagectl.BaseForestagectlConfig)
+	r.GET("/forestage/config", forestagectl.BaseForestageConfig)
 
 	//登入 / 登出
 	r.POST("/admin/login", backstagectl.BackstageLogin)
-	r.POST("/admin/login", backstagectl.BackstageLogout)
+	r.POST("/admin/logout", backstagectl.BackstageLogout)
 
 	//後台
 	backstagePage := r.Group("/backstage")

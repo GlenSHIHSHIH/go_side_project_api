@@ -4,6 +4,7 @@ import (
 	"componentmod/internal/api/controller"
 	"componentmod/internal/api/errorcode"
 	"componentmod/internal/dto/backstagedto"
+	"componentmod/internal/services/api/backstage"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/log"
 	"fmt"
@@ -31,9 +32,9 @@ func Login(c *gin.Context) (controller.Data, error) {
 		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
 	}
 
-	// backstageService.GetLoginLoutService()
+	loginLoutService := backstage.GetLoginLoutService()
 
-	return nil, nil
+	return loginLoutService.Login(loginDTO)
 }
 
 // @Summary Backstage check password
