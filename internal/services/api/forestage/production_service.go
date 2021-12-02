@@ -1,9 +1,9 @@
 package forestage
 
 import (
-	errorCode "componentmod/internal/api/error_code"
+	errorCode "componentmod/internal/api/errorcode"
 	"componentmod/internal/dto"
-	"componentmod/internal/dto/forestage"
+	"componentmod/internal/dto/forestagedto"
 	"componentmod/internal/services/api"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db"
@@ -46,14 +46,14 @@ func (p *ProductionService) GetProductionList(shProduction *dto.PageDTO) (interf
 
 	shProduction.Count = count
 
-	productionDTO := &forestage.ProductionDTO{
+	productionDTO := &forestagedto.ProductionDTO{
 		ProductionList: productionList,
 		PageData:       shProduction,
 	}
 	return productionDTO, nil
 }
 
-func (p *ProductionService) getProductionData(shProduction *dto.PageDTO) ([]*forestage.ProductionData, int64, error) {
+func (p *ProductionService) getProductionData(shProduction *dto.PageDTO) ([]*forestagedto.ProductionData, int64, error) {
 	sqldb := db.GetMySqlDB()
 
 	sql := sqldb.Model(&model.Production{})
@@ -86,7 +86,7 @@ func (p *ProductionService) getProductionData(shProduction *dto.PageDTO) ([]*for
 		sql = sql.Order(fmt.Sprintf("%v %v", scolumne, shProduction.Sort))
 	}
 
-	var ShopeeProductionData []*forestage.ProductionData
+	var ShopeeProductionData []*forestagedto.ProductionData
 	sql.Scan(&ShopeeProductionData)
 	// sql.Select("id,product_id,name,description,options,categories,image,images,url,price,price_min,create_time").Scan(&ShopeeProductionData)
 
@@ -95,8 +95,8 @@ func (p *ProductionService) getProductionData(shProduction *dto.PageDTO) ([]*for
 
 func (p *ProductionService) GetProductionById(id string) (interface{}, error) {
 
-	var productionDetailData *forestage.ProductionDetailData
-	var productionDetailDTO *forestage.ProductionDetailDTO
+	var productionDetailData *forestagedto.ProductionDetailData
+	var productionDetailDTO *forestagedto.ProductionDetailDTO
 	cacheName := CACHE_PRODUCTION + id
 	cacheRDB := db.GetCacheRDB()
 	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &productionDetailDTO)
@@ -120,7 +120,7 @@ func (p *ProductionService) GetProductionById(id string) (interface{}, error) {
 		productionDetailData = nil
 	}
 
-	productionDetailDTO = &forestage.ProductionDetailDTO{
+	productionDetailDTO = &forestagedto.ProductionDetailDTO{
 		Production: productionDetailData,
 	}
 

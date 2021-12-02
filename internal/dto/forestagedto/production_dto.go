@@ -1,4 +1,4 @@
-package forestage
+package forestagedto
 
 import "componentmod/internal/dto"
 

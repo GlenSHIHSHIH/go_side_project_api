@@ -1,7 +1,7 @@
 package forestage
 
 import (
-	"componentmod/internal/dto/forestage"
+	"componentmod/internal/dto/forestagedto"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
 	"componentmod/internal/utils/log"
@@ -25,7 +25,7 @@ func (c *CategoryService) GetCategoryList() (interface{}, error) {
 
 	//get Category 先從cache拿 看看有沒有資料
 	var category []string
-	var categoryDTO *forestage.CategoryDTO
+	var categoryDTO *forestagedto.CategoryDTO
 	cacheRDB := db.GetCacheRDB()
 	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_CATEGORY, &categoryDTO)
 
@@ -40,7 +40,7 @@ func (c *CategoryService) GetCategoryList() (interface{}, error) {
 	sqldb := db.GetMySqlDB()
 	sqldb.Raw(model.GET_PROD_CATEGORIES).Scan(&category)
 
-	categoryDTO = &forestage.CategoryDTO{
+	categoryDTO = &forestagedto.CategoryDTO{
 		Category: category,
 	}
 

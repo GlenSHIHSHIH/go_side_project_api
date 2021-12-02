@@ -1,7 +1,7 @@
 package backstage
 
 import (
-	errorCode "componentmod/internal/api/error_code"
+	errorCode "componentmod/internal/api/errorcode"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"

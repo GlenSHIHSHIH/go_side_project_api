@@ -1,4 +1,4 @@
-package forestage
+package forestagedto
 
 type CarouselDTO struct {
 	Carousel []*CarouselData `json:"carousels"`

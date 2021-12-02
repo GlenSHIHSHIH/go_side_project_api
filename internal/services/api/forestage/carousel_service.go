@@ -1,7 +1,7 @@
 package forestage
 
 import (
-	"componentmod/internal/dto/forestage"
+	"componentmod/internal/dto/forestagedto"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
 	"componentmod/internal/utils/log"
@@ -24,8 +24,8 @@ func GetCarouselService() *CarouselService {
 func (c *CarouselService) GetCarouselList() (interface{}, error) {
 
 	//get Carousels 先從cache拿 看看有沒有資料
-	var carousel []*forestage.CarouselData
-	var carouselDTO *forestage.CarouselDTO
+	var carousel []*forestagedto.CarouselData
+	var carouselDTO *forestagedto.CarouselDTO
 	cacheRDB := db.GetCacheRDB()
 	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_CAROUSEL, &carouselDTO)
 
@@ -43,7 +43,7 @@ func (c *CarouselService) GetCarouselList() (interface{}, error) {
 	sql = sql.Order("weight desc")
 	sql.Select("id,name,image,url,weight").Scan(&carousel)
 
-	carouselDTO = &forestage.CarouselDTO{
+	carouselDTO = &forestagedto.CarouselDTO{
 		Carousel: carousel,
 	}
 

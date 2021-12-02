@@ -1,7 +1,7 @@
 package forestage
 
 import (
-	"componentmod/internal/dto/forestage"
+	"componentmod/internal/dto/forestagedto"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
 	"componentmod/internal/utils/log"
@@ -24,8 +24,8 @@ func GetRankService() *RankService {
 func (PR *RankService) GetProductionRank(count int) (interface{}, error) {
 
 	//get Production Rank 先從cache拿 看看有沒有資料
-	var productionRankDTO *forestage.ProductionRankDTO
-	var productionRank []*forestage.ProductionRankData
+	var productionRankDTO *forestagedto.ProductionRankDTO
+	var productionRank []*forestagedto.ProductionRankData
 	cacheRDB := db.GetCacheRDB()
 	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_PRODUCTION_RANK, &productionRankDTO)
 
@@ -44,7 +44,7 @@ func (PR *RankService) GetProductionRank(count int) (interface{}, error) {
 	sql.Select("(liked_count+historical_sold) as amount,id,product_id,name,description,options,categories," +
 		"weight,liked_count,historical_sold,stock,image,images,url,price,price_min,create_time").Find(&productionRank)
 
-	productionRankDTO = &forestage.ProductionRankDTO{
+	productionRankDTO = &forestagedto.ProductionRankDTO{
 		ProductionList: productionRank,
 	}
 

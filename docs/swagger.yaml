@@ -17,6 +17,14 @@ paths:
           schema:
             type: json
       summary: Category
+  /create/password:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: json
+      summary: Backstage UserLogin
   /forestage/config:
     get:
       responses:
@@ -25,6 +33,20 @@ paths:
           schema:
             type: json
       summary: Forestage config
+  /password/check/{pwd}:
+    get:
+      parameters:
+      - description: pwd
+        in: path
+        name: pwd
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: json
+      summary: Backstage check password
   /production/{id}:
     get:
       operationId: "1"

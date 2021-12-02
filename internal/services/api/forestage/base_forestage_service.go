@@ -2,7 +2,7 @@ package forestage
 
 import (
 	"componentmod/internal/api/config"
-	"componentmod/internal/dto/forestage"
+	"componentmod/internal/dto/forestagedto"
 	"time"
 )
 
@@ -23,11 +23,11 @@ func (b *BaseForestageService) GetBaseConfig() (interface{}, error) {
 
 	//未來從資料庫讀取 需增加cache
 
-	baseConfigDTO := &forestage.BaseConfigDTO{
+	baseConfigDTO := &forestagedto.BaseConfigDTO{
 		ImgUrl: config.ImgUrl,
 	}
 
-	baseForestageConfig := &forestage.BaseForestageConfigDTO{
+	baseForestageConfig := &forestagedto.BaseForestageConfigDTO{
 		BaseConfigDTO: baseConfigDTO,
 	}
 

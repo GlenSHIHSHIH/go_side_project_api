@@ -1,8 +1,8 @@
 package router
 
 import (
-	"componentmod/internal/api/controller/backstage"
-	"componentmod/internal/api/controller/forestage"
+	"componentmod/internal/api/controller/backstagectl"
+	"componentmod/internal/api/controller/forestagectl"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -12,22 +12,27 @@ import (
 func Router(r *gin.Engine) {
 	production := r.Group("/production")
 	{
-		production.GET("/list", forestage.ProductionList)
-		production.GET("/:id", forestage.ProductionById)
-		production.GET("/rank/:count", forestage.ProductionRank)
+		production.GET("/list", forestagectl.ProductionList)
+		production.GET("/:id", forestagectl.ProductionById)
+		production.GET("/rank/:count", forestagectl.ProductionRank)
 	}
 
 	carousel := r.Group("/carousel")
 	{
-		carousel.GET("/list", forestage.CarouselList)
+		carousel.GET("/list", forestagectl.CarouselList)
 	}
 
-	r.GET("/category/list", forestage.CategoryList)
-	r.GET("/forestage/config", forestage.BaseForestageConfig)
+	r.GET("/category/list", forestagectl.CategoryList)
+	r.GET("/forestage/config", forestagectl.BaseForestagectlConfig)
 
+	//登入 / 登出
+	r.POST("/admin/login", backstagectl.BackstageLogin)
+	r.POST("/admin/login", backstagectl.BackstageLogout)
+
+	//後台
 	backstagePage := r.Group("/backstage")
 	{
-		backstagePage.POST("/user/create", backstage.UserCreate)
+		backstagePage.POST("/user/create", backstagectl.UserCreate)
 
 		// r.GET("/backstage/login", backstage.UserLogin)
 	}

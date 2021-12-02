@@ -1,8 +1,8 @@
-package forestage
+package forestagectl
 
 import (
 	"componentmod/internal/api/controller"
-	errorCode "componentmod/internal/api/error_code"
+	"componentmod/internal/api/errorcode"
 	"componentmod/internal/dto"
 	"componentmod/internal/services/api/forestage"
 	"componentmod/internal/utils"
@@ -38,9 +38,9 @@ func GetProduction(c *gin.Context) (controller.Data, error) {
 	}
 	err := c.Bind(shopeePageDTO)
 	if err != nil {
-		errData := errors.WithMessage(errors.WithStack(err), errorCode.PARAMETER_ERROR)
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
 		log.Error(fmt.Sprintf("%+v", errData))
-		return nil, utils.CreateApiErr(errorCode.PARAMETER_ERROR_CODE, errorCode.PARAMETER_ERROR)
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
 	}
 
 	productionService := forestage.GetProductionService()

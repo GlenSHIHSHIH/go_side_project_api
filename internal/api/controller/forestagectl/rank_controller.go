@@ -1,8 +1,8 @@
-package forestage
+package forestagectl
 
 import (
 	"componentmod/internal/api/controller"
-	errorCode "componentmod/internal/api/error_code"
+	"componentmod/internal/api/errorcode"
 	"componentmod/internal/services/api/forestage"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/log"
@@ -26,7 +26,7 @@ func GetProductionRank(c *gin.Context) (controller.Data, error) {
 
 	if err != nil {
 		log.Error(fmt.Sprintf("err:%+v", err))
-		return nil, utils.CreateApiErr(errorCode.PARAMETER_ERROR_CODE, errorCode.PARAMETER_ERROR)
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
 	}
 
 	rankService := forestage.GetRankService()

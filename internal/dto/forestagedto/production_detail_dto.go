@@ -1,10 +1,10 @@
-package forestage
+package forestagedto
 
-type ProductionRankDTO struct {
-	ProductionList []*ProductionRankData `json:"productionList"`
+type ProductionDetailDTO struct {
+	Production *ProductionDetailData `json:"production"`
 }
 
-type ProductionRankData struct {
+type ProductionDetailData struct {
 	Id             int    `json:"id"`
 	ProductId      int64  `json:"productId"`
 	Name           string `json:"name"`
@@ -16,10 +16,9 @@ type ProductionRankData struct {
 	Url            string `json:"url"`
 	Price          int64  `json:"price"`
 	PriceMin       int64  `json:"priceMin"`
-	CreateTime     string `json:"createTime"`
-	Weight         int    `json:"weight"`
-	Amount         int    `json:"amount"`
+	Attribute      string `json:"attribute"`
 	LikedCount     int    `json:"likedCount"`
 	HistoricalSold int    `json:"historicalSold"`
 	Stock          int    `json:"stock"`
+	CreateTime     string `json:"createTime"`
 }

@@ -1,4 +1,4 @@
-package forestage
+package forestagedto
 
 type BaseForestageConfigDTO struct {
 	BaseConfigDTO *BaseConfigDTO `form:"baseConfig" json:"baseConfig"`

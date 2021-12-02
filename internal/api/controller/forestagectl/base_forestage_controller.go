@@ -1,4 +1,4 @@
-package forestage
+package forestagectl
 
 import (
 	"componentmod/internal/api/controller"

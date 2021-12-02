@@ -49,9 +49,44 @@ var doc = `{
                 }
             }
         },
+        "/create/password": {
+            "get": {
+                "summary": "Backstage UserLogin",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        },
         "/forestage/config": {
             "get": {
                 "summary": "Forestage config",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        },
+        "/password/check/{pwd}": {
+            "get": {
+                "summary": "Backstage check password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "pwd",
+                        "name": "pwd",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
