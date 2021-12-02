@@ -36,14 +36,9 @@ func (u *UserService) CreateUser(user *model.User) (interface{}, error) {
 	pwd, err := u.GenUserPwd(userPwd)
 	user.Password = pwd
 
-	if err != nil || len(user.Name) <= 3 || len(user.LoginName) <= 3 || len(userPwd) <= 5 {
-		otherErr := ""
-		if len(user.Name) <= 3 || len(user.LoginName) <= 3 || len(userPwd) <= 5 {
-			otherErr = fmt.Sprintf(", or user.Name,user.LoginName lens <=3 and len(userPwd) <= 5, len(user.Name)=%v,len(user.LoginName)=%v,len(userPwd)=%v", len(user.Name), len(user.LoginName), len(userPwd))
-		}
-
+	if err != nil {
 		errData := errors.WithMessage(errors.WithStack(err), errorCode.PARAMETER_ERROR)
-		log.Error(fmt.Sprintf("%+v"+otherErr, errData))
+		log.Error(fmt.Sprintf("%+v", errData))
 		return nil, utils.CreateApiErr(errorCode.PARAMETER_ERROR_CODE, errorCode.PARAMETER_ERROR)
 	}
 

@@ -20,24 +20,11 @@ func GetLoginLoutService() *LoginLoutService {
 //登入
 func (u *LoginLoutService) Login(loginDTO *backstagedto.LoginDTO) (interface{}, error) {
 
-	loginName := loginDTO.LoginName
-	loginPwd := loginDTO.Password
-
-	if len(loginName) <= 3 || len(loginPwd) <= 5 {
-		otherErr := ""
-		if len(loginName) <= 3 || len(loginPwd) <= 5 {
-			otherErr = fmt.Sprintf(", or loginDTO.Name,loginDTO.LoginName lens <=3 and len(loginPwd) <= 5, len(loginName)=%v,len(loginPwd)=%v", len(loginName), len(loginPwd))
-		}
-		errData := errors.New(errorCode.PARAMETER_ERROR)
-		log.Error(fmt.Sprintf("%+v"+otherErr, errData))
-		return nil, utils.CreateApiErr(errorCode.PARAMETER_ERROR_CODE, errorCode.PARAMETER_ERROR)
-	}
-
 	userService := GetUserService()
-	user := userService.GetUserByLoginName(loginName)
+	user := userService.GetUserByLoginName(loginDTO.LoginName)
 	userCheck := false
 	if user != nil {
-		userCheck = userService.CheckUserPwd(loginPwd, user.Password)
+		userCheck = userService.CheckUserPwd(loginDTO.Password, user.Password)
 	}
 
 	if user == nil || userCheck == false {

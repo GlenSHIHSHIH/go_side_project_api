@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gopkg.in/validator.v2"
 )
 
 var (
@@ -24,6 +25,8 @@ var (
 func CreateUser(c *gin.Context) (controller.Data, error) {
 	var user *model.User
 	err := c.Bind(&user)
+	err = validator.Validate(user)
+
 	if err != nil {
 		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
 		log.Error(fmt.Sprintf("%+v", errData))

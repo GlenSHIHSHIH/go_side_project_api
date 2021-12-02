@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"gopkg.in/validator.v2"
 )
 
 var (
@@ -25,6 +26,7 @@ var (
 func Login(c *gin.Context) (controller.Data, error) {
 	var loginDTO *backstagedto.LoginDTO
 	err := c.Bind(&loginDTO)
+	err = validator.Validate(loginDTO)
 
 	if err != nil {
 		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
