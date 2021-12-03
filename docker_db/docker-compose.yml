@@ -13,7 +13,7 @@ services:
       MYSQL_DATABASE: jiyoung_shopee
     volumes:
       - ./db_dump:/var/lib/mysql
-      - ./mysql_conf:/etc/mysql/conf.d
+      - ./config/mysql_conf:/etc/mysql/conf.d
       - ./config/mysql_init:/docker-entrypoint-initdb.d
     networks:
       shopee-network:
@@ -36,7 +36,7 @@ networks:
     name: shopee-network
     driver: bridge
     ipam:
-        driver: default
-        config:
-            - subnet: 172.21.0.0/16
-              gateway: 172.21.0.1
+      driver: default
+      config:
+        - subnet: 172.21.0.0/16
+          gateway: 172.21.0.1
