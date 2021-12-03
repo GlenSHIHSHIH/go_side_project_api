@@ -4,8 +4,10 @@ import (
 	errorcode "componentmod/internal/api/errorcode"
 	"componentmod/internal/dto/backstagedto"
 	"componentmod/internal/utils"
+	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/log"
 	"fmt"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -43,9 +45,12 @@ func (u *LoginLoutService) Login(loginDTO *backstagedto.LoginDTO) (interface{}, 
 		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.GENERATE_JWT_ERROR)
 	}
 
-	//insert login ip
+	//set login ip and time
+	user.LoginIP = utils.GetLocalIP()
+	user.LoginTime = time.Now()
 
-	//
+	sqldb := db.GetMySqlDB()
+	sqldb.Save(&user)
 
 	res := &backstagedto.LoginResponseDTO{
 		UserInfo:     &backstagedto.JwtInfoDTO{Id: user.Id, Name: user.Name},
