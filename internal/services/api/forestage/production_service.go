@@ -1,7 +1,7 @@
 package forestage
 
 import (
-	errorCode "componentmod/internal/api/errorcode"
+	"componentmod/internal/api/errorcode"
 	"componentmod/internal/dto"
 	"componentmod/internal/dto/forestagedto"
 	"componentmod/internal/services/api"
@@ -80,7 +80,7 @@ func (p *ProductionService) getProductionData(shProduction *dto.PageDTO) ([]*for
 	if shProduction.SortColumn != "" && (strings.EqualFold(shProduction.Sort, "asc") || strings.EqualFold(shProduction.Sort, "desc")) {
 		scolumne := colume[shProduction.SortColumn]
 		if scolumne == "" {
-			return nil, 0, utils.CreateApiErr(errorCode.PARAMETER_ERROR_CODE, errorCode.PARAMETER_ERROR)
+			return nil, 0, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
 		}
 
 		sql = sql.Order(fmt.Sprintf("%v %v", scolumne, shProduction.Sort))

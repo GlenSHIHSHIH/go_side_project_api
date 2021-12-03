@@ -1,7 +1,7 @@
 package backstage
 
 import (
-	errorCode "componentmod/internal/api/errorcode"
+	errorcode "componentmod/internal/api/errorcode"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
@@ -26,9 +26,9 @@ func (u *UserService) CreateUser(user *model.User) (interface{}, error) {
 	getUser := u.GetUserByLoginName(user.LoginName)
 
 	if getUser != nil {
-		errData := errors.New(errorCode.PARAMETER_LOGIN_NAME_DUPLICATE)
+		errData := errors.New(errorcode.PARAMETER_LOGIN_NAME_DUPLICATE)
 		log.Error(fmt.Sprintf("%+v", errData))
-		return nil, utils.CreateApiErr(errorCode.PARAMETER_ERROR_CODE, errorCode.PARAMETER_LOGIN_NAME_DUPLICATE)
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_LOGIN_NAME_DUPLICATE)
 	}
 
 	//塞入密碼
@@ -37,9 +37,9 @@ func (u *UserService) CreateUser(user *model.User) (interface{}, error) {
 	user.Password = pwd
 
 	if err != nil {
-		errData := errors.WithMessage(errors.WithStack(err), errorCode.PARAMETER_ERROR)
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
 		log.Error(fmt.Sprintf("%+v", errData))
-		return nil, utils.CreateApiErr(errorCode.PARAMETER_ERROR_CODE, errorCode.PARAMETER_ERROR)
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
 	}
 
 	//寫入 db
@@ -49,9 +49,9 @@ func (u *UserService) CreateUser(user *model.User) (interface{}, error) {
 	result := sqldb.Select("name", "login_name", "password", "email", "status", "user_type", "create_user_id", "remark").Create(user)
 	err = result.Error
 	if err != nil {
-		errData := errors.WithMessage(errors.WithStack(err), errorCode.SERVER_ERROR)
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.SERVER_ERROR)
 		log.Error(fmt.Sprintf("%+v", errData))
-		return nil, utils.CreateApiErr(errorCode.SERVER_ERROR_CODE, errorCode.SERVER_ERROR)
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SERVER_ERROR)
 	}
 
 	return nil, nil

@@ -1,7 +1,7 @@
 package backstage
 
 import (
-	errorCode "componentmod/internal/api/errorcode"
+	errorcode "componentmod/internal/api/errorcode"
 	"componentmod/internal/dto/backstagedto"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/log"
@@ -28,9 +28,9 @@ func (u *LoginLoutService) Login(loginDTO *backstagedto.LoginDTO) (interface{}, 
 	}
 
 	if user == nil || userCheck == false {
-		errData := errors.New(errorCode.UNAUTHORIZED_ERROR)
+		errData := errors.New(errorcode.UNAUTHORIZED_ERROR)
 		log.Error(fmt.Sprintf("%+v", errData))
-		return nil, utils.CreateApiErr(errorCode.UNAUTHORIZED_ERROR_CODE, errorCode.UNAUTHORIZED_ERROR)
+		return nil, utils.CreateApiErr(errorcode.UNAUTHORIZED_ERROR_CODE, errorcode.UNAUTHORIZED_ERROR)
 	}
 
 	//todo jwt token refresh token
