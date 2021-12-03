@@ -20,9 +20,12 @@ var (
 )
 
 // @Summary Backstage login
+// @accept application/json
+// @produce application/json
 // @Success 200 {json} json
-// @param pwd path string true "pwd"
-// @Router /backstage/login [post]
+// @Param loginName formData string true "loginName"
+// @Param password formData string true "password"
+// @Router /admin/login [post]
 func Login(c *gin.Context) (controller.Data, error) {
 	var loginDTO *backstagedto.LoginDTO
 	err := c.Bind(&loginDTO)
@@ -39,10 +42,6 @@ func Login(c *gin.Context) (controller.Data, error) {
 	return loginLoutService.Login(loginDTO)
 }
 
-// @Summary Backstage check password
-// @Success 200 {json} json
-// @param pwd path string true "pwd"
-// @Router /backstage/login [post]
 func Logout(c *gin.Context) (controller.Data, error) {
 	// userService := backstage.GetUserService()
 	return nil, nil
