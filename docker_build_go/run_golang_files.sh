@@ -17,6 +17,9 @@ export redis_db="0"
 export web_host="kumkum.com"
 export web_port="8010"
 export web_imgUrl="https://cf.shopee.tw/file/"
+export jwt_secret="f9946c78-f48a-435d-acc4-4bf469ef2680"
+export jwt_token_time="480"
+export jwt_ref_token_time="1440"
 
 cd /go/golang-shopee/docker_build_go
 nohup ./compiler/golang_file shopee-api &

@@ -29,10 +29,15 @@ func Router(r *gin.Engine) {
 	r.POST("/admin/login", backstagectl.BackstageLogin)
 	r.POST("/admin/logout", backstagectl.BackstageLogout)
 
+	r.POST("/test/data", backstagectl.BackstageLogout)
+
 	//後台
 	backstagePage := r.Group("/backstage")
 	{
+
+		// backstagePage.Use(authorityJwtMenuCheck()){
 		backstagePage.POST("/user/create", backstagectl.UserCreate)
+		// }
 
 		// r.GET("/backstage/login", backstage.UserLogin)
 	}

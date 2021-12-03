@@ -34,6 +34,23 @@ func (u *LoginLoutService) Login(loginDTO *backstagedto.LoginDTO) (interface{}, 
 	}
 
 	//todo jwt token refresh token
+	jwtToken, errT := utils.GenJwt(user.Id, user.Name)
+	refreshToken, errR := utils.GenRefJwt(user.Id, user.Name)
+	if errT != nil {
+		errToken := errors.WithMessage(errors.WithStack(errT), errorcode.GENERATE_JWT_ERROR)
+		errRefToken := errors.WithMessage(errors.WithStack(errR), errorcode.GENERATE_REFRESH_JWT_ERROR)
+		log.Error(fmt.Sprintf("%+v,%+v", errToken, errRefToken))
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.GENERATE_JWT_ERROR)
+	}
 
-	return nil, nil
+	//insert login ip
+
+	//
+
+	res := &backstagedto.LoginResponseDTO{
+		UserInfo:     &backstagedto.JwtInfoDTO{Id: user.Id, Name: user.Name},
+		AuthorityJwt: &backstagedto.JwtTokenDTO{Token: jwtToken, RefreshToken: refreshToken},
+	}
+
+	return res, nil
 }
