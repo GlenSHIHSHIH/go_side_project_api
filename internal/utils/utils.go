@@ -1,9 +1,13 @@
 package utils
 
 import (
+	"componentmod/internal/utils/log"
 	"fmt"
+	"os"
 	"strings"
 
+	"github.com/joho/godotenv"
+	"github.com/pkg/errors"
 	"github.com/tidwall/gjson"
 )
 
@@ -37,4 +41,15 @@ func ChangeGjsonArrayToString(Result []gjson.Result) string {
 
 	data = strings.TrimPrefix(data, ",")
 	return data
+}
+
+// 拿取.env 參數
+func GetEnvParameterByName(pName string) string {
+	err := godotenv.Load()
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), "Error loading .env file")
+		log.Error(fmt.Sprintf("%+v", errData))
+	}
+
+	return os.Getenv(pName)
 }
