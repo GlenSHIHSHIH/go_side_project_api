@@ -23,30 +23,35 @@ var DBConfig = []cli.Flag{
 		Usage:       "db host",
 		Value:       "127.0.0.1",
 		Destination: &dbHost,
+		EnvVars:     []string{"db_host"},
 	},
 	&cli.StringFlag{
 		Name:        "db-port",
 		Usage:       "db port",
 		Value:       "3306",
 		Destination: &dbPort,
+		EnvVars:     []string{"db_port"},
 	},
 	&cli.StringFlag{
 		Name:        "db-name",
 		Usage:       "db name",
 		Value:       "jiyoung_shopee",
 		Destination: &dbName,
+		EnvVars:     []string{"db_name"},
 	},
 	&cli.StringFlag{
 		Name:        "db-username",
 		Usage:       "db username",
 		Value:       "glen",
 		Destination: &dbUserName,
+		EnvVars:     []string{"db_username"},
 	},
 	&cli.StringFlag{
 		Name:        "db-password",
 		Usage:       "db password",
 		Value:       "1qaz@WSX",
 		Destination: &dbPassword,
+		EnvVars:     []string{"db_password"},
 	},
 }
 

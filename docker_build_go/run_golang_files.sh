@@ -1,17 +1,22 @@
 #!/bin/bash
-LIST=`crontab -l`
 
-SOURCE="/opt/golang-shopee/compiler/golang_file shopee-data-to-db"
-# # SOURCE="/opt/golang-shopee/run_golang_files.sh >> /var/log/daily-backup.log 2>&1"
+#db setting
+export db_host="172.21.0.2"
+export db_port="3306"
+export db_name="jiyoung_shopee"
+export db_username="glen"
+export db_password="1qaz@WSX"
 
-if echo "$LIST" | grep -q "$SOURCE"; then
-   echo "The back job had been added.";
-else
-   crontab -l | { cat; echo "* * * * * $SOURCE"; } | crontab -
+#redis setting
+export redis_host="172.21.0.3"
+export redis_port="6379"
+export redis_password="1qaz@WSX"
+export redis_db="0"
 
-fi
+#web setting
+export web_host="kumkum.com"
+export web_port="8010"
+export web_imgUrl="https://cf.shopee.tw/file/"
 
-# * * * * * echo "hello" >> /var/log/daily-backup.log 2>&1
-
-# cd /go/golang-shopee/docker_build_go
-# nohup ./compiler/golang_file shopee-api &
+cd /go/golang-shopee/docker_build_go
+nohup ./compiler/golang_file shopee-api &

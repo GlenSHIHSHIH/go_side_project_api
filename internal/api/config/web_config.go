@@ -13,17 +13,20 @@ var WebConfig = []cli.Flag{
 		Usage:       "web host",
 		Value:       "kumkum.com",
 		Destination: &WebHost,
+		EnvVars:     []string{"web_host"},
 	},
 	&cli.StringFlag{
 		Name:        "web-port",
 		Usage:       "web port",
 		Value:       "80",
 		Destination: &WebPort,
+		EnvVars:     []string{"web_port"},
 	},
 	&cli.StringFlag{
 		Name:        "web-imgUrl",
 		Usage:       "web imgUrl",
 		Value:       "https://cf.shopee.tw/file/",
 		Destination: &ImgUrl,
+		EnvVars:     []string{"web_imgUrl"},
 	},
 }

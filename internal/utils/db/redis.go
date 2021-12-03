@@ -28,24 +28,28 @@ var RedisConfig = []cli.Flag{
 		Usage:       "redis host",
 		Value:       "127.0.0.1",
 		Destination: &redisHost,
+		EnvVars:     []string{"redis_host"},
 	},
 	&cli.StringFlag{
 		Name:        "redis-port",
 		Usage:       "redis port",
 		Value:       "6379",
 		Destination: &redisPort,
+		EnvVars:     []string{"redis_port"},
 	},
 	&cli.StringFlag{
 		Name:        "redis-password",
 		Usage:       "redis password",
 		Value:       "1qaz@WSX",
 		Destination: &redisPassword,
+		EnvVars:     []string{"redis_password"},
 	},
 	&cli.StringFlag{
 		Name:        "redis-db",
 		Usage:       "redis db",
 		Value:       "0",
 		Destination: &redisDBNumber,
+		EnvVars:     []string{"redis_db"},
 	},
 }
 

@@ -60,8 +60,10 @@ services:
             - -c
             - |
               chmod 755 ./compiler/golang_file
-              nohup ./compiler/golang_file shopee-api --web-port 8010 --redis-host 172.21.0.3 --db-host 172.21.0.2 &
+              chmod 755 run_golang_files.sh
+              ./run_golang_files.sh
               tail -f /dev/null
+            # nohup ./compiler/golang_file shopee-api --web-port 8010 --redis-host 172.21.0.3 --db-host 172.21.0.2 &
 
 networks:
   shopee-network:
