@@ -12,28 +12,26 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Backstage"
+                ],
                 "summary": "Backstage login",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "loginName",
-                        "name": "loginName",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "password",
-                        "name": "password",
-                        "in": "formData",
-                        "required": true
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.LoginDTO"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "json"
+                            "$ref": "#/definitions/backstagedto.LoginResponseDTO"
                         }
                     }
                 }
@@ -41,12 +39,32 @@
         },
         "/backstage/user/create": {
             "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage"
+                ],
                 "summary": "Backstage UserLogin",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.UserDTO"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "json"
+                            "$ref": "#/definitions/dto.BaseResponseDTO"
                         }
                     }
                 }
@@ -54,12 +72,18 @@
         },
         "/carousel/list": {
             "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forestage"
+                ],
                 "summary": "Carousel",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "json"
+                            "$ref": "#/definitions/forestagedto.CarouselDTO"
                         }
                     }
                 }
@@ -67,12 +91,18 @@
         },
         "/category/list": {
             "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forestage"
+                ],
                 "summary": "Category",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "json"
+                            "$ref": "#/definitions/forestagedto.CategoryDTO"
                         }
                     }
                 }
@@ -80,12 +110,18 @@
         },
         "/forestage/config": {
             "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forestage"
+                ],
                 "summary": "Forestage config",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "json"
+                            "$ref": "#/definitions/forestagedto.BaseForestageConfigDTO"
                         }
                     }
                 }
@@ -93,6 +129,12 @@
         },
         "/production/list": {
             "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forestage"
+                ],
                 "summary": "Production list",
                 "parameters": [
                     {
@@ -160,7 +202,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "json"
+                            "$ref": "#/definitions/forestagedto.ProductionDTO"
                         }
                     }
                 }
@@ -168,6 +210,12 @@
         },
         "/production/rank/{count}": {
             "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forestage"
+                ],
                 "summary": "Production rank",
                 "operationId": "10",
                 "parameters": [
@@ -183,7 +231,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "json"
+                            "$ref": "#/definitions/forestagedto.ProductionRankDTO"
                         }
                     }
                 }
@@ -191,6 +239,12 @@
         },
         "/production/{id}": {
             "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forestage"
+                ],
                 "summary": "Production detail",
                 "operationId": "1",
                 "parameters": [
@@ -206,9 +260,371 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "json"
+                            "$ref": "#/definitions/forestagedto.ProductionDetailDTO"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "backstagedto.JwtInfoDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "minimum": 6
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 4
+                }
+            }
+        },
+        "backstagedto.JwtTokenDTO": {
+            "type": "object",
+            "properties": {
+                "refreshToken": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "backstagedto.LoginDTO": {
+            "type": "object",
+            "properties": {
+                "loginName": {
+                    "type": "string",
+                    "minLength": 4
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "backstagedto.LoginResponseDTO": {
+            "type": "object",
+            "properties": {
+                "authorityJwt": {
+                    "$ref": "#/definitions/backstagedto.JwtTokenDTO"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/backstagedto.JwtInfoDTO"
+                }
+            }
+        },
+        "backstagedto.UserDTO": {
+            "type": "object",
+            "properties": {
+                "UserType": {
+                    "description": "是否為系統用戶",
+                    "type": "boolean"
+                },
+                "email": {
+                    "description": "Email",
+                    "type": "string"
+                },
+                "loginName": {
+                    "description": "登入帳號",
+                    "type": "string",
+                    "minLength": 4
+                },
+                "name": {
+                    "description": "使用者名稱",
+                    "type": "string",
+                    "minLength": 4
+                },
+                "password": {
+                    "description": "密碼",
+                    "type": "string",
+                    "minLength": 6
+                },
+                "remark": {
+                    "description": "備註",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "帳號狀態(false停用 true正常)",
+                    "type": "boolean"
+                }
+            }
+        },
+        "dto.BaseResponseDTO": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PageDTO": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageLimit": {
+                    "type": "integer"
+                },
+                "search": {
+                    "type": "string"
+                },
+                "searchCategory": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "string"
+                },
+                "sortColumn": {
+                    "type": "string"
+                }
+            }
+        },
+        "forestagedto.BaseConfigDTO": {
+            "type": "object",
+            "properties": {
+                "imgUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "forestagedto.BaseForestageConfigDTO": {
+            "type": "object",
+            "properties": {
+                "baseConfig": {
+                    "$ref": "#/definitions/forestagedto.BaseConfigDTO"
+                }
+            }
+        },
+        "forestagedto.CarouselDTO": {
+            "type": "object",
+            "properties": {
+                "carousels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/forestagedto.CarouselData"
+                    }
+                }
+            }
+        },
+        "forestagedto.CarouselData": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
+        },
+        "forestagedto.CategoryDTO": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "forestagedto.ProductionDTO": {
+            "type": "object",
+            "properties": {
+                "pageData": {
+                    "$ref": "#/definitions/dto.PageDTO"
+                },
+                "productionList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/forestagedto.ProductionData"
+                    }
+                }
+            }
+        },
+        "forestagedto.ProductionData": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "string"
+                },
+                "createTime": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "priceMin": {
+                    "type": "integer"
+                },
+                "productId": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "forestagedto.ProductionDetailDTO": {
+            "type": "object",
+            "properties": {
+                "production": {
+                    "$ref": "#/definitions/forestagedto.ProductionDetailData"
+                }
+            }
+        },
+        "forestagedto.ProductionDetailData": {
+            "type": "object",
+            "properties": {
+                "attribute": {
+                    "type": "string"
+                },
+                "categories": {
+                    "type": "string"
+                },
+                "createTime": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "historicalSold": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "string"
+                },
+                "likedCount": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "priceMin": {
+                    "type": "integer"
+                },
+                "productId": {
+                    "type": "integer"
+                },
+                "stock": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "forestagedto.ProductionRankDTO": {
+            "type": "object",
+            "properties": {
+                "productionList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/forestagedto.ProductionRankData"
+                    }
+                }
+            }
+        },
+        "forestagedto.ProductionRankData": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "categories": {
+                    "type": "string"
+                },
+                "createTime": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "historicalSold": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "string"
+                },
+                "likedCount": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "priceMin": {
+                    "type": "integer"
+                },
+                "productId": {
+                    "type": "integer"
+                },
+                "stock": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
                 }
             }
         }

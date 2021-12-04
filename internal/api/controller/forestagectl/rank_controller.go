@@ -16,9 +16,11 @@ var (
 	ProductionRank = controller.Handler(GetProductionRank)
 )
 
+// @tags Forestage
 // @Summary Production rank
+// @accept application/json
 // @Id 10
-// @Success 200 {json} json
+// @Success 200 {object} forestagedto.ProductionRankDTO
 // @param count path int true "count"
 // @Router /production/rank/{count} [get]
 func GetProductionRank(c *gin.Context) (controller.Data, error) {

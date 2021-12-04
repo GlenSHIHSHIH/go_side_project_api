@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"componentmod/internal/dto"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,14 +15,15 @@ type HandlerFunc func(c *gin.Context) (Data, error)
 
 func Handler(hf HandlerFunc) func(*gin.Context) {
 	return func(c *gin.Context) {
-		respMap := gin.H{}
 		data, err := hf(c)
 		msg := "success"
 
 		if err == nil {
-			respMap["data"] = data
-			respMap["msg"] = msg
-			c.JSON(http.StatusOK, respMap)
+			baseResponseDTO := &dto.BaseResponseDTO{
+				Data: data,
+				Msg:  msg,
+			}
+			c.JSON(http.StatusOK, baseResponseDTO)
 		}
 
 		if err != nil {
@@ -35,9 +37,11 @@ func Handler(hf HandlerFunc) func(*gin.Context) {
 				code = errCode
 				msg = errData[1]
 			}
-			respMap["data"] = data
-			respMap["msg"] = msg
-			c.JSON(code, respMap)
+			baseResponseDTO := &dto.BaseResponseDTO{
+				Data: data,
+				Msg:  msg,
+			}
+			c.JSON(code, baseResponseDTO)
 		}
 	}
 }

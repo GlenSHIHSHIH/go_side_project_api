@@ -19,12 +19,12 @@ var (
 	BackstageLogout = controller.Handler(Logout)
 )
 
+// @tags Backstage
 // @Summary Backstage login
 // @accept application/json
 // @produce application/json
-// @Success 200 {json} json
-// @Param loginName formData string true "loginName"
-// @Param password formData string true "password"
+// @Success 200 {object} backstagedto.LoginResponseDTO
+// @Param json body backstagedto.LoginDTO true "json"
 // @Router /admin/login [post]
 func Login(c *gin.Context) (controller.Data, error) {
 	var loginDTO *backstagedto.LoginDTO

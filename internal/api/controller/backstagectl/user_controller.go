@@ -19,8 +19,12 @@ var (
 	// UserLogin  = controller.Handler(Login)
 )
 
+// @tags Backstage
 // @Summary Backstage UserLogin
-// @Success 200 {json} json
+// @accept application/json
+// @produce application/json
+// @Success 200 {object} dto.BaseResponseDTO
+// @Param json body backstagedto.UserDTO true "json"
 // @Router /backstage/user/create [post]
 func CreateUser(c *gin.Context) (controller.Data, error) {
 	var user *model.User

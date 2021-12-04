@@ -18,8 +18,10 @@ var (
 	ProductionById = controller.Handler(GetProductionById)
 )
 
+// @tags Forestage
 // @Summary Production list
-// @Success 200 {json} json
+// @accept application/json
+// @Success 200 {object} forestagedto.ProductionDTO
 // @Param page query int true "int default" default(1)
 // @Param pageLimit query int true "int enums" Enums(15,20,30,40,50)
 // @Param sort query string true "string enums" Enums(asc,desc)
@@ -47,9 +49,11 @@ func GetProduction(c *gin.Context) (controller.Data, error) {
 	return productionService.GetProductionList(shopeePageDTO)
 }
 
+// @tags Forestage
 // @Summary Production detail
+// @accept application/json
 // @Id 1
-// @Success 200 {json} json
+// @Success 200 {object} forestagedto.ProductionDetailDTO
 // @param id path int true "id"
 // @Router /production/{id} [get]
 func GetProductionById(c *gin.Context) (controller.Data, error) {

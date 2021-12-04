@@ -11,8 +11,10 @@ var (
 	BaseForestageConfig = controller.Handler(GetConfig)
 )
 
+// @tags Forestage
 // @Summary Forestage config
-// @Success 200 {json} json
+// @accept application/json
+// @Success 200 {object} forestagedto.BaseForestageConfigDTO
 // @Router /forestage/config [get]
 func GetConfig(c *gin.Context) (controller.Data, error) {
 	baseForestageService := forestage.GetBaseForestageService()

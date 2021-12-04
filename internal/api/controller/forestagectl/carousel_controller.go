@@ -11,8 +11,10 @@ var (
 	CarouselList = controller.Handler(GetCarousel)
 )
 
+// @tags Forestage
 // @Summary Carousel
-// @Success 200 {json} json
+// @accept application/json
+// @Success 200 {object} forestagedto.CarouselDTO
 // @Router /carousel/list [get]
 func GetCarousel(c *gin.Context) (controller.Data, error) {
 	carouselService := forestage.GetCarouselService()

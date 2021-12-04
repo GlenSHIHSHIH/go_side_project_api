@@ -1,3 +1,243 @@
+definitions:
+  backstagedto.JwtInfoDTO:
+    properties:
+      id:
+        minimum: 6
+        type: integer
+      name:
+        minLength: 4
+        type: string
+    type: object
+  backstagedto.JwtTokenDTO:
+    properties:
+      refreshToken:
+        type: string
+      token:
+        type: string
+    type: object
+  backstagedto.LoginDTO:
+    properties:
+      loginName:
+        minLength: 4
+        type: string
+      password:
+        minLength: 6
+        type: string
+    type: object
+  backstagedto.LoginResponseDTO:
+    properties:
+      authorityJwt:
+        $ref: '#/definitions/backstagedto.JwtTokenDTO'
+      userInfo:
+        $ref: '#/definitions/backstagedto.JwtInfoDTO'
+    type: object
+  backstagedto.UserDTO:
+    properties:
+      UserType:
+        description: 是否為系統用戶
+        type: boolean
+      email:
+        description: Email
+        type: string
+      loginName:
+        description: 登入帳號
+        minLength: 4
+        type: string
+      name:
+        description: 使用者名稱
+        minLength: 4
+        type: string
+      password:
+        description: 密碼
+        minLength: 6
+        type: string
+      remark:
+        description: 備註
+        type: string
+      status:
+        description: 帳號狀態(false停用 true正常)
+        type: boolean
+    type: object
+  dto.BaseResponseDTO:
+    properties:
+      data: {}
+      msg:
+        type: string
+    type: object
+  dto.PageDTO:
+    properties:
+      count:
+        type: integer
+      page:
+        type: integer
+      pageLimit:
+        type: integer
+      search:
+        type: string
+      searchCategory:
+        type: string
+      sort:
+        type: string
+      sortColumn:
+        type: string
+    type: object
+  forestagedto.BaseConfigDTO:
+    properties:
+      imgUrl:
+        type: string
+    type: object
+  forestagedto.BaseForestageConfigDTO:
+    properties:
+      baseConfig:
+        $ref: '#/definitions/forestagedto.BaseConfigDTO'
+    type: object
+  forestagedto.CarouselDTO:
+    properties:
+      carousels:
+        items:
+          $ref: '#/definitions/forestagedto.CarouselData'
+        type: array
+    type: object
+  forestagedto.CarouselData:
+    properties:
+      id:
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+      url:
+        type: string
+      weight:
+        type: integer
+    type: object
+  forestagedto.CategoryDTO:
+    properties:
+      category:
+        items:
+          type: string
+        type: array
+    type: object
+  forestagedto.ProductionDTO:
+    properties:
+      pageData:
+        $ref: '#/definitions/dto.PageDTO'
+      productionList:
+        items:
+          $ref: '#/definitions/forestagedto.ProductionData'
+        type: array
+    type: object
+  forestagedto.ProductionData:
+    properties:
+      categories:
+        type: string
+      createTime:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      images:
+        type: string
+      name:
+        type: string
+      options:
+        type: string
+      price:
+        type: integer
+      priceMin:
+        type: integer
+      productId:
+        type: integer
+      url:
+        type: string
+    type: object
+  forestagedto.ProductionDetailDTO:
+    properties:
+      production:
+        $ref: '#/definitions/forestagedto.ProductionDetailData'
+    type: object
+  forestagedto.ProductionDetailData:
+    properties:
+      attribute:
+        type: string
+      categories:
+        type: string
+      createTime:
+        type: string
+      description:
+        type: string
+      historicalSold:
+        type: integer
+      id:
+        type: integer
+      image:
+        type: string
+      images:
+        type: string
+      likedCount:
+        type: integer
+      name:
+        type: string
+      options:
+        type: string
+      price:
+        type: integer
+      priceMin:
+        type: integer
+      productId:
+        type: integer
+      stock:
+        type: integer
+      url:
+        type: string
+    type: object
+  forestagedto.ProductionRankDTO:
+    properties:
+      productionList:
+        items:
+          $ref: '#/definitions/forestagedto.ProductionRankData'
+        type: array
+    type: object
+  forestagedto.ProductionRankData:
+    properties:
+      amount:
+        type: integer
+      categories:
+        type: string
+      createTime:
+        type: string
+      description:
+        type: string
+      historicalSold:
+        type: integer
+      id:
+        type: integer
+      image:
+        type: string
+      images:
+        type: string
+      likedCount:
+        type: integer
+      name:
+        type: string
+      options:
+        type: string
+      price:
+        type: integer
+      priceMin:
+        type: integer
+      productId:
+        type: integer
+      stock:
+        type: integer
+      url:
+        type: string
+      weight:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
@@ -6,58 +246,83 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: loginName
-        in: formData
-        name: loginName
+      - description: json
+        in: body
+        name: json
         required: true
-        type: string
-      - description: password
-        in: formData
-        name: password
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/backstagedto.LoginDTO'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: json
+            $ref: '#/definitions/backstagedto.LoginResponseDTO'
       summary: Backstage login
+      tags:
+      - Backstage
   /backstage/user/create:
     post:
+      consumes:
+      - application/json
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/backstagedto.UserDTO'
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: json
+            $ref: '#/definitions/dto.BaseResponseDTO'
       summary: Backstage UserLogin
+      tags:
+      - Backstage
   /carousel/list:
     get:
+      consumes:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: json
+            $ref: '#/definitions/forestagedto.CarouselDTO'
       summary: Carousel
+      tags:
+      - Forestage
   /category/list:
     get:
+      consumes:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: json
+            $ref: '#/definitions/forestagedto.CategoryDTO'
       summary: Category
+      tags:
+      - Forestage
   /forestage/config:
     get:
+      consumes:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: json
+            $ref: '#/definitions/forestagedto.BaseForestageConfigDTO'
       summary: Forestage config
+      tags:
+      - Forestage
   /production/{id}:
     get:
+      consumes:
+      - application/json
       operationId: "1"
       parameters:
       - description: id
@@ -69,10 +334,14 @@ paths:
         "200":
           description: OK
           schema:
-            type: json
+            $ref: '#/definitions/forestagedto.ProductionDetailDTO'
       summary: Production detail
+      tags:
+      - Forestage
   /production/list:
     get:
+      consumes:
+      - application/json
       parameters:
       - default: 1
         description: int default
@@ -123,10 +392,14 @@ paths:
         "200":
           description: OK
           schema:
-            type: json
+            $ref: '#/definitions/forestagedto.ProductionDTO'
       summary: Production list
+      tags:
+      - Forestage
   /production/rank/{count}:
     get:
+      consumes:
+      - application/json
       operationId: "10"
       parameters:
       - description: count
@@ -138,6 +411,8 @@ paths:
         "200":
           description: OK
           schema:
-            type: json
+            $ref: '#/definitions/forestagedto.ProductionRankDTO'
       summary: Production rank
+      tags:
+      - Forestage
 swagger: "2.0"

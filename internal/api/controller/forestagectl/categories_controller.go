@@ -11,8 +11,10 @@ var (
 	CategoryList = controller.Handler(GetCategory)
 )
 
+// @tags Forestage
 // @Summary Category
-// @Success 200 {json} json
+// @accept application/json
+// @Success 200 {object} forestagedto.CategoryDTO
 // @Router /category/list [get]
 func GetCategory(c *gin.Context) (controller.Data, error) {
 	categoryService := forestage.GetCategoryService()
