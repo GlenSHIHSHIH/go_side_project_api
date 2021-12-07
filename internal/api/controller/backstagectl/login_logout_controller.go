@@ -25,7 +25,7 @@ var (
 // @produce application/json
 // @Success 200 {object} backstagedto.LoginResponseDTO
 // @Param json body backstagedto.LoginDTO true "json"
-// @Router /admin/login [post]
+// @Router /backstage/admin/login [post]
 func Login(c *gin.Context) (controller.Data, error) {
 	var loginDTO *backstagedto.LoginDTO
 	err := c.Bind(&loginDTO)
