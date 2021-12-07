@@ -26,8 +26,8 @@ func Router(r *gin.Engine) {
 	r.GET("/forestage/config", forestagectl.BaseForestageConfig)
 
 	//登入 / 登出
-	r.POST("/admin/login", backstagectl.BackstageLogin)
-	r.POST("/admin/logout", backstagectl.BackstageLogout)
+	r.POST("/backstage/admin/login", backstagectl.BackstageLogin)
+	r.POST("/backstage//admin/logout", backstagectl.BackstageLogout)
 
 	r.POST("/test/data", backstagectl.BackstageLogout)
 
