@@ -23,7 +23,7 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/login": {
+        "/backstage/admin/login": {
             "post": {
                 "consumes": [
                     "application/json"

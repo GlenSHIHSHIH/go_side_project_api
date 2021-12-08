@@ -6,6 +6,7 @@ import (
 	"componentmod/internal/utils/log"
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 )
@@ -51,5 +52,8 @@ func middlewareInit(r *gin.Engine) {
 	r.Use(gin.Recovery())
 
 	r.NoRoute(direction404)
+
+	//Cors 設定
+	r.Use(cors.New(corsConfig()))
 
 }
