@@ -10,6 +10,8 @@ type Menu struct {
 	Id           int            `gorm:"primaryKey" json:"id"`
 	Name         string         `gorm:"comment:菜單名稱;type:varchar(50)" json:"name"`                                       //菜單名稱
 	Key          string         `gorm:"comment:菜單字符串;type:varchar(100)" json:"key"`                                      //菜單字符串
+	Url          string         `gorm:"comment:網址;type:varchar(300)" json:"url"`                                         //網址
+	Feature      string         `gorm:"comment:功能(T=標題、P=頁面、F=按鍵功能);type:varchar(1)" json:"feature"`                     //功能(T=標題、P=頁面、F=按鍵功能)
 	Weight       int            `gorm:"comment:權重(優先順序 重=高);type:int;default:0" json:"weight"`                           //權重
 	Parent       int            `gorm:"comment:父類(id);type:int;default:0" json:"parent"`                                 //父類(id)
 	Status       bool           `gorm:"comment:開關 (true=開啟);type:bool;default:true" json:"status"`                       //狀態(開關)
