@@ -63,7 +63,7 @@ func GenRefJwt(userId int, name string) (string, error) {
 	return generateJwtToken(refreshToken, intJwtRefTokenTime, userId, name)
 }
 
-func generateJwtToken(jwtToken string, timeMinute int, userId int, name string) (string, error) {
+func generateJwtToken(tokenType string, timeMinute int, userId int, name string) (string, error) {
 	// Create token
 	token := jwt.New(jwt.SigningMethodHS256)
 
@@ -71,7 +71,7 @@ func generateJwtToken(jwtToken string, timeMinute int, userId int, name string) 
 	// This is the information which frontend can use
 	// The backend can also decode the token and get admin etc.
 	claims := token.Claims.(jwt.MapClaims)
-	claims["sub"] = jwtToken
+	claims["sub"] = tokenType
 	claims["id"] = userId
 	claims["name"] = name
 	claims["exp"] = time.Now().Add(time.Minute * time.Duration(int64(timeMinute))).Unix()
@@ -87,10 +87,26 @@ func generateJwtToken(jwtToken string, timeMinute int, userId int, name string) 
 	return jwt, nil
 }
 
+func ValidateAndRefreshTokenCheck(token string) (*backstagedto.JwtInfoDTO, error) {
+	check, jwtInfoDTO, tokenType := validateJwtToke(token)
+	if check == false || jwtInfoDTO == nil || tokenType != refreshToken {
+		return nil, CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.REFRESH_AUTHORIZED_ERROR)
+	}
+	return jwtInfoDTO, nil
+}
+
+func ValidateAndTokenCheck(token string) (*backstagedto.JwtInfoDTO, error) {
+	check, jwtInfoDTO, tokenType := validateJwtToke(token)
+	if check == false || jwtInfoDTO == nil || tokenType != jwtToken {
+		return nil, CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.REFRESH_AUTHORIZED_ERROR)
+	}
+	return jwtInfoDTO, nil
+}
+
 // This is the api to refresh tokens
 // Most of the code is taken from the jwt-go package's sample codes
 // https://godoc.org/github.com/dgrijalva/jwt-go#example-Parse--Hmac
-func ValidateJwtToke(jwtToken string) (bool, *backstagedto.JwtInfoDTO) {
+func validateJwtToke(jwtToken string) (bool, *backstagedto.JwtInfoDTO, string) {
 
 	// Parse takes the token string and a function for looking up the key.
 	// The latter is especially useful if you use multiple keys for your application.
@@ -110,21 +126,19 @@ func ValidateJwtToke(jwtToken string) (bool, *backstagedto.JwtInfoDTO) {
 	if err != nil {
 		errData := errors.WithMessage(errors.WithStack(err), errorcode.UNAUTHORIZED_ERROR)
 		log.Error(fmt.Sprintf("%+v", errData))
-		return false, nil
+		return false, nil, ""
 	}
 
 	if Claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if Claims["sub"].(string) == "token" {
-			jwtInfo := &backstagedto.JwtInfoDTO{
-				Id:   Claims["id"].(int),
-				Name: Claims["name"].(string),
-			}
-			return true, jwtInfo
-		} else if Claims["sub"].(string) == "refreshToken" {
-			return true, nil
+		id, _ := strconv.Atoi(fmt.Sprint(Claims["id"]))
+		name := fmt.Sprint(Claims["name"])
+		tokeynType := fmt.Sprint(Claims["sub"])
+		jwtInfo := &backstagedto.JwtInfoDTO{
+			Id:   id,
+			Name: name,
 		}
-
+		return true, jwtInfo, tokeynType //"token"	or	"refreshToken"
 	}
 
-	return false, nil
+	return false, nil, ""
 }

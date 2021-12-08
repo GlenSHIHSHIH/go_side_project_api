@@ -56,6 +56,39 @@ var doc = `{
                 }
             }
         },
+        "/backstage/jwt/refreshtoken": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage"
+                ],
+                "summary": "Backstage RefreshToken",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.JwtRefTokenDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.LoginResponseDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/backstage/user/create": {
             "post": {
                 "consumes": [
@@ -297,6 +330,14 @@ var doc = `{
                 "name": {
                     "type": "string",
                     "minLength": 4
+                }
+            }
+        },
+        "backstagedto.JwtRefTokenDTO": {
+            "type": "object",
+            "properties": {
+                "refreshToken": {
+                    "type": "string"
                 }
             }
         },

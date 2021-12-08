@@ -15,8 +15,9 @@ import (
 )
 
 var (
-	BackstageLogin  = controller.Handler(Login)
-	BackstageLogout = controller.Handler(Logout)
+	BackstageLogin        = controller.Handler(Login)
+	BackstageLogout       = controller.Handler(Logout)
+	BackstageRefreshToken = controller.Handler(RefreshToken)
 )
 
 // @tags Backstage
@@ -37,12 +38,33 @@ func Login(c *gin.Context) (controller.Data, error) {
 		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
 	}
 
-	loginLoutService := backstage.GetLoginLoutService()
+	loginLogoutService := backstage.GetLoginLogoutService()
 
-	return loginLoutService.Login(loginDTO)
+	return loginLogoutService.Login(loginDTO)
 }
 
 func Logout(c *gin.Context) (controller.Data, error) {
 	// userService := backstage.GetUserService()
 	return nil, nil
+}
+
+// @tags Backstage
+// @Summary Backstage RefreshToken
+// @accept application/json
+// @produce application/json
+// @Success 200 {object} backstagedto.LoginResponseDTO
+// @Param json body backstagedto.JwtRefTokenDTO true "json"
+// @Router /backstage/jwt/refreshtoken [post]
+func RefreshToken(c *gin.Context) (controller.Data, error) {
+	var jwtRefTokenDTO *backstagedto.JwtRefTokenDTO
+	err := c.Bind(&jwtRefTokenDTO)
+
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
+	}
+
+	loginLogoutService := backstage.GetLoginLogoutService()
+	return loginLogoutService.RefreshToken(jwtRefTokenDTO)
 }

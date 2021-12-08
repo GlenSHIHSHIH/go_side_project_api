@@ -8,6 +8,11 @@ definitions:
         minLength: 4
         type: string
     type: object
+  backstagedto.JwtRefTokenDTO:
+    properties:
+      refreshToken:
+        type: string
+    type: object
   backstagedto.JwtTokenDTO:
     properties:
       refreshToken:
@@ -260,6 +265,27 @@ paths:
           schema:
             $ref: '#/definitions/backstagedto.LoginResponseDTO'
       summary: Backstage login
+      tags:
+      - Backstage
+  /backstage/jwt/refreshtoken:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/backstagedto.JwtRefTokenDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.LoginResponseDTO'
+      summary: Backstage RefreshToken
       tags:
       - Backstage
   /backstage/user/create:

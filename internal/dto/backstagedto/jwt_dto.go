@@ -9,3 +9,7 @@ type JwtTokenDTO struct {
 	Token        string `json:"token"`
 	RefreshToken string `json:"refreshToken"`
 }
+
+type JwtRefTokenDTO struct {
+	RefreshToken string `json:"refreshToken"`
+}
