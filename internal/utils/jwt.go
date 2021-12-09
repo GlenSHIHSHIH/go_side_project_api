@@ -98,7 +98,7 @@ func ValidateAndRefreshTokenCheck(token string) (*backstagedto.JwtInfoDTO, error
 func ValidateAndTokenCheck(token string) (*backstagedto.JwtInfoDTO, error) {
 	check, jwtInfoDTO, tokenType := validateJwtToke(token)
 	if check == false || jwtInfoDTO == nil || tokenType != jwtToken {
-		return nil, CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.REFRESH_AUTHORIZED_ERROR)
+		return nil, CreateApiErr(errorcode.UNAUTHORIZED_ERROR_CODE, errorcode.UNAUTHORIZED_ERROR)
 	}
 	return jwtInfoDTO, nil
 }

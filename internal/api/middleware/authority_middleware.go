@@ -1,22 +1,26 @@
 package middleware
 
 import (
+	"componentmod/internal/utils"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 )
 
 func authorityJwtMenuCheck() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// c.Header().
-		// utils.ValidateAndTokenCheck()
 
-		c.Next()
+		bearerToken := c.GetHeader("Authorization")
+		token := strings.Replace(bearerToken, "Bearer ", "", 1)
 
-		// // after request
-		// latency := time.Since(t)
-		// log.Print(latency)
+		//驗證使用者 jwt token
+		jwtInfoDTO, err := utils.ValidateAndTokenCheck(token)
 
-		// // access the status we are sending
-		// status := c.Writer.Status()
-		// log.Println(status)
+		if err == nil {
+			c.Set("userInfo", jwtInfoDTO)
+			c.Next()
+		} else {
+			middlewareHandler(c, nil, err)
+		}
 	}
 }

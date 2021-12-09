@@ -3,6 +3,7 @@ package backstagectl
 import (
 	"componentmod/internal/api/controller"
 	"componentmod/internal/api/errorcode"
+	"componentmod/internal/dto/backstagedto"
 	"componentmod/internal/services/api/backstage"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db/model"
@@ -16,7 +17,7 @@ import (
 
 var (
 	UserCreate = controller.Handler(CreateUser)
-	// UserLogin  = controller.Handler(Login)
+	UserEdit   = controller.Handler(EditUser)
 )
 
 // @tags Backstage
@@ -39,4 +40,10 @@ func CreateUser(c *gin.Context) (controller.Data, error) {
 
 	userService := backstage.GetUserService()
 	return userService.CreateUser(user)
+}
+
+func EditUser(c *gin.Context) (controller.Data, error) {
+	JwtInfoDTO, _ := c.Get("userInfo")
+	userInfo := JwtInfoDTO.(*backstagedto.JwtInfoDTO)
+	return userInfo, nil
 }

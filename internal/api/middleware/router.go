@@ -1,4 +1,4 @@
-package router
+package middleware
 
 import (
 	"componentmod/internal/api/controller/backstagectl"
@@ -34,7 +34,10 @@ func Router(r *gin.Engine) {
 	//後台
 	backstagePage := r.Group("/backstage")
 	{
-
+		backstagePage.Use(authorityJwtMenuCheck())
+		{
+			backstagePage.POST("/user/test", backstagectl.UserEdit)
+		}
 		// backstagePage.Use(authorityJwtMenuCheck()){
 		backstagePage.POST("/user/create", backstagectl.UserCreate)
 		// }

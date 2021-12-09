@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"componentmod/internal/api/config"
-	"componentmod/internal/api/router"
 	"componentmod/internal/utils/log"
 	"fmt"
 
@@ -28,7 +27,7 @@ func WebApiInit() {
 	middlewareInit(r)
 
 	//router group
-	router.Router(r)
+	Router(r)
 
 	// ginEngine = GinEngine{r}
 
