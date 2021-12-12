@@ -33,20 +33,20 @@ services:
     go_run_linux:
         image: centos:8
         depends_on:
-          go_build:
-            condition: service_completed_successfully
+            go_build:
+                condition: service_completed_successfully
         container_name: go_linux
         volumes:
             - "./compiler:/opt/golang-shopee/compiler"
-            # - "./run_golang_files.sh:/opt/golang-shopee/run_golang_files.sh"
+            - "./run_golang_files.sh:/opt/golang-shopee/run_golang_files.sh"
             # - "./initial.sh:/opt/golang-shopee/initial.sh"
         restart: always
         working_dir: "/opt/golang-shopee"
         ports:
             - 8010:8010
         networks:
-          shopee-network:
-            ipv4_address: 172.21.0.10
+            shopee-network:
+                ipv4_address: 172.21.0.10
         privileged: true
         stdin_open: true
         tty: true
@@ -66,6 +66,6 @@ services:
             # nohup ./compiler/golang_file shopee-api --web-port 8010 --redis-host 172.21.0.3 --db-host 172.21.0.2 &
 
 networks:
-  shopee-network:
-      external: true
-      name: shopee-network
+    shopee-network:
+        external: true
+        name: shopee-network
