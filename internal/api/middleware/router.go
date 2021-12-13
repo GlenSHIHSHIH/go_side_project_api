@@ -27,7 +27,7 @@ func Router(r *gin.Engine) {
 
 	//登入 / 登出
 	r.POST("/backstage/admin/login", backstagectl.BackstageLogin)
-	r.POST("/backstage//admin/logout", backstagectl.BackstageLogout)
+	r.POST("/backstage/admin/logout", backstagectl.BackstageLogout)
 
 	r.POST("/backstage/jwt/refreshtoken", backstagectl.BackstageRefreshToken)
 
