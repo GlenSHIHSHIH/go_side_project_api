@@ -26,6 +26,7 @@ services:
               go build -o golang_file main.go
               sleep 1
               mv golang_file ${go_compiler_folder}
+              cp initialdata ${go_compiler_folder}
         network_mode: "host"
         stdin_open: true
         tty: true

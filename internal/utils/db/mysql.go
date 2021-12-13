@@ -3,6 +3,9 @@ package db
 import (
 	"componentmod/internal/utils/log"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"strings"
 
 	"componentmod/internal/utils/db/model"
 
@@ -84,14 +87,40 @@ func DBInit() {
 
 func initTableAndProcedure() {
 
-	//create table
+	// create table
 	mySqlDB.AutoMigrate(&model.Production{})
 	mySqlDB.AutoMigrate(&model.ProductionTemp{})
 	mySqlDB.AutoMigrate(&model.Carousel{})
 	mySqlDB.AutoMigrate(&model.User{})
 	mySqlDB.AutoMigrate(&model.Role{})
 	mySqlDB.AutoMigrate(&model.Menu{})
-	//create procedure
+
+	// create procedure
 	mySqlDB.Exec(model.DROP_PROCEDURE_IF_EXISTS)
 	mySqlDB.Exec(model.PROCEDURE_GET_PROD_CATEGORIES)
+
+	// create initial carousels data
+	initialData("carousels", "initialdata/carousels.sql")
+}
+
+func initialData(tableName, sqlFilePath string) {
+	if mySqlDB.Migrator().HasTable(tableName) {
+		var value int64
+		mySqlDB.Table(tableName).Count(&value)
+		if value == 0 {
+			mydir, _ := os.Getwd()
+			query, err := ioutil.ReadFile(mydir + "/" + sqlFilePath)
+			if err != nil {
+				log.Fatal(fmt.Sprintf("%+v", errors.WithStack(err)))
+			}
+
+			sqlAll := string(query)
+			for _, v := range strings.Split(sqlAll, ";") {
+				if v != "" {
+					mySqlDB.Exec(v)
+				}
+			}
+
+		}
+	}
 }
