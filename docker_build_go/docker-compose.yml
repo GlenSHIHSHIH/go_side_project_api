@@ -22,11 +22,11 @@ services:
             - |
               go mod tidy
               go install
-              mkdir -p ${go_compiler_folder}
+              mkdir -p ./${go_compiler_folder}
               go build -o golang_file main.go
               sleep 1
-              mv golang_file ${go_compiler_folder}
-              cp initialdata ${go_compiler_folder}
+              mv golang_file ./${go_compiler_folder}
+              cp initialdata ./${go_compiler_folder}
         network_mode: "host"
         stdin_open: true
         tty: true
@@ -61,7 +61,7 @@ services:
             - -c
             - |
               chmod 755 ./compiler/golang_file
-              chmod 755 run_golang_files.sh
+              chmod 755 ./run_golang_files.sh
               ./run_golang_files.sh
               tail -f /dev/null
             # nohup ./compiler/golang_file shopee-api --web-port 8010 --redis-host 172.21.0.3 --db-host 172.21.0.2 &
