@@ -30,6 +30,7 @@ func Router(r *gin.Engine) {
 	r.POST("/backstage/admin/logout", backstagectl.BackstageLogout)
 
 	r.POST("/backstage/jwt/refreshtoken", backstagectl.BackstageRefreshToken)
+	r.POST("/backstage/jwt/check", backstagectl.BackstageCheckToken)
 
 	//後台
 	backstagePage := r.Group("/backstage")

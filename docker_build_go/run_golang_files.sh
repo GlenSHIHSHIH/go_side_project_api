@@ -23,4 +23,5 @@ export jwt_token_time="480"
 export jwt_ref_token_time="1440"
 
 cd /go/golang-shopee/docker_build_go
+nohup ./compiler/golang_file shopee-data-to-db &
 nohup ./compiler/golang_file shopee-api &
