@@ -27,6 +27,7 @@ services:
               sleep 1
               mv golang_file ./${go_compiler_folder}
               cp -r initialdata ./${go_compiler_folder}
+              cp ./docker_build_go/run_golang_files.sh ./${go_compiler_folder}/run_golang_files.sh
         network_mode: "host"
         stdin_open: true
         tty: true
@@ -39,8 +40,6 @@ services:
         container_name: go_linux
         volumes:
             - "./compiler:/opt/golang-shopee/compiler"
-            - "./run_golang_files.sh:/opt/golang-shopee/run_golang_files.sh"
-            # - "./initial.sh:/opt/golang-shopee/initial.sh"
         restart: always
         working_dir: "/opt/golang-shopee"
         ports:
@@ -60,11 +59,9 @@ services:
             - /bin/bash
             - -c
             - |
-              chmod 755 ./compiler/golang_file
-              chmod 755 ./run_golang_files.sh
-              ./run_golang_files.sh
+              chmod -R 755 ./compiler/
+              ./compiler/run_golang_files.sh
               tail -f /dev/null
-            # nohup ./compiler/golang_file shopee-api --web-port 8010 --redis-host 172.21.0.3 --db-host 172.21.0.2 &
 
 networks:
     shopee-network:
