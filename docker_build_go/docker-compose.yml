@@ -60,7 +60,8 @@ services:
             - -c
             - |
               chmod -R 755 ./compiler/
-              ./compiler/run_golang_files.sh
+              cd compiler
+              ./run_golang_files.sh
               tail -f /dev/null
 
 networks:
