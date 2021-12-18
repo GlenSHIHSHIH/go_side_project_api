@@ -267,6 +267,26 @@ paths:
       summary: Backstage login
       tags:
       - Backstage
+  /backstage/jwt/check:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authorization
+        in: header
+        name: string
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.JwtInfoDTO'
+      summary: Backstage CheckToken
+      tags:
+      - Backstage
   /backstage/jwt/refreshtoken:
     post:
       consumes:

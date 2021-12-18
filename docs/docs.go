@@ -56,6 +56,37 @@ var doc = `{
                 }
             }
         },
+        "/backstage/jwt/check": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage"
+                ],
+                "summary": "Backstage CheckToken",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "string",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.JwtInfoDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/backstage/jwt/refreshtoken": {
             "post": {
                 "consumes": [
