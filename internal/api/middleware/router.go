@@ -38,10 +38,8 @@ func Router(r *gin.Engine) {
 		backstagePage.Use(authorityJwtMenuCheck())
 		{
 			backstagePage.POST("/user/test", backstagectl.UserEdit)
+			backstagePage.POST("/user/create", backstagectl.UserCreate)
 		}
-		// backstagePage.Use(authorityJwtMenuCheck()){
-		backstagePage.POST("/user/create", backstagectl.UserCreate)
-		// }
 
 		// r.GET("/backstage/login", backstage.UserLogin)
 	}

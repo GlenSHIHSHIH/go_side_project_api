@@ -99,8 +99,10 @@ func initTableAndProcedure() {
 	mySqlDB.Exec(model.DROP_PROCEDURE_IF_EXISTS)
 	mySqlDB.Exec(model.PROCEDURE_GET_PROD_CATEGORIES)
 
-	// create initial carousels data
+	// create initial
 	initialData("carousels", "initialdata/carousels.sql")
+	initialData("carousels", "initialdata/users.sql")
+
 }
 
 func initialData(tableName, sqlFilePath string) {
