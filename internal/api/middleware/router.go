@@ -10,40 +10,47 @@ import (
 )
 
 func Router(r *gin.Engine) {
+
+	//----------------前台---------------
+	//產品相關資料
 	production := r.Group("/production")
 	{
+		//產品列表
 		production.GET("/list", forestagectl.ProductionList)
+		//產品詳細資料
 		production.GET("/:id", forestagectl.ProductionById)
+		//產品排名
 		production.GET("/rank/:count", forestagectl.ProductionRank)
+		//產品分類
+		production.GET("/category/list", forestagectl.CategoryList)
 	}
 
-	carousel := r.Group("/carousel")
-	{
-		carousel.GET("/list", forestagectl.CarouselList)
-	}
+	//首頁輪播圖
+	r.GET("/carousel/list", forestagectl.CarouselList)
 
-	r.GET("/category/list", forestagectl.CategoryList)
+	//相關設定檔
 	r.GET("/forestage/config", forestagectl.BaseForestageConfig)
 
-	//登入 / 登出
-	r.POST("/backstage/admin/login", backstagectl.BackstageLogin)
-	r.POST("/backstage/admin/logout", backstagectl.BackstageLogout)
-
-	r.POST("/backstage/jwt/refreshtoken", backstagectl.BackstageRefreshToken)
-	r.POST("/backstage/jwt/check", backstagectl.BackstageCheckToken)
-
-	//後台
+	//----------------後台---------------
 	backstagePage := r.Group("/backstage")
 	{
+		//登入 / 登出
+		backstagePage.POST("/admin/login", backstagectl.BackstageLogin)
+		backstagePage.POST("/admin/logout", backstagectl.BackstageLogout)
+
+		backstagePage.POST("/jwt/refreshtoken", backstagectl.BackstageRefreshToken)
+		backstagePage.POST("/jwt/check", backstagectl.BackstageCheckToken)
+
 		backstagePage.Use(authorityJwtMenuCheck())
 		{
+			//測試  尚未修正
 			backstagePage.POST("/user/test", backstagectl.UserEdit)
+			//新增使用者 (未詳細完成)
 			backstagePage.POST("/user/create", backstagectl.UserCreate)
 		}
-
-		// r.GET("/backstage/login", backstage.UserLogin)
 	}
 
+	//----------------swagger---------------
 	// @title Gin Swagger Demo
 	// @version 2.0
 	// @description Swagger API.
