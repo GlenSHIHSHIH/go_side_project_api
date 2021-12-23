@@ -101,7 +101,11 @@ func initTableAndProcedure() {
 
 	// create initial
 	initialData("carousels", "initialdata/carousels.sql")
-	initialData("carousels", "initialdata/users.sql")
+	initialData("users", "initialdata/users.sql")
+	initialData("roles", "initialdata/roles.sql")
+	initialData("menus", "initialdata/menus.sql")
+	initialData("role_menu", "initialdata/role_menu.sql")
+	initialData("user_role", "initialdata/user_role.sql")
 
 }
 

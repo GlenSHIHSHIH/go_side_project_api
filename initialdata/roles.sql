@@ -1,0 +1,2 @@
+INSERT INTO `roles` (`id`,`name`,`key`,`weight`,`status`,`create_time`,`update_time`,`create_user_id`,`update_user_id`,`deleted`,`remark`) VALUES (1,'admin','admin',1000,1,'2021-12-23 16:43:52','2021-12-23 16:43:52',NULL,NULL,NULL,'管理者');
+INSERT INTO `roles` (`id`,`name`,`key`,`weight`,`status`,`create_time`,`update_time`,`create_user_id`,`update_user_id`,`deleted`,`remark`) VALUES (2,'shopee','shopee:user',900,1,'2021-12-23 16:46:12','2021-12-23 16:46:12',NULL,NULL,NULL,'蝦皮使用者');

@@ -1,0 +1,16 @@
+相關 folder 說明
+docker_db                           建立資料庫(mysql,redis)         使用docker-compose
+docker_build_go                     建立go編譯 檔案 (在linux底下執行) 使用docker-compose
+docker_build_go/run_golang_files.sh 執行golang 檔案 與相關環境配置
+
+internal                            code 的根目錄
+internal/api                        前後台 api
+internal/cmd                        啟動api 與 蝦皮匯入資料....
+internal/dto                        輸出與輸入api的相關格式
+internal/utils                      通用的function
+internal/services                   邏輯處理
+
+initialdata                         database 初始化的資料
+docs                                swagger 產出的檔案 指令：swag init
+excel                               匯出shopee資料會產的檔案
+log                                 基本錯誤輸出
