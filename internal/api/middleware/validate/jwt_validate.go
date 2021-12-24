@@ -1,4 +1,4 @@
-package middleware
+package validate
 
 import (
 	"componentmod/internal/utils"
@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func JwtValidateMiddleware() gin.HandlerFunc {
+func JwtValidate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		bearerToken := c.GetHeader("Authorization")
@@ -22,7 +22,7 @@ func JwtValidateMiddleware() gin.HandlerFunc {
 			c.Set("userInfo", jwtInfoDTO)
 			c.Next()
 		} else {
-			ErrHandlerMiddleware(c, nil, err)
+			ErrHandler(c, nil, err)
 		}
 	}
 }

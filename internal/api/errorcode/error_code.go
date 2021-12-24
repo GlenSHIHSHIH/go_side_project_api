@@ -4,6 +4,7 @@ const (
 	PARAMETER_ERROR_CODE    = 400
 	UNAUTHORIZED_ERROR_CODE = 401
 	SERVER_ERROR_CODE       = 500
+	AUTHORITY_INSUFFICINET  = 511
 )
 const (
 	PARAMETER_ERROR                = "參數錯誤"
@@ -13,4 +14,5 @@ const (
 	SERVER_ERROR                   = "程式錯誤"
 	GENERATE_JWT_ERROR             = "產生 jwt 錯誤"
 	GENERATE_REFRESH_JWT_ERROR     = "產生 Refresh jwt 錯誤"
+	USER_AUTHORITY_INSUFFICINET    = "使用者權限不足"
 )

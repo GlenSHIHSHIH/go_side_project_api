@@ -3,7 +3,7 @@ package backstagectl
 import (
 	"componentmod/internal/api/controller"
 	"componentmod/internal/api/errorcode"
-	"componentmod/internal/dto/backstagedto"
+	"componentmod/internal/api/middleware/validate"
 	"componentmod/internal/services/api/backstage"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db/model"
@@ -43,7 +43,9 @@ func CreateUser(c *gin.Context) (controller.Data, error) {
 }
 
 func EditUser(c *gin.Context) (controller.Data, error) {
-	JwtInfoDTO, _ := c.Get("userInfo")
-	userInfo := JwtInfoDTO.(*backstagedto.JwtInfoDTO)
+	userInfo, err := validate.UserInfoValidate(c)
+	if err != nil {
+		return nil, err
+	}
 	return userInfo, nil
 }

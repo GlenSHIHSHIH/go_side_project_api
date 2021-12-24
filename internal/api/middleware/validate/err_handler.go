@@ -1,4 +1,4 @@
-package middleware
+package validate
 
 import (
 	"componentmod/internal/dto"
@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ErrHandlerMiddleware(c *gin.Context, data interface{}, err error) {
+func ErrHandler(c *gin.Context, data interface{}, err error) {
 
 	//error string 切割
 	code := 500

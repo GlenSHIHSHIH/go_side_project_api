@@ -3,6 +3,7 @@ package middleware
 import (
 	"componentmod/internal/api/controller/backstagectl"
 	"componentmod/internal/api/controller/forestagectl"
+	"componentmod/internal/api/middleware/validate"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -41,14 +42,14 @@ func Router(r *gin.Engine) {
 		//驗證 jwt Token
 		backstagePage.GET("/jwt/check", backstagectl.BackstageCheckToken)
 
-		backstagePage.Use(JwtValidateMiddleware())
+		backstagePage.Use(validate.JwtValidate())
 		{
 			//登出
 			backstagePage.POST("/admin/logout", backstagectl.BackstageLogout)
 			//菜單權限列表
 			backstagePage.GET("/menu/list", backstagectl.MenuList)
 		}
-		backstagePage.Use(JwtValidateMiddleware()) //.Use(//驗證頁面權限)
+		backstagePage.Use(validate.JwtValidate()).Use(validate.AuthorityMenuValidate())
 		{
 			//測試  尚未修正
 			backstagePage.POST("/user/test", backstagectl.UserEdit)
