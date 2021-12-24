@@ -7,7 +7,7 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
-func corsConfig() cors.Config {
+func CorsConfig() cors.Config {
 
 	corsConf := cors.Config{
 		MaxAge:                 12 * time.Hour,

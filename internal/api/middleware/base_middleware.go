@@ -50,9 +50,9 @@ func middlewareInit(r *gin.Engine) {
 	// Recovery middleware recovers from any panics and writes a 500 if there was one.
 	r.Use(gin.Recovery())
 
-	r.NoRoute(direction404)
+	r.NoRoute(Direction404)
 
 	//Cors 設定
-	r.Use(cors.New(corsConfig()))
+	r.Use(cors.New(CorsConfig()))
 
 }

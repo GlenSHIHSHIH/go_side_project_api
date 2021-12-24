@@ -1,8 +1,8 @@
 package backstagedto
 
 type JwtInfoDTO struct {
-	Id   int    `validate:"min=6" json:"id"`
-	Name string `validate:"min=4" json:"name"`
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
 type JwtTokenDTO struct {

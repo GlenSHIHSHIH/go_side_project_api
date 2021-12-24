@@ -6,6 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func direction404(c *gin.Context) {
+func Direction404(c *gin.Context) {
 	c.JSON(http.StatusNotFound, "")
 }

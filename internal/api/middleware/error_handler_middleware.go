@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func middlewareHandler(c *gin.Context, data interface{}, err error) {
+func ErrHandlerMiddleware(c *gin.Context, data interface{}, err error) {
 
 	//error string 切割
 	code := 500
