@@ -34,14 +34,21 @@ func Router(r *gin.Engine) {
 	//----------------後台---------------
 	backstagePage := r.Group("/backstage")
 	{
-		//登入 / 登出
+		//登入
 		backstagePage.POST("/admin/login", backstagectl.BackstageLogin)
-		backstagePage.POST("/admin/logout", backstagectl.BackstageLogout)
-
+		//刷新 jwt Token
 		backstagePage.POST("/jwt/refreshtoken", backstagectl.BackstageRefreshToken)
-		backstagePage.POST("/jwt/check", backstagectl.BackstageCheckToken)
+		//驗證 jwt Token
+		backstagePage.GET("/jwt/check", backstagectl.BackstageCheckToken)
 
-		backstagePage.Use(authorityJwtMenuCheck())
+		backstagePage.Use(JwtValidateMiddleware())
+		{
+			//登出
+			backstagePage.POST("/admin/logout", backstagectl.BackstageLogout)
+			//菜單權限列表
+			backstagePage.GET("/menu/list", backstagectl.MenuList)
+		}
+		backstagePage.Use(JwtValidateMiddleware()) //.Use(//驗證頁面權限)
 		{
 			//測試  尚未修正
 			backstagePage.POST("/user/test", backstagectl.UserEdit)
