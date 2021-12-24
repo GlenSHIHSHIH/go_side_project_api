@@ -18,7 +18,7 @@ func GetJwtService() *JwtService {
 }
 
 //刷新 RefreshToken
-func (l *JwtService) RefreshToken(refToken *backstagedto.JwtRefTokenDTO) (interface{}, error) {
+func (j *JwtService) RefreshToken(refToken *backstagedto.JwtRefTokenDTO) (interface{}, error) {
 
 	jwtInfoDTO, err := utils.ValidateAndRefreshTokenCheck(refToken.RefreshToken)
 	if err != nil {
