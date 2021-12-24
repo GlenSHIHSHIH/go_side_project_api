@@ -21,7 +21,7 @@ func GetMenuService() *MenuService {
 	return &MenuService{}
 }
 
-func (M *MenuService) GetMenuListByUserId(id int) (interface{}, error) {
+func (M *MenuService) GetMenuListByUserId(id int) *backstagedto.MenuDTO {
 
 	//get Carousels 先從cache拿 看看有沒有資料
 	var menu []*backstagedto.MenuData
@@ -31,7 +31,7 @@ func (M *MenuService) GetMenuListByUserId(id int) (interface{}, error) {
 	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &menuDTO)
 
 	if err == nil {
-		return menuDTO, nil
+		return menuDTO
 	}
 
 	if err.Error() != db.CACHE_MISS {
@@ -44,6 +44,7 @@ func (M *MenuService) GetMenuListByUserId(id int) (interface{}, error) {
 	sql = sql.Joins("join user_role on users.id=user_role.user_id and user_role.user_id = ?", id)
 	sql = sql.Joins("join role_menu on user_role.role_id= role_menu.role_id")
 	sql = sql.Joins("join menus on role_menu.menu_id = menus.id")
+	sql = sql.Order("parent asc").Order("weight desc")
 	sql.Scan(&menu)
 
 	menuDTO = &backstagedto.MenuDTO{
@@ -56,9 +57,51 @@ func (M *MenuService) GetMenuListByUserId(id int) (interface{}, error) {
 		log.Error(fmt.Sprintf("cache %s not save,%+v", cacheName, err))
 	}
 
-	return menuDTO, nil
+	return menuDTO
 }
 
-func (M *MenuService) GetMenuNestList() {
+func (M *MenuService) GetMenuNestList(id int) (interface{}, error) {
+	menuDTO := M.GetMenuListByUserId(id)
 
+	return NestList(menuDTO.Menu), nil
+}
+
+func NestList(menuData []*backstagedto.MenuData) []*backstagedto.MenuNestDTO {
+	var menuNestList []*backstagedto.MenuNestDTO
+
+	for _, v := range menuData {
+		if v.Feature == "T" {
+			data := &backstagedto.MenuNestDTO{
+				Id:      v.Id,
+				Name:    v.Name,
+				Key:     v.Key,
+				Url:     v.Url,
+				Feature: v.Feature,
+				Parent:  v.Parent,
+			}
+			data.Child = SubList(menuData, data)
+			menuNestList = append(menuNestList, data)
+		}
+	}
+
+	return menuNestList
+}
+
+func SubList(menuData []*backstagedto.MenuData, data *backstagedto.MenuNestDTO) []*backstagedto.MenuNestDTO {
+	var menuNestList []*backstagedto.MenuNestDTO
+	for _, v := range menuData {
+		if v.Parent == data.Id {
+			data := &backstagedto.MenuNestDTO{
+				Id:      v.Id,
+				Name:    v.Name,
+				Key:     v.Key,
+				Url:     v.Url,
+				Feature: v.Feature,
+				Parent:  v.Parent,
+			}
+			data.Child = SubList(menuData, data)
+			menuNestList = append(menuNestList, data)
+		}
+	}
+	return menuNestList
 }

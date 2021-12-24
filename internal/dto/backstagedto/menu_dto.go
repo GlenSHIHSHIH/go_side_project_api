@@ -11,5 +11,14 @@ type MenuData struct {
 	Url     string `json:"url"`
 	Feature string `json:"feature"`
 	Parent  int    `json:"parent"`
-	// Child   *[]MenuDTO `json:"child"`
+}
+
+type MenuNestDTO struct {
+	Id      int            `json:"id"`
+	Name    string         `json:"name"`
+	Key     string         `json:"key"`
+	Url     string         `json:"url"`
+	Feature string         `json:"feature"`
+	Parent  int            `json:"parent"`
+	Child   []*MenuNestDTO `json:"child"`
 }

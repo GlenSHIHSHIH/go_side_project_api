@@ -24,5 +24,5 @@ func GetMenu(c *gin.Context) (controller.Data, error) {
 		return nil, err
 	}
 	menuService := backstage.GetMenuService()
-	return menuService.GetMenuListByUserId(userInfo.Id)
+	return menuService.GetMenuNestList(userInfo.Id)
 }

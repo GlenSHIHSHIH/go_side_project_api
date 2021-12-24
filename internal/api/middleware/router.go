@@ -13,6 +13,13 @@ import (
 func Router(r *gin.Engine) {
 
 	//----------------前台---------------
+
+	//首頁輪播圖
+	r.GET("/carousel/list", forestagectl.CarouselList)
+
+	//相關設定檔
+	r.GET("/forestage/config", forestagectl.BaseForestageConfig)
+
 	//產品相關資料
 	production := r.Group("/production")
 	{
@@ -26,22 +33,19 @@ func Router(r *gin.Engine) {
 		production.GET("/category/list", forestagectl.CategoryList)
 	}
 
-	//首頁輪播圖
-	r.GET("/carousel/list", forestagectl.CarouselList)
-
-	//相關設定檔
-	r.GET("/forestage/config", forestagectl.BaseForestageConfig)
-
 	//----------------後台---------------
 	backstagePage := r.Group("/backstage")
 	{
 		//登入
 		backstagePage.POST("/admin/login", backstagectl.BackstageLogin)
+
 		//刷新 jwt Token
 		backstagePage.POST("/jwt/refreshtoken", backstagectl.BackstageRefreshToken)
+
 		//驗證 jwt Token
 		backstagePage.GET("/jwt/check", backstagectl.BackstageCheckToken)
 
+		//jwt 驗證通過
 		backstagePage.Use(validate.JwtValidate())
 		{
 			//登出
@@ -49,10 +53,12 @@ func Router(r *gin.Engine) {
 			//菜單權限列表
 			backstagePage.GET("/menu/list", backstagectl.MenuList)
 		}
+
+		//jwt 與 頁面權限 驗證通過
 		backstagePage.Use(validate.JwtValidate()).Use(validate.AuthorityMenuValidate())
 		{
 			//測試  尚未修正
-			backstagePage.POST("/user/test", backstagectl.UserEdit)
+			backstagePage.POST("/user/delete", backstagectl.UserEdit)
 			//新增使用者 (未詳細完成)
 			backstagePage.POST("/user/create", backstagectl.UserCreate)
 		}

@@ -2,7 +2,6 @@ package validate
 
 import (
 	"componentmod/internal/api/errorcode"
-	"componentmod/internal/dto/backstagedto"
 	"componentmod/internal/services/api/backstage"
 	"componentmod/internal/utils"
 
@@ -19,16 +18,10 @@ func AuthorityMenuValidate() gin.HandlerFunc {
 		}
 
 		menuService := backstage.GetMenuService()
-		menuList, err := menuService.GetMenuListByUserId(userInfo.Id)
-
-		if err != nil {
-			ErrHandler(c, nil, err)
-			return
-		}
+		menuDTO := menuService.GetMenuListByUserId(userInfo.Id)
 
 		menuIsInUrl := false
 		url := c.Request.URL.Path
-		menuDTO := menuList.(*backstagedto.MenuDTO)
 
 		for _, v := range menuDTO.Menu {
 			if url == v.Url {
