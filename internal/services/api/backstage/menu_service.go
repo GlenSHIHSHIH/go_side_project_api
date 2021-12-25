@@ -21,17 +21,16 @@ func GetMenuService() *MenuService {
 	return &MenuService{}
 }
 
-func (M *MenuService) GetMenuListByUserId(id int) *backstagedto.MenuDTO {
+func (M *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 
 	//get Carousels 先從cache拿 看看有沒有資料
 	var menu []*backstagedto.MenuData
-	var menuDTO *backstagedto.MenuDTO
 	cacheName := CACHE_MENU + "_" + strconv.Itoa(id)
 	cacheRDB := db.GetCacheRDB()
-	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &menuDTO)
+	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &menu)
 
 	if err == nil {
-		return menuDTO
+		return menu
 	}
 
 	if err.Error() != db.CACHE_MISS {
@@ -47,31 +46,33 @@ func (M *MenuService) GetMenuListByUserId(id int) *backstagedto.MenuDTO {
 	sql = sql.Order("parent asc").Order("weight desc")
 	sql.Scan(&menu)
 
-	menuDTO = &backstagedto.MenuDTO{
-		Menu: menu,
-	}
-
-	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, cacheName, menuDTO, CACHE_MENU_TIME)
+	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, cacheName, menu, CACHE_MENU_TIME)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("cache %s not save,%+v", cacheName, err))
 	}
 
-	return menuDTO
+	return menu
 }
 
 func (M *MenuService) GetMenuNestList(id int) (interface{}, error) {
-	menuDTO := M.GetMenuListByUserId(id)
+	menuData := M.GetMenuListByUserId(id)
 
-	return NestList(menuDTO.Menu, 0), nil
+	menuNestData := NestList(menuData, 0)
+
+	menuNestDTO := &backstagedto.MenuDTO{
+		Menu: menuNestData,
+	}
+
+	return menuNestDTO, nil
 }
 
-func NestList(menuData []*backstagedto.MenuData, parent int) []*backstagedto.MenuNestDTO {
-	var menuNestList []*backstagedto.MenuNestDTO
+func NestList(menuData []*backstagedto.MenuData, parent int) []*backstagedto.MenuNestData {
+	var menuNestList []*backstagedto.MenuNestData
 
 	for _, v := range menuData {
 		if v.Parent == parent {
-			data := &backstagedto.MenuNestDTO{
+			data := &backstagedto.MenuNestData{
 				Id:      v.Id,
 				Name:    v.Name,
 				Key:     v.Key,

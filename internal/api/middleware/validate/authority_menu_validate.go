@@ -18,12 +18,12 @@ func AuthorityMenuValidate() gin.HandlerFunc {
 		}
 
 		menuService := backstage.GetMenuService()
-		menuDTO := menuService.GetMenuListByUserId(userInfo.Id)
+		menuData := menuService.GetMenuListByUserId(userInfo.Id)
 
 		menuIsInUrl := false
 		url := c.Request.URL.Path
 
-		for _, v := range menuDTO.Menu {
+		for _, v := range menuData {
 			if url == v.Url {
 				menuIsInUrl = true
 				break
