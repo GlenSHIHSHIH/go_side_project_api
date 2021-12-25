@@ -63,14 +63,14 @@ func (M *MenuService) GetMenuListByUserId(id int) *backstagedto.MenuDTO {
 func (M *MenuService) GetMenuNestList(id int) (interface{}, error) {
 	menuDTO := M.GetMenuListByUserId(id)
 
-	return NestList(menuDTO.Menu), nil
+	return NestList(menuDTO.Menu, 0), nil
 }
 
-func NestList(menuData []*backstagedto.MenuData) []*backstagedto.MenuNestDTO {
+func NestList(menuData []*backstagedto.MenuData, parent int) []*backstagedto.MenuNestDTO {
 	var menuNestList []*backstagedto.MenuNestDTO
 
 	for _, v := range menuData {
-		if v.Feature == "T" {
+		if v.Parent == parent {
 			data := &backstagedto.MenuNestDTO{
 				Id:      v.Id,
 				Name:    v.Name,
@@ -79,29 +79,10 @@ func NestList(menuData []*backstagedto.MenuData) []*backstagedto.MenuNestDTO {
 				Feature: v.Feature,
 				Parent:  v.Parent,
 			}
-			data.Child = SubList(menuData, data)
+			data.Child = NestList(menuData, data.Id)
 			menuNestList = append(menuNestList, data)
 		}
 	}
 
-	return menuNestList
-}
-
-func SubList(menuData []*backstagedto.MenuData, data *backstagedto.MenuNestDTO) []*backstagedto.MenuNestDTO {
-	var menuNestList []*backstagedto.MenuNestDTO
-	for _, v := range menuData {
-		if v.Parent == data.Id {
-			data := &backstagedto.MenuNestDTO{
-				Id:      v.Id,
-				Name:    v.Name,
-				Key:     v.Key,
-				Url:     v.Url,
-				Feature: v.Feature,
-				Parent:  v.Parent,
-			}
-			data.Child = SubList(menuData, data)
-			menuNestList = append(menuNestList, data)
-		}
-	}
 	return menuNestList
 }
