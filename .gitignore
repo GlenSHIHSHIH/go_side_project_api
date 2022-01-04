@@ -6,3 +6,4 @@ docker_db/db_dump/*
 !docker_db/db_dump/readme
 __debug_bin
 docker_build_go/compiler/*
+docker_build_go/.env
