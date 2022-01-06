@@ -52,16 +52,20 @@ func Router(r *gin.Engine) {
 			backstagePage.POST("/admin/logout", backstagectl.BackstageLogout)
 			//菜單權限列表
 			backstagePage.GET("/menu/list", backstagectl.MenuList)
+
+			//jwt 與 頁面權限 驗證通過
+			backstagePage.Use(validate.AuthorityMenuValidate())
+			{
+
+				//user
+				//測試  尚未修正
+				backstagePage.POST("/user/delete", backstagectl.UserEdit)
+				//新增使用者 (未詳細完成)
+				backstagePage.POST("/user/create", backstagectl.UserCreate)
+			}
+
 		}
 
-		//jwt 與 頁面權限 驗證通過
-		backstagePage.Use(validate.JwtValidate()).Use(validate.AuthorityMenuValidate())
-		{
-			//測試  尚未修正
-			backstagePage.POST("/user/delete", backstagectl.UserEdit)
-			//新增使用者 (未詳細完成)
-			backstagePage.POST("/user/create", backstagectl.UserCreate)
-		}
 	}
 
 	//----------------swagger---------------
