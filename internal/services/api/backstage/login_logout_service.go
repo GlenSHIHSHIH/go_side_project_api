@@ -53,9 +53,26 @@ func (l *LoginLogoutService) Login(loginDTO *backstagedto.LoginDTO) (interface{}
 	sqldb.Save(&user)
 
 	res := &backstagedto.LoginResponseDTO{
-		UserInfo:     &backstagedto.JwtInfoDTO{Id: user.Id, Name: user.Name},
+		UserInfo:     &backstagedto.JwtUserInfoDTO{Id: user.Id, Name: user.Name},
 		AuthorityJwt: &backstagedto.JwtTokenDTO{Token: jwtToken, RefreshToken: refreshToken},
 	}
 
 	return res, nil
+}
+
+//登出
+func (l *LoginLogoutService) Logout(userInfo *backstagedto.JwtUserInfoDTO) (interface{}, error) {
+
+	//移除  user navigation (menus) cache
+	menuService := GetMenuService()
+	err := menuService.RemoveMenuCache(userInfo.Id)
+
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.SERVER_ERROR)
+		log.Error(fmt.Sprintf("logout error: %+v", errData))
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SERVER_ERROR)
+	}
+	//移除 其他cache ...
+
+	return nil, nil
 }

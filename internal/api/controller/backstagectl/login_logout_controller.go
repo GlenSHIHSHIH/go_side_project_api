@@ -3,6 +3,7 @@ package backstagectl
 import (
 	"componentmod/internal/api/controller"
 	"componentmod/internal/api/errorcode"
+	"componentmod/internal/api/middleware/validate"
 	"componentmod/internal/dto/backstagedto"
 	"componentmod/internal/services/api/backstage"
 	"componentmod/internal/utils"
@@ -43,6 +44,14 @@ func Login(c *gin.Context) (controller.Data, error) {
 }
 
 func Logout(c *gin.Context) (controller.Data, error) {
-	// userService := backstage.GetUserService()
-	return nil, nil
+
+	userInfo, err := validate.UserInfoValidate(c)
+
+	if err != nil {
+		return nil, err
+	}
+
+	loginLogoutService := backstage.GetLoginLogoutService()
+
+	return loginLogoutService.Logout(userInfo)
 }

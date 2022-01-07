@@ -6,6 +6,6 @@ type LoginDTO struct {
 }
 
 type LoginResponseDTO struct {
-	UserInfo     *JwtInfoDTO  `json:"userInfo"`
-	AuthorityJwt *JwtTokenDTO `json:"authorityJwt"`
+	UserInfo     *JwtUserInfoDTO `json:"userInfo"`
+	AuthorityJwt *JwtTokenDTO    `json:"authorityJwt"`
 }

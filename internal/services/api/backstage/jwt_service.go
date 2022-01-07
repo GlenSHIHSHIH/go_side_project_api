@@ -36,7 +36,7 @@ func (j *JwtService) RefreshToken(refToken *backstagedto.JwtRefTokenDTO) (interf
 	}
 
 	res := &backstagedto.LoginResponseDTO{
-		UserInfo:     &backstagedto.JwtInfoDTO{Id: jwtInfoDTO.Id, Name: jwtInfoDTO.Name},
+		UserInfo:     &backstagedto.JwtUserInfoDTO{Id: jwtInfoDTO.Id, Name: jwtInfoDTO.Name},
 		AuthorityJwt: &backstagedto.JwtTokenDTO{Token: jwtToken, RefreshToken: refreshToken},
 	}
 	return res, nil

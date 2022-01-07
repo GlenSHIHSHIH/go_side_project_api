@@ -1,6 +1,6 @@
 package backstagedto
 
-type JwtInfoDTO struct {
+type JwtUserInfoDTO struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
 }

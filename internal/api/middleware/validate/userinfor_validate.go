@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserInfoValidate(c *gin.Context) (*backstagedto.JwtInfoDTO, error) {
+func UserInfoValidate(c *gin.Context) (*backstagedto.JwtUserInfoDTO, error) {
 
 	JwtInfoDTO, exist := c.Get("userInfo")
 
@@ -17,5 +17,5 @@ func UserInfoValidate(c *gin.Context) (*backstagedto.JwtInfoDTO, error) {
 		return nil, err
 	}
 
-	return JwtInfoDTO.(*backstagedto.JwtInfoDTO), nil
+	return JwtInfoDTO.(*backstagedto.JwtUserInfoDTO), nil
 }

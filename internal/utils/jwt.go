@@ -87,7 +87,7 @@ func generateJwtToken(tokenType string, timeMinute int, userId int, name string)
 	return jwt, nil
 }
 
-func ValidateAndRefreshTokenCheck(token string) (*backstagedto.JwtInfoDTO, error) {
+func ValidateAndRefreshTokenCheck(token string) (*backstagedto.JwtUserInfoDTO, error) {
 	check, jwtInfoDTO, tokenType := validateJwtToke(token)
 	if check == false || jwtInfoDTO == nil || tokenType != refreshToken {
 		return nil, CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.REFRESH_AUTHORIZED_ERROR)
@@ -95,7 +95,7 @@ func ValidateAndRefreshTokenCheck(token string) (*backstagedto.JwtInfoDTO, error
 	return jwtInfoDTO, nil
 }
 
-func ValidateAndTokenCheck(token string) (*backstagedto.JwtInfoDTO, error) {
+func ValidateAndTokenCheck(token string) (*backstagedto.JwtUserInfoDTO, error) {
 	check, jwtInfoDTO, tokenType := validateJwtToke(token)
 	if check == false || jwtInfoDTO == nil || tokenType != jwtToken {
 		return nil, CreateApiErr(errorcode.UNAUTHORIZED_ERROR_CODE, errorcode.UNAUTHORIZED_ERROR)
@@ -106,7 +106,7 @@ func ValidateAndTokenCheck(token string) (*backstagedto.JwtInfoDTO, error) {
 // This is the api to refresh tokens
 // Most of the code is taken from the jwt-go package's sample codes
 // https://godoc.org/github.com/dgrijalva/jwt-go#example-Parse--Hmac
-func validateJwtToke(jwtToken string) (bool, *backstagedto.JwtInfoDTO, string) {
+func validateJwtToke(jwtToken string) (bool, *backstagedto.JwtUserInfoDTO, string) {
 
 	// Parse takes the token string and a function for looking up the key.
 	// The latter is especially useful if you use multiple keys for your application.
@@ -133,7 +133,7 @@ func validateJwtToke(jwtToken string) (bool, *backstagedto.JwtInfoDTO, string) {
 		id, _ := strconv.Atoi(fmt.Sprint(Claims["id"]))
 		name := fmt.Sprint(Claims["name"])
 		tokeynType := fmt.Sprint(Claims["sub"])
-		jwtInfo := &backstagedto.JwtInfoDTO{
+		jwtInfo := &backstagedto.JwtUserInfoDTO{
 			Id:   id,
 			Name: name,
 		}

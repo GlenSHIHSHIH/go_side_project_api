@@ -21,11 +21,21 @@ func GetMenuService() *MenuService {
 	return &MenuService{}
 }
 
+func getMenuNameByUserId(id int) string {
+	return CACHE_MENU + "_" + strconv.Itoa(id)
+}
+
+func (M *MenuService) RemoveMenuCache(id int) error {
+	cacheRDB := db.GetCacheRDB()
+	cacheName := getMenuNameByUserId(id)
+	return cacheRDB.Delete(cacheRDB.Ctx, cacheName)
+}
+
 func (M *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 
 	//get Carousels 先從cache拿 看看有沒有資料
 	var menu []*backstagedto.MenuData
-	cacheName := CACHE_MENU + "_" + strconv.Itoa(id)
+	cacheName := getMenuNameByUserId(id)
 	cacheRDB := db.GetCacheRDB()
 	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &menu)
 
@@ -58,7 +68,7 @@ func (M *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 func (M *MenuService) GetMenuNestList(id int) (interface{}, error) {
 	menuData := M.GetMenuListByUserId(id)
 
-	menuNestData := NestList(menuData, 0)
+	menuNestData := nestList(menuData, 0)
 
 	menuNestDTO := &backstagedto.MenuDTO{
 		Menu: menuNestData,
@@ -67,7 +77,7 @@ func (M *MenuService) GetMenuNestList(id int) (interface{}, error) {
 	return menuNestDTO, nil
 }
 
-func NestList(menuData []*backstagedto.MenuData, parent int) []*backstagedto.MenuNestData {
+func nestList(menuData []*backstagedto.MenuData, parent int) []*backstagedto.MenuNestData {
 	var menuNestList []*backstagedto.MenuNestData
 
 	for _, v := range menuData {
@@ -80,7 +90,7 @@ func NestList(menuData []*backstagedto.MenuData, parent int) []*backstagedto.Men
 				Feature: v.Feature,
 				Parent:  v.Parent,
 			}
-			data.Child = NestList(menuData, data.Id)
+			data.Child = nestList(menuData, data.Id)
 			menuNestList = append(menuNestList, data)
 		}
 	}
