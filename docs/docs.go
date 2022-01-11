@@ -81,7 +81,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/backstagedto.JwtInfoDTO"
+                            "$ref": "#/definitions/backstagedto.JwtUserInfoDTO"
                         }
                     }
                 }
@@ -115,6 +115,44 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/backstagedto.LoginResponseDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/backstage/menu": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage"
+                ],
+                "summary": "Menu View",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.MenuViewListDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/backstage/menu/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage"
+                ],
+                "summary": "Menu List",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.MenuDTO"
                         }
                     }
                 }
@@ -351,19 +389,6 @@ var doc = `{
         }
     },
     "definitions": {
-        "backstagedto.JwtInfoDTO": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer",
-                    "minimum": 6
-                },
-                "name": {
-                    "type": "string",
-                    "minLength": 4
-                }
-            }
-        },
         "backstagedto.JwtRefTokenDTO": {
             "type": "object",
             "properties": {
@@ -379,6 +404,17 @@ var doc = `{
                     "type": "string"
                 },
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "backstagedto.JwtUserInfoDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
                     "type": "string"
                 }
             }
@@ -403,7 +439,90 @@ var doc = `{
                     "$ref": "#/definitions/backstagedto.JwtTokenDTO"
                 },
                 "userInfo": {
-                    "$ref": "#/definitions/backstagedto.JwtInfoDTO"
+                    "$ref": "#/definitions/backstagedto.JwtUserInfoDTO"
+                }
+            }
+        },
+        "backstagedto.MenuDTO": {
+            "type": "object",
+            "properties": {
+                "menu": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/backstagedto.MenuNestData"
+                    }
+                }
+            }
+        },
+        "backstagedto.MenuNestData": {
+            "type": "object",
+            "properties": {
+                "child": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/backstagedto.MenuNestData"
+                    }
+                },
+                "feature": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "backstagedto.MenuViewDTO": {
+            "type": "object",
+            "properties": {
+                "feature": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
+        },
+        "backstagedto.MenuViewListDTO": {
+            "type": "object",
+            "properties": {
+                "menuViewList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/backstagedto.MenuViewDTO"
+                    }
+                },
+                "pageData": {
+                    "$ref": "#/definitions/dto.PageForMultSearchDTO"
                 }
             }
         },
@@ -469,6 +588,32 @@ var doc = `{
                 },
                 "searchCategory": {
                     "type": "string"
+                },
+                "sort": {
+                    "type": "string"
+                },
+                "sortColumn": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PageForMultSearchDTO": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageLimit": {
+                    "type": "integer"
+                },
+                "search": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "sort": {
                     "type": "string"

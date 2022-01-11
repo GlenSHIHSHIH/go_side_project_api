@@ -1,13 +1,4 @@
 definitions:
-  backstagedto.JwtInfoDTO:
-    properties:
-      id:
-        minimum: 6
-        type: integer
-      name:
-        minLength: 4
-        type: string
-    type: object
   backstagedto.JwtRefTokenDTO:
     properties:
       refreshToken:
@@ -18,6 +9,13 @@ definitions:
       refreshToken:
         type: string
       token:
+        type: string
+    type: object
+  backstagedto.JwtUserInfoDTO:
+    properties:
+      id:
+        type: integer
+      name:
         type: string
     type: object
   backstagedto.LoginDTO:
@@ -34,7 +32,61 @@ definitions:
       authorityJwt:
         $ref: '#/definitions/backstagedto.JwtTokenDTO'
       userInfo:
-        $ref: '#/definitions/backstagedto.JwtInfoDTO'
+        $ref: '#/definitions/backstagedto.JwtUserInfoDTO'
+    type: object
+  backstagedto.MenuDTO:
+    properties:
+      menu:
+        items:
+          $ref: '#/definitions/backstagedto.MenuNestData'
+        type: array
+    type: object
+  backstagedto.MenuNestData:
+    properties:
+      child:
+        items:
+          $ref: '#/definitions/backstagedto.MenuNestData'
+        type: array
+      feature:
+        type: string
+      id:
+        type: integer
+      key:
+        type: string
+      name:
+        type: string
+      parent:
+        type: integer
+      url:
+        type: string
+    type: object
+  backstagedto.MenuViewDTO:
+    properties:
+      feature:
+        type: string
+      id:
+        type: integer
+      key:
+        type: string
+      name:
+        type: string
+      parent:
+        type: string
+      status:
+        type: boolean
+      url:
+        type: string
+      weight:
+        type: integer
+    type: object
+  backstagedto.MenuViewListDTO:
+    properties:
+      menuViewList:
+        items:
+          $ref: '#/definitions/backstagedto.MenuViewDTO'
+        type: array
+      pageData:
+        $ref: '#/definitions/dto.PageForMultSearchDTO'
     type: object
   backstagedto.UserDTO:
     properties:
@@ -81,6 +133,23 @@ definitions:
         type: string
       searchCategory:
         type: string
+      sort:
+        type: string
+      sortColumn:
+        type: string
+    type: object
+  dto.PageForMultSearchDTO:
+    properties:
+      count:
+        type: integer
+      page:
+        type: integer
+      pageLimit:
+        type: integer
+      search:
+        additionalProperties:
+          type: string
+        type: object
       sort:
         type: string
       sortColumn:
@@ -283,7 +352,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/backstagedto.JwtInfoDTO'
+            $ref: '#/definitions/backstagedto.JwtUserInfoDTO'
       summary: Backstage CheckToken
       tags:
       - Backstage
@@ -306,6 +375,30 @@ paths:
           schema:
             $ref: '#/definitions/backstagedto.LoginResponseDTO'
       summary: Backstage RefreshToken
+      tags:
+      - Backstage
+  /backstage/menu:
+    get:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.MenuViewListDTO'
+      summary: Menu View
+      tags:
+      - Backstage
+  /backstage/menu/list:
+    get:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.MenuDTO'
+      summary: Menu List
       tags:
       - Backstage
   /backstage/user/create:

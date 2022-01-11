@@ -54,14 +54,27 @@ func Router(r *gin.Engine) {
 			backstagePage.GET("/menu/list", backstagectl.MenuList)
 
 			//jwt 與 頁面權限 驗證通過
-			backstagePage.Use(validate.AuthorityMenuValidate())
+			user := backstagePage.Use(validate.AuthorityMenuValidate())
 			{
 
 				//user
 				//測試  尚未修正
-				backstagePage.POST("/user/delete", backstagectl.UserEdit)
+				user.POST("/user/delete", backstagectl.UserEdit)
 				//新增使用者 (未詳細完成)
-				backstagePage.POST("/user/create", backstagectl.UserCreate)
+				user.POST("/user/create", backstagectl.UserCreate)
+			}
+
+			// 菜單
+			menu := backstagePage.Use(validate.AuthorityMenuValidate())
+			{
+				// 菜單頁面
+				menu.GET("/menu", backstagectl.MenuView)
+				// // 菜單新增
+				// menu.POST("/menu/create", backstagectl.MenuView)
+				// // 菜單修改
+				// menu.PUT("/menu/edit", backstagectl.MenuView)
+				// // 菜單刪除
+				// menu.DELETE("/menu/delete", backstagectl.MenuView)
 			}
 
 		}

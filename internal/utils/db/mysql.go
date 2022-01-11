@@ -13,6 +13,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var (
@@ -74,6 +75,7 @@ func DBInit() {
 	// log.Fatal(dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
+		Logger:                                   logger.Default.LogMode(logger.Silent),
 	})
 
 	if err != nil {

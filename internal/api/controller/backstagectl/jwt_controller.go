@@ -44,7 +44,7 @@ func RefreshToken(c *gin.Context) (controller.Data, error) {
 // @Summary Backstage CheckToken
 // @accept application/json
 // @produce application/json
-// @Success 200 {object} backstagedto.JwtInfoDTO
+// @Success 200 {object} backstagedto.JwtUserInfoDTO
 // @Param string header string true "Authorization"
 // @Router /backstage/jwt/check [post]
 func CheckToken(c *gin.Context) (controller.Data, error) {
