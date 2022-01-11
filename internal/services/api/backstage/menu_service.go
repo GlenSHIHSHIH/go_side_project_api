@@ -54,7 +54,7 @@ func (m *MenuService) getMenuData(p *dto.PageForMultSearchDTO) ([]*backstagedto.
 
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Menu{})
-	sql = sql.Debug()
+
 	//搜尋條件分類
 	if PSearch := p.Search["name"]; PSearch != "" {
 		sql = sql.Where("menus.name LIKE ?", "%"+PSearch+"%")
