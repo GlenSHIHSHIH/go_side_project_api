@@ -134,7 +134,7 @@ func (m *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 	sql := sqldb.Table("users")
 	sql = sql.Joins("join user_role on users.id=user_role.user_id and user_role.user_id = ?", id)
 	sql = sql.Joins("join role_menu on user_role.role_id= role_menu.role_id")
-	sql = sql.Joins("join menus on role_menu.menu_id = menus.id")
+	sql = sql.Joins("join menus on role_menu.menu_id = menus.id and menus.status = true")
 	sql = sql.Order("parent asc").Order("weight desc")
 	sql.Scan(&menu)
 
