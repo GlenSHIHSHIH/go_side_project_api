@@ -40,3 +40,13 @@ type MenuNestData struct {
 	Parent  int             `json:"parent"`
 	Child   []*MenuNestData `json:"child"`
 }
+
+// menu parent 後台下拉選單
+type MenuParentDTO struct {
+	MenuParentList []*MenuParentListDTO `json:"menuParentList"`
+}
+
+type MenuParentListDTO struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}

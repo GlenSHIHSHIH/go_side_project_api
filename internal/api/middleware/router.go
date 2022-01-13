@@ -52,6 +52,8 @@ func Router(r *gin.Engine) {
 			backstagePage.POST("/admin/logout", backstagectl.BackstageLogout)
 			//菜單權限列表
 			backstagePage.GET("/menu/list", backstagectl.MenuList)
+			//拿取父類別 選項
+			backstagePage.GET("/menu/parent/list", backstagectl.MenuParentList)
 
 			//jwt 與 頁面權限 驗證通過
 			user := backstagePage.Use(validate.AuthorityMenuValidate())

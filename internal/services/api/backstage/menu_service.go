@@ -27,6 +27,22 @@ func GetMenuService() *MenuService {
 	return &MenuService{}
 }
 
+func (m *MenuService) GetMenuParentList() (interface{}, error) {
+
+	var menuParentListDTO []*backstagedto.MenuParentListDTO
+	sqldb := db.GetMySqlDB()
+	sql := sqldb.Model(&model.Menu{})
+	// sql = sql.Debug()
+	sql = sql.Where("feature in ?", []string{"T", "P"})
+	sql.Scan(&menuParentListDTO)
+
+	menuParentDTO := &backstagedto.MenuParentDTO{
+		MenuParentList: menuParentListDTO,
+	}
+
+	return menuParentDTO, nil
+}
+
 func (m *MenuService) GetMenuViewList(p *dto.PageForMultSearchDTO) (interface{}, error) {
 
 	//頁數預設 矯正

@@ -15,8 +15,9 @@ import (
 )
 
 var (
-	MenuList = controller.Handler(GetMenu)
-	MenuView = controller.Handler(GetMenuView)
+	MenuList       = controller.Handler(GetMenu)
+	MenuView       = controller.Handler(GetMenuView)
+	MenuParentList = controller.Handler(GetMenuParentList)
 )
 
 // @tags Backstage
@@ -58,4 +59,15 @@ func GetMenuView(c *gin.Context) (controller.Data, error) {
 
 	menuService := backstage.GetMenuService()
 	return menuService.GetMenuViewList(pageForMultSearchDTO)
+}
+
+// @tags Backstage
+// @Summary Menu Parent List
+// @accept application/json
+// @Success 200 {object} backstagedto.MenuDTO
+// @Router /backstage/menu/parent/list [get]
+func GetMenuParentList(c *gin.Context) (controller.Data, error) {
+
+	menuService := backstage.GetMenuService()
+	return menuService.GetMenuParentList()
 }
