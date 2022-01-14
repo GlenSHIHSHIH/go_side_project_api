@@ -44,6 +44,15 @@ func ChangeGjsonArrayToString(Result []gjson.Result) string {
 	return data
 }
 
+// string[] to []interfacer{}
+func ChangeStringToInterfaceArr(old []string) []interface{} {
+	new := make([]interface{}, len(old))
+	for i, v := range old {
+		new[i] = v
+	}
+	return new
+}
+
 // 拿取.env 參數
 func GetEnvParameterByName(pName string) string {
 	err := godotenv.Load()

@@ -4,6 +4,7 @@ import (
 	"componentmod/internal/api/errorcode"
 	"componentmod/internal/services/api/backstage"
 	"componentmod/internal/utils"
+	"regexp"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,7 +25,13 @@ func AuthorityMenuValidate() gin.HandlerFunc {
 		url := c.Request.URL.Path
 
 		for _, v := range menuData {
-			if url == v.Url {
+
+			if v.Url == "" {
+				continue
+			}
+
+			r, _ := regexp.Compile(v.Url)
+			if r.MatchString(url) {
 				menuIsInUrl = true
 				break
 			}

@@ -70,13 +70,13 @@ func Router(r *gin.Engine) {
 			menu := backstagePage.Use(validate.AuthorityMenuValidate())
 			{
 				// 菜單頁面
-				menu.GET("/menu", backstagectl.MenuView)
+				menu.GET("/menu", backstagectl.Menu)
 				// // 菜單新增
 				// menu.POST("/menu/create", backstagectl.MenuView)
 				// // 菜單修改
 				// menu.PUT("/menu/edit", backstagectl.MenuView)
-				// // 菜單刪除
-				// menu.DELETE("/menu/delete", backstagectl.MenuView)
+				// 菜單刪除
+				menu.DELETE("/menu/delete/:id", backstagectl.MenuDestory)
 			}
 
 		}

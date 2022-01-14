@@ -119,13 +119,31 @@ func (m *MenuService) getMenuData(p *dto.PageForMultSearchDTO) ([]*backstagedto.
 	return menuViewDTO, count, nil
 }
 
-func getMenuNameByUserId(id int) string {
+func (m *MenuService) DeleteMenu(ids []string) (interface{}, error) {
+	sqldb := db.GetMySqlDB()
+	sqldb.Where("id in ?", ids).Delete(&model.Menu{})
+
+	//移除全部人的菜單cache
+	redisRDB := db.GetRedisDB()
+	CacheMenuAllUser := getCacheMenuNameByAllUser()
+	keys := redisRDB.Keys(redisRDB.Ctx, CacheMenuAllUser).Val()
+
+	redisRDB.Do(redisRDB.Ctx, "unlink", utils.ChangeStringToInterfaceArr(keys)...)
+	return nil, nil
+}
+
+func getCacheMenuNameByAllUser() string {
+	return CACHE_MENU + "*"
+}
+
+func getCacheMenuNameByUserId(id int) string {
 	return CACHE_MENU + "_" + strconv.Itoa(id)
 }
 
 func (m *MenuService) RemoveMenuCache(id int) error {
 	cacheRDB := db.GetCacheRDB()
-	cacheName := getMenuNameByUserId(id)
+	cacheName := getCacheMenuNameByUserId(id)
+
 	return cacheRDB.Delete(cacheRDB.Ctx, cacheName)
 }
 
@@ -133,7 +151,7 @@ func (m *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 
 	//get Carousels 先從cache拿 看看有沒有資料
 	var menu []*backstagedto.MenuData
-	cacheName := getMenuNameByUserId(id)
+	cacheName := getCacheMenuNameByUserId(id)
 	cacheRDB := db.GetCacheRDB()
 	err := cacheRDB.Get(cacheRDB.Ctx, cacheName, &menu)
 
@@ -150,8 +168,10 @@ func (m *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 	sql := sqldb.Table("users")
 	sql = sql.Joins("join user_role on users.id=user_role.user_id and user_role.user_id = ?", id)
 	sql = sql.Joins("join role_menu on user_role.role_id= role_menu.role_id")
-	sql = sql.Joins("join menus on role_menu.menu_id = menus.id and menus.status = true")
-	sql = sql.Order("parent asc").Order("weight desc")
+	sql = sql.Joins("join roles on roles.id= role_menu.role_id and roles.status = true and roles.deleted is NULL")
+	sql = sql.Joins("join menus on role_menu.menu_id = menus.id and menus.status = true and menus.deleted is NULL")
+	sql = sql.Where("users.deleted is NULL and users.status = true")
+	sql = sql.Order("menus.parent asc").Order("menus.weight desc")
 	sql.Scan(&menu)
 
 	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, cacheName, menu, CACHE_MENU_TIME)
