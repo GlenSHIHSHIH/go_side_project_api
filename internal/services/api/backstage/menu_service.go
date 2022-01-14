@@ -124,16 +124,16 @@ func (m *MenuService) DeleteMenu(ids []string) (interface{}, error) {
 	sqldb.Where("id in ?", ids).Delete(&model.Menu{})
 
 	//移除全部人的菜單cache
-	redisRDB := db.GetRedisDB()
-	CacheMenuAllUser := getCacheMenuNameByAllUser()
-	keys := redisRDB.Keys(redisRDB.Ctx, CacheMenuAllUser).Val()
-
-	redisRDB.Do(redisRDB.Ctx, "unlink", utils.ChangeStringToInterfaceArr(keys)...)
+	removeCacheMenuNameByAllUser()
 	return nil, nil
 }
 
-func getCacheMenuNameByAllUser() string {
-	return CACHE_MENU + "*"
+//移除全部人的菜單cache
+func removeCacheMenuNameByAllUser() {
+	redisRDB := db.GetRedisDB()
+	keys := redisRDB.Keys(redisRDB.Ctx, CACHE_MENU+"*").Val()
+	cacheNames := append([]interface{}{"unlink"}, utils.ChangeStringToInterfaceArr(keys)...)
+	redisRDB.Do(redisRDB.Ctx, cacheNames...)
 }
 
 func getCacheMenuNameByUserId(id int) string {
