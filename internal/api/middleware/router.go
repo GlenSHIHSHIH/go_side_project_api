@@ -71,10 +71,16 @@ func Router(r *gin.Engine) {
 			{
 				// 菜單頁面
 				menu.GET("/menu", backstagectl.Menu)
+
+				// 菜單 id
+				menu.GET("/menu/:id", backstagectl.MenuId)
+
 				// // 菜單新增
 				// menu.POST("/menu/create", backstagectl.MenuView)
+
 				// // 菜單修改
 				// menu.PUT("/menu/edit", backstagectl.MenuView)
+
 				// 菜單刪除
 				menu.DELETE("/menu/delete/:id", backstagectl.MenuDestory)
 			}

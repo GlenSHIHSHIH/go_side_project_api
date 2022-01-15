@@ -110,7 +110,7 @@ func (m *MenuService) getMenuData(p *dto.PageForMultSearchDTO) ([]*backstagedto.
 	}
 
 	var menuViewDTO []*backstagedto.MenuViewDTO
-	sql.Select("menus.id,menus.name,menus.key,menus.url,menus.weight,menus.status," +
+	sql.Select("menus.id,menus.name,menus.key,menus.url,menus.weight,menus.status,menus.remark," +
 		"(case when menus.feature ='T' then '標題' when  menus.feature ='P' then '頁面' when  menus.feature ='F' then '按鍵功能' END)as feature," +
 		"m.name as parent")
 	sql.Joins("left join menus as m on m.id=menus.parent")
@@ -119,9 +119,42 @@ func (m *MenuService) getMenuData(p *dto.PageForMultSearchDTO) ([]*backstagedto.
 	return menuViewDTO, count, nil
 }
 
+func (m *MenuService) GetMenuById(id string) (interface{}, error) {
+
+	var menuViewDTO *backstagedto.MenuViewDTO
+	sqldb := db.GetMySqlDB()
+	sql := sqldb.Model(&model.Menu{})
+	sql = sql.Where("id = ?", id)
+	sql.Find(&menuViewDTO)
+
+	if menuViewDTO.Id == 0 {
+		menuViewDTO = nil
+	}
+
+	menuIdDTO := &backstagedto.MenuIdDTO{
+		MenuById: menuViewDTO,
+	}
+
+	return menuIdDTO, nil
+}
+
+// func (m *MenuService) CreateMenu(ids []string) (interface{}, error) {
+// 	sqldb := db.GetMySqlDB()
+// 	sqldb.Where("id in ?", ids).Delete(&model.Menu{})
+
+// 	//移除全部人的菜單cache
+// 	removeCacheMenuNameByAllUser()
+// 	return nil, nil
+// }
+
 func (m *MenuService) DeleteMenu(ids []string) (interface{}, error) {
+
+	// 從菜單刪除
 	sqldb := db.GetMySqlDB()
 	sqldb.Where("id in ?", ids).Delete(&model.Menu{})
+
+	// 從菜單、權限中繼表單 刪除
+	sqldb.Unscoped().Table("role_menu").Where("menu_id in ?", ids).Delete(&model.Menu{})
 
 	//移除全部人的菜單cache
 	removeCacheMenuNameByAllUser()

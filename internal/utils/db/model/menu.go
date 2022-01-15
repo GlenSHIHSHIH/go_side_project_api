@@ -21,4 +21,5 @@ type Menu struct {
 	UpdateUserId int            `gorm:"comment:修改人員Id;type:int; json:"updateUserId"`                                     //修改人員
 	Deleted      gorm.DeletedAt `gorm:"comment:軟刪除;type:datetime; json:"deleted"`                                        //軟刪除
 	Remark       string         `gorm:"comment:備註;type:varchar(500);default:null" json:"remark"`                         //備註
+	Role         []Role         `gorm:"many2many:role_menu;"`
 }

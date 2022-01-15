@@ -19,23 +19,9 @@ var (
 	MenuList       = controller.Handler(GetMenu)
 	MenuParentList = controller.Handler(GetMenuParentList)
 	Menu           = controller.Handler(Menus)
+	MenuId         = controller.Handler(MenuById)
 	MenuDestory    = controller.Handler(MenuDelete)
 )
-
-// @tags Backstage
-// @Summary Menu List
-// @accept application/json
-// @Success 200 {object} backstagedto.MenuDTO
-// @Router /backstage/menu/list [get]
-func GetMenu(c *gin.Context) (controller.Data, error) {
-
-	userInfo, err := validate.UserInfoValidate(c)
-	if err != nil {
-		return nil, err
-	}
-	menuService := backstage.GetMenuService()
-	return menuService.GetMenuNestList(userInfo.Id)
-}
 
 // @tags Backstage
 // @Summary Menu Delete
@@ -47,6 +33,18 @@ func MenuDelete(c *gin.Context) (controller.Data, error) {
 
 	menuService := backstage.GetMenuService()
 	return menuService.DeleteMenu(ids)
+}
+
+// @tags Backstage
+// @Summary Menu By Id
+// @accept application/json
+// @Success 200 {object} backstagedto.MenuIdDTO
+// @Router /backstage/menu/id [get]
+func MenuById(c *gin.Context) (controller.Data, error) {
+	id := c.Param("id")
+
+	menuService := backstage.GetMenuService()
+	return menuService.GetMenuById(id)
 }
 
 // @tags Backstage
@@ -73,6 +71,21 @@ func Menus(c *gin.Context) (controller.Data, error) {
 
 	menuService := backstage.GetMenuService()
 	return menuService.GetMenuViewList(pageForMultSearchDTO)
+}
+
+// @tags Backstage
+// @Summary Menu List
+// @accept application/json
+// @Success 200 {object} backstagedto.MenuDTO
+// @Router /backstage/menu/list [get]
+func GetMenu(c *gin.Context) (controller.Data, error) {
+
+	userInfo, err := validate.UserInfoValidate(c)
+	if err != nil {
+		return nil, err
+	}
+	menuService := backstage.GetMenuService()
+	return menuService.GetMenuNestList(userInfo.Id)
 }
 
 // @tags Backstage

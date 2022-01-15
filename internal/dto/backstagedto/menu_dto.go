@@ -2,6 +2,10 @@ package backstagedto
 
 import "componentmod/internal/dto"
 
+type MenuIdDTO struct {
+	MenuById *MenuViewDTO `json:"menuById"`
+}
+
 type MenuViewDTO struct {
 	Id      int    `json:"id"`
 	Name    string `json:"name"`
@@ -11,6 +15,7 @@ type MenuViewDTO struct {
 	Parent  string `json:"parent"`
 	Weight  int    `json:"weight"`
 	Status  bool   `json:"status"`
+	Remark  string `json:"remark"`
 }
 
 type MenuViewListDTO struct {
