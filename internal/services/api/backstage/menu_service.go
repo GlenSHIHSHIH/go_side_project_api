@@ -138,14 +138,50 @@ func (m *MenuService) GetMenuById(id string) (interface{}, error) {
 	return menuIdDTO, nil
 }
 
-// func (m *MenuService) CreateMenu(ids []string) (interface{}, error) {
-// 	sqldb := db.GetMySqlDB()
-// 	sqldb.Where("id in ?", ids).Delete(&model.Menu{})
+func (m *MenuService) CreateMenu(userInfo *backstagedto.JwtUserInfoDTO, menuCreateOrEditDTO *backstagedto.MenuCreateOrEditDTO) (interface{}, error) {
 
-// 	//移除全部人的菜單cache
-// 	removeCacheMenuNameByAllUser()
-// 	return nil, nil
-// }
+	parent, _ := strconv.Atoi(menuCreateOrEditDTO.Parent)
+
+	menu := model.Menu{
+		Name:         menuCreateOrEditDTO.Name,
+		Key:          menuCreateOrEditDTO.Key,
+		Url:          menuCreateOrEditDTO.Url,
+		Feature:      menuCreateOrEditDTO.Feature,
+		Weight:       menuCreateOrEditDTO.Weight,
+		Parent:       parent,
+		Status:       menuCreateOrEditDTO.Status,
+		Remark:       menuCreateOrEditDTO.Remark,
+		CreateTime:   time.Now(),
+		CreateUserId: userInfo.Id,
+	}
+	sqldb := db.GetMySqlDB()
+	sqldb.Create(&menu)
+
+	return nil, nil
+}
+func (m *MenuService) EditMenu(userInfo *backstagedto.JwtUserInfoDTO, id string, menuCreateOrEditDTO *backstagedto.MenuCreateOrEditDTO) (interface{}, error) {
+
+	var menu *model.Menu
+	sqldb := db.GetMySqlDB()
+	sql := sqldb.Model(&model.Menu{})
+	sql.Where("id = ?", id).Find(&menu)
+
+	menu.Name = menuCreateOrEditDTO.Name
+	menu.Key = menuCreateOrEditDTO.Key
+	menu.Url = menuCreateOrEditDTO.Url
+	menu.Feature = menuCreateOrEditDTO.Feature
+	menu.Weight = menuCreateOrEditDTO.Weight
+	parent, _ := strconv.Atoi(menuCreateOrEditDTO.Parent)
+	menu.Parent = parent
+	menu.Status = menuCreateOrEditDTO.Status
+	menu.Remark = menuCreateOrEditDTO.Remark
+	menu.UpdateTime = time.Now()
+	menu.UpdateUserId = userInfo.Id
+
+	sqldb.Save(menu)
+
+	return nil, nil
+}
 
 func (m *MenuService) DeleteMenu(ids []string) (interface{}, error) {
 

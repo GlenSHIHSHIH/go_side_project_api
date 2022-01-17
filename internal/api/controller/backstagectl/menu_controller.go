@@ -5,6 +5,7 @@ import (
 	"componentmod/internal/api/errorcode"
 	"componentmod/internal/api/middleware/validate"
 	"componentmod/internal/dto"
+	"componentmod/internal/dto/backstagedto"
 	"componentmod/internal/services/api/backstage"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/log"
@@ -16,12 +17,62 @@ import (
 )
 
 var (
-	MenuList       = controller.Handler(GetMenu)
-	MenuParentList = controller.Handler(GetMenuParentList)
-	Menu           = controller.Handler(Menus)
-	MenuId         = controller.Handler(MenuById)
+	MenuList       = controller.Handler(Menu)
+	MenuParentList = controller.Handler(MenuParent)
+	MenuShow       = controller.Handler(Menus)
+	MenuIndex      = controller.Handler(MenuById)
 	MenuDestory    = controller.Handler(MenuDelete)
+	MenuStore      = controller.Handler(MenuCreate)
+	MenuUpdate     = controller.Handler(MenuEdit)
 )
+
+// @tags Backstage
+// @Summary Menu Create
+// @accept application/json
+// @Success 200 {object}
+// @Router /backstage/menu/create [post]
+func MenuCreate(c *gin.Context) (controller.Data, error) {
+
+	userInfo, err := validate.UserInfoValidate(c)
+	if err != nil {
+		return nil, err
+	}
+
+	var menuCreateOrEditDTO *backstagedto.MenuCreateOrEditDTO
+	err = c.Bind(&menuCreateOrEditDTO)
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
+	}
+
+	menuService := backstage.GetMenuService()
+	return menuService.CreateMenu(userInfo, menuCreateOrEditDTO)
+}
+
+// @tags Backstage
+// @Summary Menu Edit
+// @accept application/json
+// @Success 200 {object}
+// @Router /backstage/menu/edit [put]
+func MenuEdit(c *gin.Context) (controller.Data, error) {
+	userInfo, err := validate.UserInfoValidate(c)
+	if err != nil {
+		return nil, err
+	}
+
+	id := c.Param("id")
+
+	var menuCreateOrEditDTO *backstagedto.MenuCreateOrEditDTO
+	err = c.Bind(&menuCreateOrEditDTO)
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
+	}
+	menuService := backstage.GetMenuService()
+	return menuService.EditMenu(userInfo, id, menuCreateOrEditDTO)
+}
 
 // @tags Backstage
 // @Summary Menu Delete
@@ -78,7 +129,7 @@ func Menus(c *gin.Context) (controller.Data, error) {
 // @accept application/json
 // @Success 200 {object} backstagedto.MenuDTO
 // @Router /backstage/menu/list [get]
-func GetMenu(c *gin.Context) (controller.Data, error) {
+func Menu(c *gin.Context) (controller.Data, error) {
 
 	userInfo, err := validate.UserInfoValidate(c)
 	if err != nil {
@@ -93,7 +144,7 @@ func GetMenu(c *gin.Context) (controller.Data, error) {
 // @accept application/json
 // @Success 200 {object} backstagedto.MenuDTO
 // @Router /backstage/menu/parent/list [get]
-func GetMenuParentList(c *gin.Context) (controller.Data, error) {
+func MenuParent(c *gin.Context) (controller.Data, error) {
 
 	menuService := backstage.GetMenuService()
 	return menuService.GetMenuParentList()

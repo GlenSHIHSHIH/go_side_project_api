@@ -6,6 +6,17 @@ type MenuIdDTO struct {
 	MenuById *MenuViewDTO `json:"menuById"`
 }
 
+type MenuCreateOrEditDTO struct {
+	Name    string `json:"name"`
+	Key     string `json:"key"`
+	Url     string `json:"url"`
+	Feature string `json:"feature"`
+	Parent  string `json:"parent"`
+	Weight  int    `json:"weight"`
+	Status  bool   `json:"status"`
+	Remark  string `json:"remark"`
+}
+
 type MenuViewDTO struct {
 	Id      int    `json:"id"`
 	Name    string `json:"name"`
