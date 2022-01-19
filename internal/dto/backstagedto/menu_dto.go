@@ -3,7 +3,7 @@ package backstagedto
 import "componentmod/internal/dto"
 
 type MenuIdDTO struct {
-	MenuById *MenuViewDTO `json:"menuById"`
+	MenuById *MenuViewData `json:"menuById"`
 }
 
 type MenuCreateOrEditDTO struct {
@@ -17,7 +17,7 @@ type MenuCreateOrEditDTO struct {
 	Remark  string `json:"remark"`
 }
 
-type MenuViewDTO struct {
+type MenuViewData struct {
 	Id      int    `json:"id"`
 	Name    string `json:"name"`
 	Key     string `json:"key"`
@@ -30,7 +30,7 @@ type MenuViewDTO struct {
 }
 
 type MenuViewListDTO struct {
-	MenuViewList []*MenuViewDTO            `json:"menuViewList"`
+	MenuViewList []*MenuViewData           `json:"menuViewList"`
 	PageData     *dto.PageForMultSearchDTO `json:"pageData"`
 }
 

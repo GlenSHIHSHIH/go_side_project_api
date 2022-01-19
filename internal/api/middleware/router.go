@@ -84,6 +84,24 @@ func Router(r *gin.Engine) {
 				// 菜單刪除
 				menu.DELETE("/menu/delete/:id", backstagectl.MenuDestory)
 			}
+			// 角色
+			role := backstagePage.Use(validate.AuthorityMenuValidate())
+			{
+				// 角色頁面
+				role.GET("/role", backstagectl.RoleShow)
+
+				// 角色 id
+				role.GET("/role/:id", backstagectl.RoleIndex)
+
+				// // 角色新增
+				// role.POST("/role/create", backstagectl.RoleStore)
+
+				// // 角色修改
+				// role.PUT("/role/edit/:id", backstagectl.RoleUpdate)
+
+				// 角色刪除
+				role.DELETE("/role/delete/:id", backstagectl.RoleDestory)
+			}
 
 		}
 

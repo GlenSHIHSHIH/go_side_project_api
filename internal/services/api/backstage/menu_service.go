@@ -11,7 +11,6 @@ import (
 	"componentmod/internal/utils/log"
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -66,7 +65,7 @@ func (m *MenuService) GetMenuViewList(p *dto.PageForMultSearchDTO) (interface{},
 	return data, nil
 }
 
-func (m *MenuService) getMenuData(p *dto.PageForMultSearchDTO) ([]*backstagedto.MenuViewDTO, int64, error) {
+func (m *MenuService) getMenuData(p *dto.PageForMultSearchDTO) ([]*backstagedto.MenuViewData, int64, error) {
 
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Menu{})
@@ -100,16 +99,16 @@ func (m *MenuService) getMenuData(p *dto.PageForMultSearchDTO) ([]*backstagedto.
 	sql = sql.Limit(p.PageLimit).Offset((p.Page - 1) * p.PageLimit)
 
 	//排序 依照所選欄位
-	if p.SortColumn != "" && (strings.EqualFold(p.Sort, "asc") || strings.EqualFold(p.Sort, "desc")) {
-		scolumne := p.SortColumn
-		if scolumne == "" {
-			return nil, 0, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
-		}
-
-		sql = sql.Order(fmt.Sprintf("%v %v", scolumne, p.Sort))
+	baseApiService := api.GetBaseApiService()
+	if p.SortColumn == "" || !baseApiService.Check(p.Sort) {
+		return nil, 0, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
 	}
 
-	var menuViewDTO []*backstagedto.MenuViewDTO
+	if p.SortColumn != "" && baseApiService.Check(p.Sort) {
+		sql = sql.Order(fmt.Sprintf("%v %v", p.SortColumn, p.Sort))
+	}
+
+	var menuViewDTO []*backstagedto.MenuViewData
 	sql.Select("menus.id,menus.name,menus.key,menus.url,menus.weight,menus.status,menus.remark," +
 		"(case when menus.feature ='T' then '標題' when  menus.feature ='P' then '頁面' when  menus.feature ='F' then '按鍵功能' END)as feature," +
 		"m.name as parent")
@@ -121,7 +120,7 @@ func (m *MenuService) getMenuData(p *dto.PageForMultSearchDTO) ([]*backstagedto.
 
 func (m *MenuService) GetMenuById(id string) (interface{}, error) {
 
-	var menuViewDTO *backstagedto.MenuViewDTO
+	var menuViewDTO *backstagedto.MenuViewData
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Menu{})
 	sql = sql.Where("id = ?", id)
@@ -193,12 +192,12 @@ func (m *MenuService) DeleteMenu(ids []string) (interface{}, error) {
 	sqldb.Unscoped().Table("role_menu").Where("menu_id in ?", ids).Delete(&model.Menu{})
 
 	//移除全部人的菜單cache
-	removeCacheMenuNameByAllUser()
+	m.RemoveCacheMenuNameByAllUser()
 	return nil, nil
 }
 
 //移除全部人的菜單cache
-func removeCacheMenuNameByAllUser() {
+func (m *MenuService) RemoveCacheMenuNameByAllUser() {
 	redisRDB := db.GetRedisDB()
 	keys := redisRDB.Keys(redisRDB.Ctx, CACHE_MENU+"*").Val()
 	cacheNames := append([]interface{}{"unlink"}, utils.ChangeStringToInterfaceArr(keys)...)

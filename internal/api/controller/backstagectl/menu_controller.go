@@ -4,7 +4,6 @@ import (
 	"componentmod/internal/api/controller"
 	"componentmod/internal/api/errorcode"
 	"componentmod/internal/api/middleware/validate"
-	"componentmod/internal/dto"
 	"componentmod/internal/dto/backstagedto"
 	"componentmod/internal/services/api/backstage"
 	"componentmod/internal/utils"
@@ -105,13 +104,8 @@ func MenuById(c *gin.Context) (controller.Data, error) {
 // @Router /backstage/menu [get]
 func Menus(c *gin.Context) (controller.Data, error) {
 	search := c.QueryMap("search")
-	var pageForMultSearchDTO = &dto.PageForMultSearchDTO{
-		Page:       1,
-		PageLimit:  20,
-		Sort:       "asc",
-		SortColumn: "id",
-		Search:     search,
-	}
+	var pageForMultSearchDTO = GetPageMultSearchDefaultDTO()
+	pageForMultSearchDTO.Search = search
 
 	err := c.Bind(pageForMultSearchDTO)
 	if err != nil {

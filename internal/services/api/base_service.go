@@ -1,5 +1,7 @@
 package api
 
+import "strings"
+
 type BaseApiService struct {
 }
 
@@ -25,4 +27,12 @@ func (b *BaseApiService) PageParameter(page, pageLimit, defaultPage, defaultPage
 		defaultPageLimit = pageLimit
 	}
 	return defaultPage, defaultPageLimit
+}
+
+func (b *BaseApiService) Check(sort string) bool {
+
+	if strings.EqualFold(sort, "asc") || strings.EqualFold(sort, "desc") {
+		return true
+	}
+	return false
 }
