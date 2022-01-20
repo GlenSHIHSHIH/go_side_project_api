@@ -3,7 +3,7 @@ package config
 import "github.com/urfave/cli/v2"
 
 var (
-	WebHost, WebPort, ImgUrl, WebEnv string
+	WebHost, WebPort, ImgUrl, WebEnv, WebGin string
 )
 
 //web 參數設定
@@ -35,5 +35,12 @@ var WebConfig = []cli.Flag{
 		Value:       "develop",
 		Destination: &WebEnv,
 		EnvVars:     []string{"web_env"},
+	},
+	&cli.StringFlag{
+		Name:        "web-gin",
+		Usage:       "web gin",
+		Value:       "debug",
+		Destination: &WebGin,
+		EnvVars:     []string{"web_gin"},
 	},
 }

@@ -50,6 +50,8 @@ func Router(r *gin.Engine) {
 		{
 			//登出
 			backstagePage.POST("/admin/logout", backstagectl.BackstageLogout)
+			//菜單all權限列表
+			backstagePage.GET("/menu/all", backstagectl.MenuTreeList)
 			//菜單權限列表
 			backstagePage.GET("/menu/list", backstagectl.MenuList)
 			//拿取父類別 選項

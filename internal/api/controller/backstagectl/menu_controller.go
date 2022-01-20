@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	MenuTreeList   = controller.Handler(MenuTree)
 	MenuList       = controller.Handler(Menu)
 	MenuParentList = controller.Handler(MenuParent)
 	MenuShow       = controller.Handler(Menus)
@@ -129,6 +130,16 @@ func Menu(c *gin.Context) (controller.Data, error) {
 	if err != nil {
 		return nil, err
 	}
+	menuService := backstage.GetMenuService()
+	return menuService.GetMenuNestList(userInfo.Id)
+}
+
+// @tags Backstage
+// @Summary Menu Tree List
+// @accept application/json
+// @Success 200 {object} backstagedto.MenuDTO
+// @Router /backstage/menu/parent/list [get]
+func MenuTree(c *gin.Context) (controller.Data, error) {
 	menuService := backstage.GetMenuService()
 	return menuService.GetMenuNestList(userInfo.Id)
 }

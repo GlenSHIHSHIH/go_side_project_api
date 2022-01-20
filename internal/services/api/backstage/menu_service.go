@@ -251,6 +251,18 @@ func (m *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 	return menu
 }
 
+func (m *MenuService) GetMenuAllList(id int) (interface{}, error) {
+	menuData := m.GetMenuListByUserId(id)
+
+	menuNestData := nestList(menuData, 0)
+
+	menuNestDTO := &backstagedto.MenuDTO{
+		Menu: menuNestData,
+	}
+
+	return menuNestDTO, nil
+}
+
 func (m *MenuService) GetMenuNestList(id int) (interface{}, error) {
 	menuData := m.GetMenuListByUserId(id)
 

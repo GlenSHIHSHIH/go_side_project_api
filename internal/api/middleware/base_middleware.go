@@ -21,6 +21,9 @@ import (
 // var ginEngine GinEngine
 
 func WebApiInit() {
+
+	gin.SetMode(config.WebGin)
+
 	r := gin.New()
 
 	//middleware

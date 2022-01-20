@@ -1,4 +1,5 @@
 #!/bin/bash
+#go setting
 
 #db setting
 export db_host="172.21.0.2"
@@ -21,6 +22,8 @@ export web_env="production"
 export jwt_secret="f9946c78-f48a-435d-acc4-4bf469ef2680"
 export jwt_token_time="480"
 export jwt_ref_token_time="1440"
+
+export web_gin="release"
 
 nohup ./golang_file shopee-data-to-db &
 nohup ./golang_file shopee-api &
