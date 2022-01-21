@@ -251,10 +251,14 @@ func (m *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 	return menu
 }
 
-func (m *MenuService) GetMenuAllList(id int) (interface{}, error) {
-	menuData := m.GetMenuListByUserId(id)
+func (m *MenuService) GetMenuAllList() (interface{}, error) {
 
-	menuNestData := nestList(menuData, 0)
+	var menu []*backstagedto.MenuData
+	sqldb := db.GetMySqlDB()
+	sql := sqldb.Model(&model.Menu{})
+	sql.Find(&menu)
+
+	menuNestData := nestList(menu, 0)
 
 	menuNestDTO := &backstagedto.MenuDTO{
 		Menu: menuNestData,

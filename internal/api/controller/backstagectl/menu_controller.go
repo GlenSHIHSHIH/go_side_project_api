@@ -141,7 +141,7 @@ func Menu(c *gin.Context) (controller.Data, error) {
 // @Router /backstage/menu/parent/list [get]
 func MenuTree(c *gin.Context) (controller.Data, error) {
 	menuService := backstage.GetMenuService()
-	return menuService.GetMenuNestList(userInfo.Id)
+	return menuService.GetMenuAllList()
 }
 
 // @tags Backstage

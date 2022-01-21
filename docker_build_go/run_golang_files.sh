@@ -23,6 +23,7 @@ export jwt_secret="f9946c78-f48a-435d-acc4-4bf469ef2680"
 export jwt_token_time="480"
 export jwt_ref_token_time="1440"
 
+#gin setting
 export web_gin="release"
 
 nohup ./golang_file shopee-data-to-db &
