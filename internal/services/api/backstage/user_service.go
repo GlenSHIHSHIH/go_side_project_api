@@ -62,7 +62,7 @@ func (u *UserService) GetUserByLoginName(loginName string) *model.User {
 	var user *model.User
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.User{})
-	sql.Where("login_name = ?", loginName).Find(&user)
+	sql.Where("login_name = ?", loginName).Where("status = ?", true).Find(&user)
 
 	if user.Id == 0 {
 		user = nil
