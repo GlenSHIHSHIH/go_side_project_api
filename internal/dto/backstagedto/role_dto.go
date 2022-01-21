@@ -16,6 +16,7 @@ type RoleCreateOrEditDTO struct {
 	Weight int    `json:"weight"`
 	Status bool   `json:"status"`
 	Remark string `json:"remark"`
+	Select []int  `json:"select"`
 }
 
 type RoleViewData struct {

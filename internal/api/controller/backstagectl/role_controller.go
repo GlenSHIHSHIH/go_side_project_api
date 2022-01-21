@@ -3,6 +3,8 @@ package backstagectl
 import (
 	"componentmod/internal/api/controller"
 	"componentmod/internal/api/errorcode"
+	"componentmod/internal/api/middleware/validate"
+	"componentmod/internal/dto/backstagedto"
 	"componentmod/internal/services/api/backstage"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/log"
@@ -17,8 +19,8 @@ var (
 	RoleShow    = controller.Handler(Roles)
 	RoleIndex   = controller.Handler(RoleById)
 	RoleDestory = controller.Handler(RoleDelete)
-	// RoleStore   = controller.Handler(RoleCreate)
-	// RoleUpdate  = controller.Handler(RoleEdit)
+	RoleStore   = controller.Handler(RoleCreate)
+	RoleUpdate  = controller.Handler(RoleEdit)
 )
 
 //table list
@@ -72,50 +74,50 @@ func RoleDelete(c *gin.Context) (controller.Data, error) {
 	return roleService.DeleteRole(ids)
 }
 
-// // @tags Backstage
-// // @Summary Role Create
-// // @accept application/json
-// // @Success 200 {object}
-// // @Router /backstage/role/create [post]
-// func RoleCreate(c *gin.Context) (controller.Data, error) {
+// @tags Backstage
+// @Summary Role Create
+// @accept application/json
+// @Success 200 {object}
+// @Router /backstage/role/create [post]
+func RoleCreate(c *gin.Context) (controller.Data, error) {
 
-// 	userInfo, err := validate.UserInfoValidate(c)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	userInfo, err := validate.UserInfoValidate(c)
+	if err != nil {
+		return nil, err
+	}
 
-// 	var roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO
-// 	err = c.Bind(&roleCreateOrEditDTO)
-// 	if err != nil {
-// 		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
-// 		log.Error(fmt.Sprintf("%+v", errData))
-// 		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
-// 	}
+	var roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO
+	err = c.Bind(&roleCreateOrEditDTO)
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
+	}
 
-// 	roleService := backstage.GetRoleService()
-// 	return roleService.CreateRole(userInfo, roleCreateOrEditDTO)
-// }
+	roleService := backstage.GetRoleService()
+	return roleService.CreateRole(userInfo, roleCreateOrEditDTO)
+}
 
-// // @tags Backstage
-// // @Summary Role Edit
-// // @accept application/json
-// // @Success 200 {object}
-// // @Router /backstage/role/edit [put]
-// func RoleEdit(c *gin.Context) (controller.Data, error) {
-// 	userInfo, err := validate.UserInfoValidate(c)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+// @tags Backstage
+// @Summary Role Edit
+// @accept application/json
+// @Success 200 {object}
+// @Router /backstage/role/edit/id [put]
+func RoleEdit(c *gin.Context) (controller.Data, error) {
+	userInfo, err := validate.UserInfoValidate(c)
+	if err != nil {
+		return nil, err
+	}
 
-// 	id := c.Param("id")
+	id := c.Param("id")
 
-// 	var roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO
-// 	err = c.Bind(&roleCreateOrEditDTO)
-// 	if err != nil {
-// 		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
-// 		log.Error(fmt.Sprintf("%+v", errData))
-// 		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
-// 	}
-// 	roleService := backstage.GetRoleService()
-// 	return roleService.EditRole(userInfo, id, roleCreateOrEditDTO)
-// }
+	var roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO
+	err = c.Bind(&roleCreateOrEditDTO)
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
+	}
+	roleService := backstage.GetRoleService()
+	return roleService.EditRole(userInfo, id, roleCreateOrEditDTO)
+}

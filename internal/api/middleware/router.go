@@ -50,10 +50,13 @@ func Router(r *gin.Engine) {
 		{
 			//登出
 			backstagePage.POST("/admin/logout", backstagectl.BackstageLogout)
+
 			//菜單all權限列表
 			backstagePage.GET("/menu/all", backstagectl.MenuTreeList)
+
 			//菜單權限列表
 			backstagePage.GET("/menu/list", backstagectl.MenuList)
+
 			//拿取父類別 選項
 			backstagePage.GET("/menu/parent/list", backstagectl.MenuParentList)
 
@@ -95,11 +98,11 @@ func Router(r *gin.Engine) {
 				// 角色 id
 				role.GET("/role/:id", backstagectl.RoleIndex)
 
-				// // 角色新增
-				// role.POST("/role/create", backstagectl.RoleStore)
+				// 角色新增
+				role.POST("/role/create", backstagectl.RoleStore)
 
-				// // 角色修改
-				// role.PUT("/role/edit/:id", backstagectl.RoleUpdate)
+				// 角色修改
+				role.PUT("/role/edit/:id", backstagectl.RoleUpdate)
 
 				// 角色刪除
 				role.DELETE("/role/delete/:id", backstagectl.RoleDestory)

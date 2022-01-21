@@ -9,6 +9,8 @@ import (
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
 	"fmt"
+	"strconv"
+	"time"
 )
 
 type RoleService struct {
@@ -90,8 +92,15 @@ func (r *RoleService) GetRoleById(id string) (interface{}, error) {
 	sql = sql.Where("id = ?", id)
 	sql.Find(&roleCreateOrEditDTO)
 
+	var menu_id []int
+	sql = sqldb.Table("role_menu")
+	sql = sql.Where("role_id = ?", id)
+	sql.Pluck("menu_id", &menu_id)
+
 	if roleCreateOrEditDTO.Id == 0 {
 		roleCreateOrEditDTO = nil
+	} else {
+		roleCreateOrEditDTO.Select = menu_id
 	}
 
 	roleIdDTO := &backstagedto.RoleIdDTO{
@@ -117,47 +126,65 @@ func (r *RoleService) DeleteRole(ids []string) (interface{}, error) {
 	return nil, nil
 }
 
-// func (r *RoleService) CreateRole(userInfo *backstagedto.JwtUserInfoDTO, roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO) (interface{}, error) {
+func (r *RoleService) CreateRole(userInfo *backstagedto.JwtUserInfoDTO, roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO) (interface{}, error) {
 
-// 	parent, _ := strconv.Atoi(roleCreateOrEditDTO.Parent)
+	role := model.Role{
+		Name:         roleCreateOrEditDTO.Name,
+		Key:          roleCreateOrEditDTO.Key,
+		Weight:       roleCreateOrEditDTO.Weight,
+		Status:       roleCreateOrEditDTO.Status,
+		Remark:       roleCreateOrEditDTO.Remark,
+		CreateTime:   time.Now(),
+		CreateUserId: userInfo.Id,
+	}
+	sqldb := db.GetMySqlDB()
+	sqldb.Create(&role)
 
-// 	role := model.Role{
-// 		Name:         roleCreateOrEditDTO.Name,
-// 		Key:          roleCreateOrEditDTO.Key,
-// 		Url:          roleCreateOrEditDTO.Url,
-// 		Feature:      roleCreateOrEditDTO.Feature,
-// 		Weight:       roleCreateOrEditDTO.Weight,
-// 		Parent:       parent,
-// 		Status:       roleCreateOrEditDTO.Status,
-// 		Remark:       roleCreateOrEditDTO.Remark,
-// 		CreateTime:   time.Now(),
-// 		CreateUserId: userInfo.Id,
-// 	}
-// 	sqldb := db.GetMySqlDB()
-// 	sqldb.Create(&role)
+	//儲存 role_menu list
+	storeRoleMenuTable(role.Id, roleCreateOrEditDTO.Select)
 
-// 	return nil, nil
-// }
-// func (r *RoleService) EditRole(userInfo *backstagedto.JwtUserInfoDTO, id string, roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO) (interface{}, error) {
+	return nil, nil
+}
 
-// 	var role *model.Role
-// 	sqldb := db.GetMySqlDB()
-// 	sql := sqldb.Model(&model.Role{})
-// 	sql.Where("id = ?", id).Find(&role)
+func (r *RoleService) EditRole(userInfo *backstagedto.JwtUserInfoDTO, id string, roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO) (interface{}, error) {
 
-// 	role.Name = roleCreateOrEditDTO.Name
-// 	role.Key = roleCreateOrEditDTO.Key
-// 	role.Url = roleCreateOrEditDTO.Url
-// 	role.Feature = roleCreateOrEditDTO.Feature
-// 	role.Weight = roleCreateOrEditDTO.Weight
-// 	parent, _ := strconv.Atoi(roleCreateOrEditDTO.Parent)
-// 	role.Parent = parent
-// 	role.Status = roleCreateOrEditDTO.Status
-// 	role.Remark = roleCreateOrEditDTO.Remark
-// 	role.UpdateTime = time.Now()
-// 	role.UpdateUserId = userInfo.Id
+	var role *model.Role
+	sqldb := db.GetMySqlDB()
+	sql := sqldb.Model(&model.Role{})
+	sql.Where("id = ?", id).Find(&role)
 
-// 	sqldb.Save(role)
+	role.Name = roleCreateOrEditDTO.Name
+	role.Key = roleCreateOrEditDTO.Key
+	role.Weight = roleCreateOrEditDTO.Weight
+	role.Status = roleCreateOrEditDTO.Status
+	role.Remark = roleCreateOrEditDTO.Remark
+	role.UpdateTime = time.Now()
+	role.UpdateUserId = userInfo.Id
 
-// 	return nil, nil
-// }
+	sqldb.Save(role)
+
+	//儲存 role_menu list
+	roleId, _ := strconv.Atoi(id)
+	storeRoleMenuTable(roleId, roleCreateOrEditDTO.Select)
+
+	return nil, nil
+}
+
+func storeRoleMenuTable(id int, selected []int) {
+	sqldb := db.GetMySqlDB()
+	sqldb.Unscoped().Table("role_menu").Where("role_id = ?", id).Delete(&model.Role{})
+
+	var roleMenuArr []map[string]interface{}
+	for _, v := range selected {
+		roleMenu := map[string]interface{}{"role_id": id, "menu_id": v}
+		roleMenuArr = append(roleMenuArr, roleMenu)
+	}
+
+	fmt.Println("roleMenuArr")
+	fmt.Println(roleMenuArr)
+
+	sql := sqldb.Table("role_menu")
+	sql = sql.Debug()
+	sql.Create(roleMenuArr)
+
+}
