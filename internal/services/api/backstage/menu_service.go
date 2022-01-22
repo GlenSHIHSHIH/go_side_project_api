@@ -234,11 +234,14 @@ func (m *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 	//get menu (many to many)
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Table("users")
+	sql = sql.Debug()
+
 	sql = sql.Joins("join user_role on users.id=user_role.user_id and user_role.user_id = ?", id)
 	sql = sql.Joins("join role_menu on user_role.role_id= role_menu.role_id")
 	sql = sql.Joins("join roles on roles.id= role_menu.role_id and roles.status = true and roles.deleted is NULL")
 	sql = sql.Joins("join menus on role_menu.menu_id = menus.id and menus.status = true and menus.deleted is NULL")
 	sql = sql.Where("users.deleted is NULL and users.status = true")
+	sql = sql.Select("distinct(menus.id),menus.name,menus.key,menus.url,menus.feature,menus.parent,menus.weight ")
 	sql = sql.Order("menus.parent asc").Order("menus.weight desc")
 	sql.Scan(&menu)
 
