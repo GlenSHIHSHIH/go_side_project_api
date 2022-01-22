@@ -26,10 +26,11 @@ var (
 	MenuUpdate     = controller.Handler(MenuEdit)
 )
 
-// @tags Backstage
+// @tags Backstage-Menu
 // @Summary Menu Create
 // @accept application/json
-// @Success 200 {object}
+// @Success 200
+// @Param json body backstagedto.MenuCreateOrEditDTO true "json"
 // @Router /backstage/menu/create [post]
 func MenuCreate(c *gin.Context) (controller.Data, error) {
 
@@ -50,11 +51,13 @@ func MenuCreate(c *gin.Context) (controller.Data, error) {
 	return menuService.CreateMenu(userInfo, menuCreateOrEditDTO)
 }
 
-// @tags Backstage
+// @tags Backstage-Menu
 // @Summary Menu Edit
 // @accept application/json
-// @Success 200 {object}
-// @Router /backstage/menu/edit [put]
+// @Success 200
+// @param id path int true "id"
+// @Param json body backstagedto.MenuCreateOrEditDTO true "json"
+// @Router /backstage/menu/edit/{id} [put]
 func MenuEdit(c *gin.Context) (controller.Data, error) {
 	userInfo, err := validate.UserInfoValidate(c)
 	if err != nil {
@@ -74,11 +77,12 @@ func MenuEdit(c *gin.Context) (controller.Data, error) {
 	return menuService.EditMenu(userInfo, id, menuCreateOrEditDTO)
 }
 
-// @tags Backstage
+// @tags Backstage-Menu
 // @Summary Menu Delete
 // @accept application/json
-// @Success 200 {object}
-// @Router /backstage/menu/delete [delete]
+// @Success 200
+// @param id path int true "id"
+// @Router /backstage/menu/delete/{id} [delete]
 func MenuDelete(c *gin.Context) (controller.Data, error) {
 	ids := strings.Split(c.Param("id"), ",")
 
@@ -86,11 +90,12 @@ func MenuDelete(c *gin.Context) (controller.Data, error) {
 	return menuService.DeleteMenu(ids)
 }
 
-// @tags Backstage
+// @tags Backstage-Menu
 // @Summary Menu By Id
 // @accept application/json
 // @Success 200 {object} backstagedto.MenuIdDTO
-// @Router /backstage/menu/id [get]
+// @param id path int true "id"
+// @Router /backstage/menu/{id} [get]
 func MenuById(c *gin.Context) (controller.Data, error) {
 	id := c.Param("id")
 
@@ -98,10 +103,16 @@ func MenuById(c *gin.Context) (controller.Data, error) {
 	return menuService.GetMenuById(id)
 }
 
-// @tags Backstage
+// @tags Backstage-Menu
 // @Summary Menu View
 // @accept application/json
 // @Success 200 {object} backstagedto.MenuViewListDTO
+// @Param page query int true "int default" default(1)
+// @Param pageLimit query int true "int enums" Enums(15,20,30,40,50)
+// @Param sort query string true "string enums" Enums(asc,desc)
+// @Param sortColumn query string true "string enums" Enums(id,key,url)
+// @Param search query string false "string default" default()
+// @Param searchCategory query string false "string default" default()
 // @Router /backstage/menu [get]
 func Menus(c *gin.Context) (controller.Data, error) {
 	search := c.QueryMap("search")
@@ -119,7 +130,7 @@ func Menus(c *gin.Context) (controller.Data, error) {
 	return menuService.GetMenuViewList(pageForMultSearchDTO)
 }
 
-// @tags Backstage
+// @tags Backstage-Menu
 // @Summary Menu List
 // @accept application/json
 // @Success 200 {object} backstagedto.MenuDTO
@@ -134,7 +145,7 @@ func Menu(c *gin.Context) (controller.Data, error) {
 	return menuService.GetMenuNestList(userInfo.Id)
 }
 
-// @tags Backstage
+// @tags Backstage-Menu
 // @Summary Menu Tree List
 // @accept application/json
 // @Success 200 {object} backstagedto.MenuDTO
@@ -144,7 +155,7 @@ func MenuTree(c *gin.Context) (controller.Data, error) {
 	return menuService.GetMenuAllList()
 }
 
-// @tags Backstage
+// @tags Backstage-Menu
 // @Summary Menu Parent List
 // @accept application/json
 // @Success 200 {object} backstagedto.MenuDTO

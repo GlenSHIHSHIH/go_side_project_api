@@ -34,12 +34,36 @@ definitions:
       userInfo:
         $ref: '#/definitions/backstagedto.JwtUserInfoDTO'
     type: object
+  backstagedto.MenuCreateOrEditDTO:
+    properties:
+      feature:
+        type: string
+      key:
+        type: string
+      name:
+        type: string
+      parent:
+        type: string
+      remark:
+        type: string
+      status:
+        type: boolean
+      url:
+        type: string
+      weight:
+        type: integer
+    type: object
   backstagedto.MenuDTO:
     properties:
       menu:
         items:
           $ref: '#/definitions/backstagedto.MenuNestData'
         type: array
+    type: object
+  backstagedto.MenuIdDTO:
+    properties:
+      menuById:
+        $ref: '#/definitions/backstagedto.MenuViewData'
     type: object
   backstagedto.MenuNestData:
     properties:
@@ -60,7 +84,7 @@ definitions:
       url:
         type: string
     type: object
-  backstagedto.MenuViewDTO:
+  backstagedto.MenuViewData:
     properties:
       feature:
         type: string
@@ -71,6 +95,8 @@ definitions:
       name:
         type: string
       parent:
+        type: string
+      remark:
         type: string
       status:
         type: boolean
@@ -83,10 +109,66 @@ definitions:
     properties:
       menuViewList:
         items:
-          $ref: '#/definitions/backstagedto.MenuViewDTO'
+          $ref: '#/definitions/backstagedto.MenuViewData'
         type: array
       pageData:
         $ref: '#/definitions/dto.PageForMultSearchDTO'
+    type: object
+  backstagedto.RoleCreateOrEditDTO:
+    properties:
+      id:
+        type: integer
+      key:
+        type: string
+      name:
+        type: string
+      remark:
+        type: string
+      select:
+        items:
+          type: integer
+        type: array
+      status:
+        type: boolean
+      weight:
+        type: integer
+    type: object
+  backstagedto.RoleIdDTO:
+    properties:
+      roleById:
+        $ref: '#/definitions/backstagedto.RoleCreateOrEditDTO'
+    type: object
+  backstagedto.RoleListDTO:
+    properties:
+      pageData:
+        $ref: '#/definitions/dto.PageForMultSearchDTO'
+      roleList:
+        items:
+          $ref: '#/definitions/backstagedto.RoleViewData'
+        type: array
+    type: object
+  backstagedto.RoleViewData:
+    properties:
+      createTime:
+        type: string
+      createUser:
+        type: string
+      id:
+        type: integer
+      key:
+        type: string
+      name:
+        type: string
+      remark:
+        type: string
+      status:
+        type: boolean
+      updateTime:
+        type: string
+      updateUser:
+        type: string
+      weight:
+        type: integer
     type: object
   backstagedto.UserDTO:
     properties:
@@ -381,6 +463,51 @@ paths:
     get:
       consumes:
       - application/json
+      parameters:
+      - default: 1
+        description: int default
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: int enums
+        enum:
+        - 15
+        - 20
+        - 30
+        - 40
+        - 50
+        in: query
+        name: pageLimit
+        required: true
+        type: integer
+      - description: string enums
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        required: true
+        type: string
+      - description: string enums
+        enum:
+        - id
+        - key
+        - url
+        in: query
+        name: sortColumn
+        required: true
+        type: string
+      - default: ""
+        description: string default
+        in: query
+        name: search
+        type: string
+      - default: ""
+        description: string default
+        in: query
+        name: searchCategory
+        type: string
       responses:
         "200":
           description: OK
@@ -388,7 +515,80 @@ paths:
             $ref: '#/definitions/backstagedto.MenuViewListDTO'
       summary: Menu View
       tags:
-      - Backstage
+      - Backstage-Menu
+  /backstage/menu/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.MenuIdDTO'
+      summary: Menu By Id
+      tags:
+      - Backstage-Menu
+  /backstage/menu/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/backstagedto.MenuCreateOrEditDTO'
+      responses:
+        "200":
+          description: ""
+      summary: Menu Create
+      tags:
+      - Backstage-Menu
+  /backstage/menu/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: ""
+      summary: Menu Delete
+      tags:
+      - Backstage-Menu
+  /backstage/menu/edit/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/backstagedto.MenuCreateOrEditDTO'
+      responses:
+        "200":
+          description: ""
+      summary: Menu Edit
+      tags:
+      - Backstage-Menu
   /backstage/menu/list:
     get:
       consumes:
@@ -400,7 +600,148 @@ paths:
             $ref: '#/definitions/backstagedto.MenuDTO'
       summary: Menu List
       tags:
-      - Backstage
+      - Backstage-Menu
+  /backstage/menu/parent/list:
+    get:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.MenuDTO'
+      summary: Menu Parent List
+      tags:
+      - Backstage-Menu
+  /backstage/role:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 1
+        description: int default
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: int enums
+        enum:
+        - 15
+        - 20
+        - 30
+        - 40
+        - 50
+        in: query
+        name: pageLimit
+        required: true
+        type: integer
+      - description: string enums
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        required: true
+        type: string
+      - description: string enums
+        enum:
+        - id
+        - key
+        in: query
+        name: sortColumn
+        required: true
+        type: string
+      - default: ""
+        description: string default
+        in: query
+        name: search
+        type: string
+      - default: ""
+        description: string default
+        in: query
+        name: searchCategory
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.RoleListDTO'
+      summary: Role View
+      tags:
+      - Backstage-Role
+  /backstage/role/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.RoleIdDTO'
+      summary: Role By Id
+      tags:
+      - Backstage-Role
+  /backstage/role/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/backstagedto.RoleCreateOrEditDTO'
+      responses:
+        "200":
+          description: ""
+      summary: Role Create
+      tags:
+      - Backstage-Role
+  /backstage/role/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: ""
+      summary: Role Delete
+      tags:
+      - Backstage-Role
+  /backstage/role/edit/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/backstagedto.RoleCreateOrEditDTO'
+      responses:
+        "200":
+          description: ""
+      summary: Role Edit
+      tags:
+      - Backstage-Role
   /backstage/user/create:
     post:
       consumes:

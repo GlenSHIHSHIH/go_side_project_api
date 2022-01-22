@@ -25,10 +25,16 @@ var (
 
 //table list
 
-// @tags Backstage
+// @tags Backstage-Role
 // @Summary Role View
 // @accept application/json
 // @Success 200 {object} backstagedto.RoleListDTO
+// @Param page query int true "int default" default(1)
+// @Param pageLimit query int true "int enums" Enums(15,20,30,40,50)
+// @Param sort query string true "string enums" Enums(asc,desc)
+// @Param sortColumn query string true "string enums" Enums(id,key)
+// @Param search query string false "string default" default()
+// @Param searchCategory query string false "string default" default()
 // @Router /backstage/role [get]
 func Roles(c *gin.Context) (controller.Data, error) {
 	search := c.QueryMap("search")
@@ -48,11 +54,12 @@ func Roles(c *gin.Context) (controller.Data, error) {
 
 //find by id
 
-// @tags Backstage
+// @tags Backstage-Role
 // @Summary Role By Id
 // @accept application/json
 // @Success 200 {object} backstagedto.RoleIdDTO
-// @Router /backstage/role/id [get]
+// @param id path int true "id"
+// @Router /backstage/role/{id} [get]
 func RoleById(c *gin.Context) (controller.Data, error) {
 	id := c.Param("id")
 
@@ -60,13 +67,12 @@ func RoleById(c *gin.Context) (controller.Data, error) {
 	return roleService.GetRoleById(id)
 }
 
-//delete by id
-
-// @tags Backstage
+// @tags Backstage-Role
 // @Summary Role Delete
 // @accept application/json
-// @Success 200 {object}
-// @Router /backstage/role/delete [delete]
+// @Success 200
+// @param id path int true "id"
+// @Router /backstage/role/delete/{id} [delete]
 func RoleDelete(c *gin.Context) (controller.Data, error) {
 	ids := strings.Split(c.Param("id"), ",")
 
@@ -74,10 +80,11 @@ func RoleDelete(c *gin.Context) (controller.Data, error) {
 	return roleService.DeleteRole(ids)
 }
 
-// @tags Backstage
+// @tags Backstage-Role
 // @Summary Role Create
 // @accept application/json
-// @Success 200 {object}
+// @Success 200
+// @Param json body backstagedto.RoleCreateOrEditDTO true "json"
 // @Router /backstage/role/create [post]
 func RoleCreate(c *gin.Context) (controller.Data, error) {
 
@@ -98,11 +105,13 @@ func RoleCreate(c *gin.Context) (controller.Data, error) {
 	return roleService.CreateRole(userInfo, roleCreateOrEditDTO)
 }
 
-// @tags Backstage
+// @tags Backstage-Role
 // @Summary Role Edit
 // @accept application/json
-// @Success 200 {object}
-// @Router /backstage/role/edit/id [put]
+// @Success 200
+// @param id path int true "id"
+// @Param json body backstagedto.RoleCreateOrEditDTO true "json"
+// @Router /backstage/role/edit/{id} [put]
 func RoleEdit(c *gin.Context) (controller.Data, error) {
 	userInfo, err := validate.UserInfoValidate(c)
 	if err != nil {

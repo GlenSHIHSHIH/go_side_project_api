@@ -126,9 +126,70 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Backstage"
+                    "Backstage-Menu"
                 ],
                 "summary": "Menu View",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "int default",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            15,
+                            20,
+                            30,
+                            40,
+                            50
+                        ],
+                        "type": "integer",
+                        "description": "int enums",
+                        "name": "pageLimit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "description": "string enums",
+                        "name": "sort",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "key",
+                            "url"
+                        ],
+                        "type": "string",
+                        "description": "string enums",
+                        "name": "sortColumn",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "",
+                        "description": "string default",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "",
+                        "description": "string default",
+                        "name": "searchCategory",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -139,13 +200,99 @@ var doc = `{
                 }
             }
         },
+        "/backstage/menu/create": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Menu"
+                ],
+                "summary": "Menu Create",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.MenuCreateOrEditDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/menu/delete/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Menu"
+                ],
+                "summary": "Menu Delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/menu/edit/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Menu"
+                ],
+                "summary": "Menu Edit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.MenuCreateOrEditDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/backstage/menu/list": {
             "get": {
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "Backstage"
+                    "Backstage-Menu"
                 ],
                 "summary": "Menu List",
                 "responses": {
@@ -153,6 +300,246 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/backstagedto.MenuDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/backstage/menu/parent/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Menu"
+                ],
+                "summary": "Menu Parent List",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.MenuDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/backstage/menu/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Menu"
+                ],
+                "summary": "Menu By Id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.MenuIdDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/backstage/role": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Role"
+                ],
+                "summary": "Role View",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "int default",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            15,
+                            20,
+                            30,
+                            40,
+                            50
+                        ],
+                        "type": "integer",
+                        "description": "int enums",
+                        "name": "pageLimit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "description": "string enums",
+                        "name": "sort",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "key"
+                        ],
+                        "type": "string",
+                        "description": "string enums",
+                        "name": "sortColumn",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "",
+                        "description": "string default",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "",
+                        "description": "string default",
+                        "name": "searchCategory",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.RoleListDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/backstage/role/create": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Role"
+                ],
+                "summary": "Role Create",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.RoleCreateOrEditDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/role/delete/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Role"
+                ],
+                "summary": "Role Delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/role/edit/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Role"
+                ],
+                "summary": "Role Edit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.RoleCreateOrEditDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/role/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Role"
+                ],
+                "summary": "Role By Id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.RoleIdDTO"
                         }
                     }
                 }
@@ -443,6 +830,35 @@ var doc = `{
                 }
             }
         },
+        "backstagedto.MenuCreateOrEditDTO": {
+            "type": "object",
+            "properties": {
+                "feature": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
+        },
         "backstagedto.MenuDTO": {
             "type": "object",
             "properties": {
@@ -451,6 +867,14 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/backstagedto.MenuNestData"
                     }
+                }
+            }
+        },
+        "backstagedto.MenuIdDTO": {
+            "type": "object",
+            "properties": {
+                "menuById": {
+                    "$ref": "#/definitions/backstagedto.MenuViewData"
                 }
             }
         },
@@ -483,7 +907,7 @@ var doc = `{
                 }
             }
         },
-        "backstagedto.MenuViewDTO": {
+        "backstagedto.MenuViewData": {
             "type": "object",
             "properties": {
                 "feature": {
@@ -499,6 +923,9 @@ var doc = `{
                     "type": "string"
                 },
                 "parent": {
+                    "type": "string"
+                },
+                "remark": {
                     "type": "string"
                 },
                 "status": {
@@ -518,11 +945,97 @@ var doc = `{
                 "menuViewList": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/backstagedto.MenuViewDTO"
+                        "$ref": "#/definitions/backstagedto.MenuViewData"
                     }
                 },
                 "pageData": {
                     "$ref": "#/definitions/dto.PageForMultSearchDTO"
+                }
+            }
+        },
+        "backstagedto.RoleCreateOrEditDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "select": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "status": {
+                    "type": "boolean"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
+        },
+        "backstagedto.RoleIdDTO": {
+            "type": "object",
+            "properties": {
+                "roleById": {
+                    "$ref": "#/definitions/backstagedto.RoleCreateOrEditDTO"
+                }
+            }
+        },
+        "backstagedto.RoleListDTO": {
+            "type": "object",
+            "properties": {
+                "pageData": {
+                    "$ref": "#/definitions/dto.PageForMultSearchDTO"
+                },
+                "roleList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/backstagedto.RoleViewData"
+                    }
+                }
+            }
+        },
+        "backstagedto.RoleViewData": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "type": "string"
+                },
+                "createUser": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                },
+                "updateTime": {
+                    "type": "string"
+                },
+                "updateUser": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
                 }
             }
         },

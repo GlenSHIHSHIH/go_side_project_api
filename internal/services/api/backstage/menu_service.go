@@ -234,8 +234,6 @@ func (m *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 	//get menu (many to many)
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Table("users")
-	sql = sql.Debug()
-
 	sql = sql.Joins("join user_role on users.id=user_role.user_id and user_role.user_id = ?", id)
 	sql = sql.Joins("join role_menu on user_role.role_id= role_menu.role_id")
 	sql = sql.Joins("join roles on roles.id= role_menu.role_id and roles.status = true and roles.deleted is NULL")
@@ -254,12 +252,17 @@ func (m *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 	return menu
 }
 
-func (m *MenuService) GetMenuAllList() (interface{}, error) {
-
+func (m *MenuService) GetMenuAll() []*backstagedto.MenuData {
 	var menu []*backstagedto.MenuData
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Menu{})
 	sql.Find(&menu)
+	return menu
+}
+
+func (m *MenuService) GetMenuAllList() (interface{}, error) {
+
+	menu := m.GetMenuAll()
 
 	menuNestData := nestList(menu, 0)
 

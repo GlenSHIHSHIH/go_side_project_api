@@ -143,6 +143,10 @@ func (r *RoleService) CreateRole(userInfo *backstagedto.JwtUserInfoDTO, roleCrea
 	//儲存 role_menu list
 	storeRoleMenuTable(role.Id, roleCreateOrEditDTO.Select)
 
+	//移除全部人的菜單cache
+	menuService := GetMenuService()
+	menuService.RemoveCacheMenuNameByAllUser()
+
 	return nil, nil
 }
 
@@ -167,24 +171,70 @@ func (r *RoleService) EditRole(userInfo *backstagedto.JwtUserInfoDTO, id string,
 	roleId, _ := strconv.Atoi(id)
 	storeRoleMenuTable(roleId, roleCreateOrEditDTO.Select)
 
+	//移除全部人的菜單cache
+	menuService := GetMenuService()
+	menuService.RemoveCacheMenuNameByAllUser()
+
 	return nil, nil
 }
 
 func storeRoleMenuTable(id int, selected []int) {
+
+	menuService := GetMenuService()
+	menu := menuService.GetMenuAll()
+
 	sqldb := db.GetMySqlDB()
 	sqldb.Unscoped().Table("role_menu").Where("role_id = ?", id).Delete(&model.Role{})
 
-	var roleMenuArr []map[string]interface{}
-	for _, v := range selected {
-		roleMenu := map[string]interface{}{"role_id": id, "menu_id": v}
-		roleMenuArr = append(roleMenuArr, roleMenu)
+	nodes := selected
+
+	for {
+		if len(nodes) == 0 {
+			break
+		}
+
+		fmt.Println("default nodes:")
+		fmt.Println(nodes)
+		for i := len(nodes) - 1; i >= 0; i-- {
+			for _, v := range menu {
+				if nodes[i] == v.Id {
+
+					if !utils.ValueIsInIntArray(selected, v.Parent) {
+						selected = append(selected, v.Parent)
+						fmt.Println("append selected:")
+						fmt.Println(selected)
+					}
+
+					if !utils.ValueIsInIntArray(nodes, v.Parent) {
+						nodes = append(nodes, v.Parent)
+						fmt.Println("append nodes:")
+						fmt.Println(nodes)
+					}
+
+					break
+				}
+			}
+
+			fmt.Println("seprate")
+			fmt.Println(nodes[0 : i-1])
+			fmt.Println(nodes[i : len(nodes)-1])
+			nodes = append(nodes[0:i-1], nodes[i:len(nodes)-1]...)
+			fmt.Println("seprate after")
+			fmt.Println(nodes)
+		}
 	}
 
-	fmt.Println("roleMenuArr")
-	fmt.Println(roleMenuArr)
+	// var roleMenuArr []map[string]interface{}
+	// for _, v := range selected {
+	// 	roleMenu := map[string]interface{}{"role_id": id, "menu_id": v}
+	// 	roleMenuArr = append(roleMenuArr, roleMenu)
+	// }
 
-	sql := sqldb.Table("role_menu")
-	sql = sql.Debug()
-	sql.Create(roleMenuArr)
+	// fmt.Println("roleMenuArr")
+	// fmt.Println(roleMenuArr)
+
+	// sql := sqldb.Table("role_menu")
+	// sql = sql.Debug()
+	// sql.Create(roleMenuArr)
 
 }
