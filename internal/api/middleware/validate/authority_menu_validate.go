@@ -36,7 +36,7 @@ func AuthorityMenuValidate() gin.HandlerFunc {
 			r, _ := regexp.Compile(fmt.Sprintf("^%s[/]*", v.Url))
 			if r.MatchString(url) {
 				compareUrl := strings.Replace(url, r.FindString(url), "", 1)
-				parameter, err := strconv.Atoi(compareUrl)
+				parameter, err := strconv.Atoi(strings.ReplaceAll(compareUrl, ",", ""))
 				if compareUrl == "" || parameter > 0 {
 					menuIsInUrl = true
 					break
