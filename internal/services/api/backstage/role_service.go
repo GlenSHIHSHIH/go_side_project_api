@@ -186,8 +186,11 @@ func storeRoleMenuTable(id int, selected []int) {
 	sqldb := db.GetMySqlDB()
 	sqldb.Unscoped().Table("role_menu").Where("role_id = ?", id).Delete(&model.Role{})
 
-	nodes := selected
+	var nodes, addParentNode []int
+	nodes = append(nodes, selected...)
+	addParentNode = append(addParentNode, selected...)
 
+	//搜尋父節點
 	for {
 		if len(nodes) == 0 {
 			break
@@ -199,42 +202,37 @@ func storeRoleMenuTable(id int, selected []int) {
 			for _, v := range menu {
 				if nodes[i] == v.Id {
 
-					if !utils.ValueIsInIntArray(selected, v.Parent) {
-						selected = append(selected, v.Parent)
-						fmt.Println("append selected:")
-						fmt.Println(selected)
+					if v.Parent == 0 {
+						break
+					}
+
+					if !utils.ValueIsInIntArray(addParentNode, v.Parent) {
+						addParentNode = append(addParentNode, v.Parent)
 					}
 
 					if !utils.ValueIsInIntArray(nodes, v.Parent) {
 						nodes = append(nodes, v.Parent)
-						fmt.Println("append nodes:")
-						fmt.Println(nodes)
 					}
 
 					break
 				}
 			}
-
-			fmt.Println("seprate")
-			fmt.Println(nodes[0 : i-1])
-			fmt.Println(nodes[i : len(nodes)-1])
-			nodes = append(nodes[0:i-1], nodes[i:len(nodes)-1]...)
-			fmt.Println("seprate after")
-			fmt.Println(nodes)
+			nodes = append(nodes[0:i], nodes[i+1:]...)
 		}
+
 	}
 
-	// var roleMenuArr []map[string]interface{}
-	// for _, v := range selected {
-	// 	roleMenu := map[string]interface{}{"role_id": id, "menu_id": v}
-	// 	roleMenuArr = append(roleMenuArr, roleMenu)
-	// }
+	var roleMenuArr []map[string]interface{}
+	for _, v := range addParentNode {
+		roleMenu := map[string]interface{}{"role_id": id, "menu_id": v}
+		roleMenuArr = append(roleMenuArr, roleMenu)
+	}
 
-	// fmt.Println("roleMenuArr")
-	// fmt.Println(roleMenuArr)
+	fmt.Println("roleMenuArr")
+	fmt.Println(roleMenuArr)
 
-	// sql := sqldb.Table("role_menu")
-	// sql = sql.Debug()
-	// sql.Create(roleMenuArr)
+	sql := sqldb.Table("role_menu")
+	sql = sql.Debug()
+	sql.Create(roleMenuArr)
 
 }
