@@ -179,6 +179,9 @@ func (m *MenuService) EditMenu(userInfo *backstagedto.JwtUserInfoDTO, id string,
 
 	sqldb.Save(menu)
 
+	//移除全部人的菜單cache
+	m.RemoveCacheMenuNameByAllUser()
+
 	return nil, nil
 }
 
