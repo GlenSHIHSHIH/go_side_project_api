@@ -36,3 +36,14 @@ type RoleListDTO struct {
 	RoleList []*RoleViewData           `json:"roleList"`
 	PageData *dto.PageForMultSearchDTO `json:"pageData"`
 }
+
+type RoleOptionList struct {
+	Id     int    `json:"id"`
+	Name   string `json:"name"`
+	Key    string `json:"key"`
+	Status bool   `json:"status"`
+}
+
+type RoleOptionListDTO struct {
+	RoleList []*RoleOptionList `json:"roleList"`
+}

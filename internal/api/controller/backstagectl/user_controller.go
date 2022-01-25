@@ -4,11 +4,12 @@ import (
 	"componentmod/internal/api/controller"
 	"componentmod/internal/api/errorcode"
 	"componentmod/internal/api/middleware/validate"
+	"componentmod/internal/dto/backstagedto"
 	"componentmod/internal/services/api/backstage"
 	"componentmod/internal/utils"
-	"componentmod/internal/utils/db/model"
 	"componentmod/internal/utils/log"
 	"fmt"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
@@ -16,22 +17,29 @@ import (
 )
 
 var (
-	UserCreate = controller.Handler(CreateUser)
-	UserEdit   = controller.Handler(EditUser)
+	UserShow    = controller.Handler(Users)
+	UserIndex   = controller.Handler(UserById)
+	UserStore   = controller.Handler(UserCreate)
+	UserUpdate  = controller.Handler(UserEdit)
+	UserDestory = controller.Handler(UserDelete)
 )
 
-// @tags Backstage
-// @Summary Backstage UserLogin
+// @tags Backstage-User
+// @Summary User Create
 // @accept application/json
-// @produce application/json
-// @Success 200 {object} dto.BaseResponseDTO
-// @Param json body backstagedto.UserDTO true "json"
+// @Success 200
+// @Param json body backstagedto.UserCreateOrEditDTO true "json"
 // @Router /backstage/user/create [post]
-func CreateUser(c *gin.Context) (controller.Data, error) {
-	var user *model.User
-	err := c.Bind(&user)
-	err = validator.Validate(user)
+func UserCreate(c *gin.Context) (controller.Data, error) {
 
+	userInfo, err := validate.UserInfoValidate(c)
+	if err != nil {
+		return nil, err
+	}
+
+	var userCreateOrEditDTO *backstagedto.UserCreateOrEditDTO
+	err = c.Bind(&userCreateOrEditDTO)
+	err = validator.Validate(userCreateOrEditDTO)
 	if err != nil {
 		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
 		log.Error(fmt.Sprintf("%+v", errData))
@@ -39,13 +47,84 @@ func CreateUser(c *gin.Context) (controller.Data, error) {
 	}
 
 	userService := backstage.GetUserService()
-	return userService.CreateUser(user)
+	return userService.CreateUser(userInfo, userCreateOrEditDTO)
 }
 
-func EditUser(c *gin.Context) (controller.Data, error) {
+// @tags Backstage-User
+// @Summary User Delete
+// @accept application/json
+// @Success 200
+// @param id path int true "id"
+// @Router /backstage/user/delete/{id} [delete]
+func UserDelete(c *gin.Context) (controller.Data, error) {
+	ids := strings.Split(c.Param("id"), ",")
+
+	userService := backstage.GetUserService()
+	return userService.DeleteUser(ids)
+}
+
+// @tags Backstage-User
+// @Summary User Edit
+// @accept application/json
+// @Success 200
+// @param id path int true "id"
+// @Param json body backstagedto.UserCreateOrEditDTO true "json"
+// @Router /backstage/user/edit/{id} [put]
+func UserEdit(c *gin.Context) (controller.Data, error) {
 	userInfo, err := validate.UserInfoValidate(c)
 	if err != nil {
 		return nil, err
 	}
-	return userInfo, nil
+
+	id := c.Param("id")
+
+	var userCreateOrEditDTO *backstagedto.UserCreateOrEditDTO
+	err = c.Bind(&userCreateOrEditDTO)
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
+	}
+	userService := backstage.GetUserService()
+	return userService.EditUser(userInfo, id, userCreateOrEditDTO)
+}
+
+// @tags Backstage-User
+// @Summary User By Id
+// @accept application/json
+// @Success 200 {object} backstagedto.UserIdDTO
+// @param id path int true "id"
+// @Router /backstage/user/{id} [get]
+func UserById(c *gin.Context) (controller.Data, error) {
+	id := c.Param("id")
+
+	userService := backstage.GetUserService()
+	return userService.GetUserById(id)
+}
+
+// @tags Backstage-User
+// @Summary User View
+// @accept application/json
+// @Success 200 {object} backstagedto.UserViewListDTO
+// @Param page query int true "int default" default(1)
+// @Param pageLimit query int true "int enums" Enums(15,20,30,40,50)
+// @Param sort query string true "string enums" Enums(asc,desc)
+// @Param sortColumn query string true "string enums" Enums(id,name,login_name)
+// @Param search query string false "string default" default()
+// @Param searchCategory query string false "string default" default()
+// @Router /backstage/user [get]
+func Users(c *gin.Context) (controller.Data, error) {
+	search := c.QueryMap("search")
+	var pageForMultSearchDTO = GetPageMultSearchDefaultDTO()
+	pageForMultSearchDTO.Search = search
+
+	err := c.Bind(pageForMultSearchDTO)
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
+	}
+
+	userService := backstage.GetUserService()
+	return userService.GetUserViewList(pageForMultSearchDTO)
 }

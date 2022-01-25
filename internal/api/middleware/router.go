@@ -52,6 +52,9 @@ func Router(r *gin.Engine) {
 			backstagePage.POST("/admin/logout", backstagectl.BackstageLogout)
 
 			//菜單all權限列表
+			backstagePage.GET("/role/all", backstagectl.RoleList)
+
+			//菜單all權限列表
 			backstagePage.GET("/menu/all", backstagectl.MenuTreeList)
 
 			//菜單權限列表
@@ -63,12 +66,20 @@ func Router(r *gin.Engine) {
 			//jwt 與 頁面權限 驗證通過
 			user := backstagePage.Use(validate.AuthorityMenuValidate())
 			{
+				// 使用者頁面
+				user.GET("/user", backstagectl.UserShow)
 
-				//user
-				//測試  尚未修正
-				user.POST("/user/delete", backstagectl.UserEdit)
-				//新增使用者 (未詳細完成)
-				user.POST("/user/create", backstagectl.UserCreate)
+				// 使用者 id
+				user.GET("/user/:id", backstagectl.UserIndex)
+
+				// 使用者新增 (未詳細完成)
+				user.POST("/user/create", backstagectl.UserStore)
+
+				// 使用者修改
+				user.PUT("/user/edit/:id", backstagectl.UserUpdate)
+
+				// 使用者刪除
+				user.POST("/user/delete", backstagectl.UserDestory)
 			}
 
 			// 菜單

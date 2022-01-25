@@ -19,4 +19,5 @@ type Role struct {
 	Deleted      gorm.DeletedAt `gorm:"comment:軟刪除;type:datetime; json:"deleted"`                                        //軟刪除
 	Remark       string         `gorm:"comment:備註;type:varchar(500);default:null" json:"remark"`                         //備註
 	Menu         []Menu         `gorm:"many2many:role_menu;"`                                                            //菜單(多對多)
+	User         []User         `gorm:"many2many:user_role;"`                                                            //使用者(多對多)
 }

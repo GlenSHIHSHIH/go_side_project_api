@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	RoleList    = controller.Handler(RolesList)
 	RoleShow    = controller.Handler(Roles)
 	RoleIndex   = controller.Handler(RoleById)
 	RoleDestory = controller.Handler(RoleDelete)
@@ -52,7 +53,17 @@ func Roles(c *gin.Context) (controller.Data, error) {
 	return roleService.GetRoleViewList(pageForMultSearchDTO)
 }
 
-//find by id
+// @tags Backstage-Role
+// @Summary Role List
+// @accept application/json
+// @Success 200 {object} backstagedto.RoleIdDTO
+// @param id path int true "id"
+// @Router /backstage/role/{id} [get]
+func RolesList(c *gin.Context) (controller.Data, error) {
+
+	roleService := backstage.GetRoleService()
+	return roleService.GetRoleList()
+}
 
 // @tags Backstage-Role
 // @Summary Role By Id

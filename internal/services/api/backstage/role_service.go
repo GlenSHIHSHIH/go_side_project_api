@@ -84,6 +84,21 @@ func (r *RoleService) getRoleData(p *dto.PageForMultSearchDTO) ([]*backstagedto.
 	return roleViewDTO, count, nil
 }
 
+func (r *RoleService) GetRoleList() (interface{}, error) {
+
+	var roleCreateOrEditDTO []*backstagedto.RoleOptionList
+	sqldb := db.GetMySqlDB()
+	sql := sqldb.Model(&model.Role{})
+	sql = sql.Order("weight desc")
+	sql.Find(&roleCreateOrEditDTO)
+
+	roleOptionListDTO := &backstagedto.RoleOptionListDTO{
+		RoleList: roleCreateOrEditDTO,
+	}
+
+	return roleOptionListDTO, nil
+}
+
 func (r *RoleService) GetRoleById(id string) (interface{}, error) {
 
 	var roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO
@@ -118,6 +133,7 @@ func (r *RoleService) DeleteRole(ids []string) (interface{}, error) {
 
 	// 從菜單、權限中繼表單 刪除
 	sqldb.Unscoped().Table("role_menu").Where("role_id in ?", ids).Delete(&model.Role{})
+	sqldb.Unscoped().Table("user_role").Where("role_id in ?", ids).Delete(&model.Role{})
 
 	//移除全部人的菜單cache
 	menuService := GetMenuService()
@@ -228,11 +244,7 @@ func storeRoleMenuTable(id int, selected []int) {
 		roleMenuArr = append(roleMenuArr, roleMenu)
 	}
 
-	fmt.Println("roleMenuArr")
-	fmt.Println(roleMenuArr)
-
 	sql := sqldb.Table("role_menu")
-	sql = sql.Debug()
 	sql.Create(roleMenuArr)
 
 }
