@@ -245,6 +245,31 @@ func storeUserRoleTable(id int, selected []string) {
 
 }
 
+func (u *UserService) EditUserPwd(userInfo *backstagedto.JwtUserInfoDTO, id string, userEditPwdDTO *backstagedto.UserEditPwdDTO) (interface{}, error) {
+
+	var user *model.User
+	sqldb := db.GetMySqlDB()
+	sql := sqldb.Model(&model.User{})
+	sql.Where("id = ?", id).Find(&user)
+
+	samePws := u.CheckUserPwd(userEditPwdDTO.OrgPassword, user.Password)
+	if !samePws {
+		pwd, err := u.GenUserPwd(userEditPwdDTO.Password)
+		user.Password = pwd
+		user.PwdUpdateTime.Time = time.Now()
+
+		if err != nil {
+			errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
+			log.Error(fmt.Sprintf("%+v", errData))
+			return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
+		}
+
+	}
+
+	sql.Save(user)
+
+	return nil, nil
+}
 func (u *UserService) EditUser(userInfo *backstagedto.JwtUserInfoDTO, id string, userCreateOrEditDTO *backstagedto.UserCreateOrEditDTO) (interface{}, error) {
 
 	//查詢使用者名稱有無重複
@@ -262,20 +287,6 @@ func (u *UserService) EditUser(userInfo *backstagedto.JwtUserInfoDTO, id string,
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.User{})
 	sql.Where("id = ?", id).Find(&user)
-
-	// samePws := u.CheckUserPwd(userCreateOrEditDTO.Password, user.Password)
-	// if !samePws {
-	// 	pwd, err := u.GenUserPwd(userCreateOrEditDTO.Password)
-	// 	user.Password = pwd
-	// 	user.PwdUpdateTime = time.Now()
-
-	// 	if err != nil {
-	// 		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
-	// 		log.Error(fmt.Sprintf("%+v", errData))
-	// 		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
-	// 	}
-
-	// }
 
 	user.Name = userCreateOrEditDTO.Name
 	user.LoginName = userCreateOrEditDTO.LoginName

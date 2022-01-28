@@ -72,11 +72,14 @@ func Router(r *gin.Engine) {
 				// 使用者 id
 				user.GET("/user/:id", backstagectl.UserIndex)
 
-				// 使用者新增 (未詳細完成)
+				// 使用者新增
 				user.POST("/user/create", backstagectl.UserStore)
 
 				// 使用者修改
 				user.PUT("/user/edit/:id", backstagectl.UserUpdate)
+
+				// 使用者密碼修改
+				user.PUT("/user/password/edit/:id", backstagectl.UserPwdUpdate)
 
 				// 使用者刪除
 				user.DELETE("/user/delete/:id", backstagectl.UserDestory)

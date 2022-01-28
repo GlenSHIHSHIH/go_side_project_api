@@ -5,15 +5,11 @@ import (
 	"time"
 )
 
-// type UserDTO struct {
-// 	Name      string `validate:"min=4" json:"name"`      //使用者名稱
-// 	LoginName string `validate:"min=4" json:"loginName"` //登入帳號
-// 	Password  string `validate:"min=6" json:"password"`  //密碼
-// 	Email     string `json:"email"`                      //Email
-// 	Status    bool   `json:"status"`                     //帳號狀態(false停用 true正常)
-// 	UserType  bool   `json:"userType"`                   //是否為系統用戶
-// 	Remark    string `json:"remark"`                     //備註
-// }
+type UserEditPwdDTO struct {
+	Id          int    `json:"id"`
+	OrgPassword string `validate:"min=6" json:"orgPassword"` //密碼
+	Password    string `validate:"min=6" json:"newPassword"` //密碼
+}
 
 type UserIdDTO struct {
 	UserById *UserCreateOrEditDTO `json:"userById"`
