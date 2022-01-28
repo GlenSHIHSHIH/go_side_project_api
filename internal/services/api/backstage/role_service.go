@@ -8,9 +8,14 @@ import (
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
+	"componentmod/internal/utils/log"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
+
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 type RoleService struct {
@@ -129,15 +134,35 @@ func (r *RoleService) DeleteRole(ids []string) (interface{}, error) {
 
 	// 從菜單刪除
 	sqldb := db.GetMySqlDB()
-	sqldb.Where("id in ?", ids).Delete(&model.Role{})
+	err := sqldb.Transaction(func(tx *gorm.DB) error {
+		// 從菜單刪除
+		// do some database operations in the transaction (use 'tx' from this point, not 'db')
+		if err := tx.Where("id in ?", ids).Delete(&model.Role{}).Error; err != nil {
+			// return any error will rollback
+			return err
+		}
 
-	// 從菜單、權限中繼表單 刪除
-	sqldb.Unscoped().Table("role_menu").Where("role_id in ?", ids).Delete(&model.Role{})
-	sqldb.Unscoped().Table("user_role").Where("role_id in ?", ids).Delete(&model.Role{})
+		// 從菜單、權限中繼表單 刪除
+		if err := tx.Unscoped().Table("role_menu").Where("role_id in ?", ids).Delete(&model.Role{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Unscoped().Table("user_role").Where("role_id in ?", ids).Delete(&model.Role{}).Error; err != nil {
+			return err
+		}
 
-	//移除全部人的菜單cache
-	menuService := GetMenuService()
-	menuService.RemoveCacheMenuNameByAllUser()
+		//移除全部人的菜單cache
+		menuService := GetMenuService()
+		menuService.RemoveCacheMenuNameByAllUser()
+
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.SQL_DELETE_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_DELETE_ERROR)
+	}
 
 	return nil, nil
 }
@@ -153,15 +178,36 @@ func (r *RoleService) CreateRole(userInfo *backstagedto.JwtUserInfoDTO, roleCrea
 		CreateTime:   time.Now(),
 		CreateUserId: userInfo.Id,
 	}
+
 	sqldb := db.GetMySqlDB()
-	sqldb.Create(&role)
+	err := sqldb.Transaction(func(tx *gorm.DB) error {
 
-	//儲存 role_menu list
-	storeRoleMenuTable(role.Id, roleCreateOrEditDTO.Select)
+		// do some database operations in the transaction (use 'tx' from this point, not 'db')
+		if err := tx.Create(&role).Error; err != nil {
+			// return any error will rollback
+			return err
+		}
 
-	//移除全部人的菜單cache
-	menuService := GetMenuService()
-	menuService.RemoveCacheMenuNameByAllUser()
+		//儲存 role_menu list
+		storeRoleMenuTable(role.Id, roleCreateOrEditDTO.Select)
+		//移除全部人的菜單cache
+		menuService := GetMenuService()
+		menuService.RemoveCacheMenuNameByAllUser()
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+	if err != nil {
+
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.SQL_INSERT_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+
+		if strings.Contains(err.Error(), "Duplicate") {
+			return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_INSERT_ERROR+": 識別碼(key) 重複,請重新輸入")
+		}
+
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_INSERT_ERROR)
+	}
 
 	return nil, nil
 }
@@ -181,15 +227,35 @@ func (r *RoleService) EditRole(userInfo *backstagedto.JwtUserInfoDTO, id string,
 	role.UpdateTime = time.Now()
 	role.UpdateUserId = userInfo.Id
 
-	sqldb.Save(role)
+	err := sqldb.Transaction(func(tx *gorm.DB) error {
 
-	//儲存 role_menu list
-	roleId, _ := strconv.Atoi(id)
-	storeRoleMenuTable(roleId, roleCreateOrEditDTO.Select)
+		// do some database operations in the transaction (use 'tx' from this point, not 'db')
+		if err := tx.Save(role).Error; err != nil {
+			// return any error will rollback
+			return err
+		}
 
-	//移除全部人的菜單cache
-	menuService := GetMenuService()
-	menuService.RemoveCacheMenuNameByAllUser()
+		//儲存 role_menu list
+		roleId, _ := strconv.Atoi(id)
+		storeRoleMenuTable(roleId, roleCreateOrEditDTO.Select)
+		//移除全部人的菜單cache
+		menuService := GetMenuService()
+		menuService.RemoveCacheMenuNameByAllUser()
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+	if err != nil {
+
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.SQL_UPDATE_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+
+		if strings.Contains(err.Error(), "Duplicate") {
+			return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_UPDATE_ERROR+": 識別碼(key) 重複,請重新輸入")
+		}
+
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_UPDATE_ERROR)
+	}
 
 	return nil, nil
 }

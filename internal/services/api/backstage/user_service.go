@@ -15,6 +15,7 @@ import (
 
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type UserService struct {
@@ -196,14 +197,29 @@ func (u *UserService) CreateUser(userInfo *backstagedto.JwtUserInfoDTO, userCrea
 	}
 
 	sqldb := db.GetMySqlDB()
-	sqldb.Create(&user)
+	err = sqldb.Transaction(func(tx *gorm.DB) error {
 
-	//儲存 role_menu list
-	storeUserRoleTable(user.Id, userCreateOrEditDTO.Select)
+		// do some database operations in the transaction (use 'tx' from this point, not 'db')
+		if err := tx.Create(&user).Error; err != nil {
+			// return any error will rollback
+			return err
+		}
 
-	//移除全部人的菜單cache
-	menuService := GetMenuService()
-	menuService.RemoveCacheMenuNameByAllUser()
+		//儲存 role_menu list
+		storeUserRoleTable(user.Id, userCreateOrEditDTO.Select)
+
+		//移除全部人的菜單cache
+		menuService := GetMenuService()
+		menuService.RemoveCacheMenuNameByAllUser()
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.SQL_INSERT_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_INSERT_ERROR)
+	}
 
 	return nil, nil
 }
@@ -270,15 +286,31 @@ func (u *UserService) EditUser(userInfo *backstagedto.JwtUserInfoDTO, id string,
 	user.UpdateTime = time.Now()
 	user.UpdateUserId = userInfo.Id
 	// sql = sqldb.Debug()
-	sql.Save(user)
 
-	//儲存 role_menu list
-	userId, _ := strconv.Atoi(id)
-	storeUserRoleTable(userId, userCreateOrEditDTO.Select)
+	err := sql.Transaction(func(tx *gorm.DB) error {
 
-	//移除全部人的菜單cache
-	menuService := GetMenuService()
-	menuService.RemoveCacheMenuNameByAllUser()
+		// do some database operations in the transaction (use 'tx' from this point, not 'db')
+		if err := tx.Save(user).Error; err != nil {
+			// return any error will rollback
+			return err
+		}
+
+		//儲存 role_menu list
+		userId, _ := strconv.Atoi(id)
+		storeUserRoleTable(userId, userCreateOrEditDTO.Select)
+
+		//移除全部人的菜單cache
+		menuService := GetMenuService()
+		menuService.RemoveCacheMenuNameByAllUser()
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.SQL_UPDATE_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_UPDATE_ERROR)
+	}
 
 	return nil, nil
 }
@@ -287,14 +319,31 @@ func (u *UserService) DeleteUser(ids []string) (interface{}, error) {
 
 	// 從菜單刪除
 	sqldb := db.GetMySqlDB()
-	sqldb.Where("id in ?", ids).Delete(&model.User{})
+	err := sqldb.Transaction(func(tx *gorm.DB) error {
+		// do some database operations in the transaction (use 'tx' from this point, not 'db')
+		if err := tx.Where("id in ?", ids).Delete(&model.User{}).Error; err != nil {
+			// return any error will rollback
+			return err
+		}
 
-	// 從菜單、權限中繼表單 刪除
-	sqldb.Unscoped().Table("user_role").Where("user_id in ?", ids).Delete(&model.User{})
+		// 從菜單、權限中繼表單 刪除
+		if err := tx.Unscoped().Table("user_role").Where("user_id in ?", ids).Delete(&model.User{}).Error; err != nil {
+			return err
+		}
 
-	//移除全部人的菜單cache
-	menuService := GetMenuService()
-	menuService.RemoveCacheMenuNameByAllUser()
+		//移除全部人的菜單cache
+		menuService := GetMenuService()
+		menuService.RemoveCacheMenuNameByAllUser()
+
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.SQL_DELETE_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_DELETE_ERROR)
+	}
 
 	return nil, nil
 }

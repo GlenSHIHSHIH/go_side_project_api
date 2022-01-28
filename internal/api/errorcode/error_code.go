@@ -16,4 +16,7 @@ const (
 	GENERATE_JWT_ERROR             = "產生 jwt 錯誤"
 	GENERATE_REFRESH_JWT_ERROR     = "產生 Refresh jwt 錯誤"
 	USER_AUTHORITY_INSUFFICINET    = "使用者權限不足"
+	SQL_INSERT_ERROR               = "SQL語法新增錯誤"
+	SQL_UPDATE_ERROR               = "SQL語法修改錯誤"
+	SQL_DELETE_ERROR               = "SQL語法刪除錯誤"
 )

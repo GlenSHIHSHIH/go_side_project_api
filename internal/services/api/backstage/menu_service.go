@@ -11,7 +11,11 @@ import (
 	"componentmod/internal/utils/log"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
+
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 const (
@@ -154,7 +158,17 @@ func (m *MenuService) CreateMenu(userInfo *backstagedto.JwtUserInfoDTO, menuCrea
 		CreateUserId: userInfo.Id,
 	}
 	sqldb := db.GetMySqlDB()
-	sqldb.Create(&menu)
+	if err := sqldb.Create(&menu).Error; err != nil {
+
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.SQL_INSERT_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+
+		if strings.Contains(err.Error(), "Duplicate") {
+			return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_INSERT_ERROR+": 識別碼(key) 重複,請重新輸入")
+		}
+
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_INSERT_ERROR)
+	}
 
 	return nil, nil
 }
@@ -177,7 +191,17 @@ func (m *MenuService) EditMenu(userInfo *backstagedto.JwtUserInfoDTO, id string,
 	menu.UpdateTime = time.Now()
 	menu.UpdateUserId = userInfo.Id
 
-	sqldb.Save(menu)
+	if err := sqldb.Save(menu).Error; err != nil {
+
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.SQL_UPDATE_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+
+		if strings.Contains(err.Error(), "Duplicate") {
+			return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_UPDATE_ERROR+": 識別碼(key) 重複,請重新輸入")
+		}
+
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_UPDATE_ERROR)
+	}
 
 	//移除全部人的菜單cache
 	m.RemoveCacheMenuNameByAllUser()
@@ -187,15 +211,34 @@ func (m *MenuService) EditMenu(userInfo *backstagedto.JwtUserInfoDTO, id string,
 
 func (m *MenuService) DeleteMenu(ids []string) (interface{}, error) {
 
-	// 從菜單刪除
 	sqldb := db.GetMySqlDB()
-	sqldb.Where("id in ?", ids).Delete(&model.Menu{})
 
-	// 從菜單、權限中繼表單 刪除
-	sqldb.Unscoped().Table("role_menu").Where("menu_id in ?", ids).Delete(&model.Menu{})
+	err := sqldb.Transaction(func(tx *gorm.DB) error {
+		// 從菜單刪除
+		// do some database operations in the transaction (use 'tx' from this point, not 'db')
+		if err := tx.Where("id in ?", ids).Delete(&model.Menu{}).Error; err != nil {
+			// return any error will rollback
+			return err
+		}
 
-	//移除全部人的菜單cache
-	m.RemoveCacheMenuNameByAllUser()
+		// 從菜單、權限中繼表單 刪除
+		if err := tx.Unscoped().Table("role_menu").Where("menu_id in ?", ids).Delete(&model.Menu{}).Error; err != nil {
+			return err
+		}
+
+		//移除全部人的菜單cache
+		m.RemoveCacheMenuNameByAllUser()
+
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.SQL_DELETE_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_DELETE_ERROR)
+	}
+
 	return nil, nil
 }
 
