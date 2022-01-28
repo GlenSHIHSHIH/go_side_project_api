@@ -79,7 +79,7 @@ func Router(r *gin.Engine) {
 				user.PUT("/user/edit/:id", backstagectl.UserUpdate)
 
 				// 使用者刪除
-				user.POST("/user/delete", backstagectl.UserDestory)
+				user.DELETE("/user/delete/:id", backstagectl.UserDestory)
 			}
 
 			// 菜單

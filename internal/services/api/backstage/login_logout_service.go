@@ -20,7 +20,7 @@ func GetLoginLogoutService() *LoginLogoutService {
 }
 
 //登入
-func (l *LoginLogoutService) Login(loginDTO *backstagedto.LoginDTO) (interface{}, error) {
+func (l *LoginLogoutService) Login(loginDTO *backstagedto.LoginDTO, ip string) (interface{}, error) {
 
 	userService := GetUserService()
 	user := userService.GetUserByLoginName(loginDTO.LoginName)
@@ -46,9 +46,9 @@ func (l *LoginLogoutService) Login(loginDTO *backstagedto.LoginDTO) (interface{}
 	}
 
 	//set login ip and time
-	user.LoginIP = utils.GetLocalIP()
-	user.LoginTime = time.Now()
-
+	// user.LoginIP = utils.GetLocalIP()
+	user.LoginIP = ip
+	user.LoginTime.Time = time.Now()
 	sqldb := db.GetMySqlDB()
 	sqldb.Save(&user)
 

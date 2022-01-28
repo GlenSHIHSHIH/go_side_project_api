@@ -40,7 +40,7 @@ func Login(c *gin.Context) (controller.Data, error) {
 
 	loginLogoutService := backstage.GetLoginLogoutService()
 
-	return loginLogoutService.Login(loginDTO)
+	return loginLogoutService.Login(loginDTO, c.ClientIP())
 }
 
 func Logout(c *gin.Context) (controller.Data, error) {

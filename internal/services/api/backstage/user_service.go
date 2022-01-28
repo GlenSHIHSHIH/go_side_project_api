@@ -29,7 +29,7 @@ func (u *UserService) GetUserByLoginName(loginName string) *model.User {
 	var user *model.User
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.User{})
-	sql.Where("login_name = ?", loginName).Where("status = ?", true).Find(&user)
+	sql.Unscoped().Where("login_name = ?", loginName).Where("status = ?", true).Find(&user)
 
 	if user.Id == 0 {
 		user = nil
@@ -122,9 +122,12 @@ func (u *UserService) getUserData(p *dto.PageForMultSearchDTO) ([]*backstagedto.
 
 	var userViewDTO []*backstagedto.UserViewData
 
-	sql = sql.Select("users.*,us.name as CreateUser,u.name as UpdateUser")
+	sql = sql.Select("users.*,us.name as CreateUser,u.name as UpdateUser,GROUP_CONCAT(roles.name SEPARATOR ',') as Role")
+	sql = sql.Joins("left join user_role on users.id=user_role.user_id")
+	sql = sql.Joins("left join roles on roles.id = user_role.role_id")
 	sql = sql.Joins("left join users as us on us.id=users.create_user_id")
 	sql = sql.Joins("left join users as u on u.id=users.update_user_id")
+	sql = sql.Group("users.id")
 	sql.Find(&userViewDTO)
 
 	return userViewDTO, count, nil
@@ -135,6 +138,7 @@ func (u *UserService) GetUserById(id string) (interface{}, error) {
 	var userCreateOrEditDTO *backstagedto.UserCreateOrEditDTO
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.User{})
+	sql = sql.Select("id,name,login_name,email,status,user_type,remark")
 	sql = sql.Where("id = ?", id)
 	sql.Find(&userCreateOrEditDTO)
 
@@ -146,7 +150,7 @@ func (u *UserService) GetUserById(id string) (interface{}, error) {
 	if userCreateOrEditDTO.Id == 0 {
 		userCreateOrEditDTO = nil
 	} else {
-		userCreateOrEditDTO.Select = role_id
+		userCreateOrEditDTO.Select = utils.ChangeIntToStringArr(role_id)
 	}
 
 	userIdDTO := &backstagedto.UserIdDTO{
@@ -163,9 +167,9 @@ func (u *UserService) CreateUser(userInfo *backstagedto.JwtUserInfoDTO, userCrea
 	getUser := u.GetUserByLoginName(userCreateOrEditDTO.LoginName)
 
 	if getUser != nil {
-		errData := errors.New(errorcode.PARAMETER_LOGIN_NAME_DUPLICATE)
+		errData := errors.New(errorcode.CREATE_LOGIN_NAME_DUPLICATE)
 		log.Error(fmt.Sprintf("%+v", errData))
-		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_LOGIN_NAME_DUPLICATE)
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.CREATE_LOGIN_NAME_DUPLICATE)
 	}
 
 	//塞入密碼
@@ -204,10 +208,14 @@ func (u *UserService) CreateUser(userInfo *backstagedto.JwtUserInfoDTO, userCrea
 	return nil, nil
 }
 
-func storeUserRoleTable(id int, selected []int) {
+func storeUserRoleTable(id int, selected []string) {
 
 	sqldb := db.GetMySqlDB()
 	sqldb.Unscoped().Table("user_role").Where("user_id = ?", id).Delete(&model.User{})
+
+	if len(selected) == 0 {
+		return
+	}
 
 	var userRoleArr []map[string]interface{}
 	for _, v := range selected {
@@ -216,31 +224,42 @@ func storeUserRoleTable(id int, selected []int) {
 	}
 
 	sql := sqldb.Table("user_role")
-	sql = sql.Debug()
+	// sql = sql.Debug()
 	sql.Create(userRoleArr)
 
 }
 
 func (u *UserService) EditUser(userInfo *backstagedto.JwtUserInfoDTO, id string, userCreateOrEditDTO *backstagedto.UserCreateOrEditDTO) (interface{}, error) {
 
+	//查詢使用者名稱有無重複
+	getUser := u.GetUserByLoginName(userCreateOrEditDTO.LoginName)
+
+	if getUser != nil && getUser.Id != userCreateOrEditDTO.Id {
+		if getUser != nil {
+			errData := errors.New(errorcode.CREATE_LOGIN_NAME_DUPLICATE)
+			log.Error(fmt.Sprintf("%+v", errData))
+			return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.CREATE_LOGIN_NAME_DUPLICATE)
+		}
+	}
+
 	var user *model.User
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.User{})
 	sql.Where("id = ?", id).Find(&user)
 
-	samePws := u.CheckUserPwd(userCreateOrEditDTO.Password, user.Password)
-	if !samePws {
-		pwd, err := u.GenUserPwd(userCreateOrEditDTO.Password)
-		user.Password = pwd
-		user.PwdUpdateTime = time.Now()
+	// samePws := u.CheckUserPwd(userCreateOrEditDTO.Password, user.Password)
+	// if !samePws {
+	// 	pwd, err := u.GenUserPwd(userCreateOrEditDTO.Password)
+	// 	user.Password = pwd
+	// 	user.PwdUpdateTime = time.Now()
 
-		if err != nil {
-			errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
-			log.Error(fmt.Sprintf("%+v", errData))
-			return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
-		}
+	// 	if err != nil {
+	// 		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
+	// 		log.Error(fmt.Sprintf("%+v", errData))
+	// 		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
+	// 	}
 
-	}
+	// }
 
 	user.Name = userCreateOrEditDTO.Name
 	user.LoginName = userCreateOrEditDTO.LoginName
@@ -250,8 +269,8 @@ func (u *UserService) EditUser(userInfo *backstagedto.JwtUserInfoDTO, id string,
 	user.UserType = userCreateOrEditDTO.UserType
 	user.UpdateTime = time.Now()
 	user.UpdateUserId = userInfo.Id
-
-	sqldb.Save(user)
+	// sql = sqldb.Debug()
+	sql.Save(user)
 
 	//儲存 role_menu list
 	userId, _ := strconv.Atoi(id)
@@ -271,7 +290,7 @@ func (u *UserService) DeleteUser(ids []string) (interface{}, error) {
 	sqldb.Where("id in ?", ids).Delete(&model.User{})
 
 	// 從菜單、權限中繼表單 刪除
-	sqldb.Unscoped().Table("user_user").Where("user_id in ?", ids).Delete(&model.User{})
+	sqldb.Unscoped().Table("user_role").Where("user_id in ?", ids).Delete(&model.User{})
 
 	//移除全部人的菜單cache
 	menuService := GetMenuService()

@@ -202,6 +202,10 @@ func storeRoleMenuTable(id int, selected []int) {
 	sqldb := db.GetMySqlDB()
 	sqldb.Unscoped().Table("role_menu").Where("role_id = ?", id).Delete(&model.Role{})
 
+	if len(selected) == 0 {
+		return
+	}
+
 	var nodes, addParentNode []int
 	nodes = append(nodes, selected...)
 	addParentNode = append(addParentNode, selected...)

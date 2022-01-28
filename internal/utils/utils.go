@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/joho/godotenv"
@@ -54,11 +55,20 @@ func ChangeGjsonArrayToString(Result []gjson.Result) string {
 	return data
 }
 
-// string[] to []interfacer{}
+// []string to []interfacer{}
 func ChangeStringToInterfaceArr(old []string) []interface{} {
 	new := make([]interface{}, len(old))
 	for i, v := range old {
 		new[i] = v
+	}
+	return new
+}
+
+// []int to []string
+func ChangeIntToStringArr(old []int) []string {
+	var new []string
+	for _, i := range old {
+		new = append(new, strconv.Itoa(i))
 	}
 	return new
 }
