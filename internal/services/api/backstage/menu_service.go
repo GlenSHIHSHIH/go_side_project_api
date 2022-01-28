@@ -242,7 +242,7 @@ func (m *MenuService) GetMenuListByUserId(id int) []*backstagedto.MenuData {
 	sql = sql.Joins("join roles on roles.id= role_menu.role_id and roles.status = true and roles.deleted is NULL")
 	sql = sql.Joins("join menus on role_menu.menu_id = menus.id and menus.status = true and menus.deleted is NULL")
 	sql = sql.Where("users.deleted is NULL and users.status = true")
-	sql = sql.Select("distinct(menus.id),menus.name,menus.key,menus.url,menus.feature,menus.parent,menus.weight ")
+	sql = sql.Select("distinct(menus.id),menus.name,menus.key,menus.url,menus.feature,menus.parent,menus.weight,menus.status ")
 	sql = sql.Order("menus.parent asc").Order("menus.weight desc")
 	sql.Scan(&menu)
 
@@ -299,6 +299,7 @@ func nestList(menuData []*backstagedto.MenuData, parent int) []*backstagedto.Men
 				Key:     v.Key,
 				Url:     v.Url,
 				Feature: v.Feature,
+				Status:  v.Status,
 				Parent:  v.Parent,
 			}
 			data.Child = nestList(menuData, data.Id)

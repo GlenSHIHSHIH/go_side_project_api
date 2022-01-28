@@ -40,6 +40,7 @@ type MenuData struct {
 	Key     string `json:"key"`
 	Url     string `json:"url"`
 	Feature string `json:"feature"`
+	Status  bool   `json:"status"`
 	Parent  int    `json:"parent"`
 }
 
@@ -54,6 +55,7 @@ type MenuNestData struct {
 	Url     string          `json:"url"`
 	Feature string          `json:"feature"`
 	Parent  int             `json:"parent"`
+	Status  bool            `json:"status"`
 	Child   []*MenuNestData `json:"child"`
 }
 
