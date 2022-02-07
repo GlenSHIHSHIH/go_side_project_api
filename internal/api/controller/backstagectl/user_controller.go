@@ -22,6 +22,7 @@ var (
 	UserStore     = controller.Handler(UserCreate)
 	UserUpdate    = controller.Handler(UserEdit)
 	UserPwdUpdate = controller.Handler(UserPwdEdit)
+	UserPwdSet    = controller.Handler(UserPwdReset)
 	UserDestory   = controller.Handler(UserDelete)
 )
 
@@ -96,7 +97,7 @@ func UserEdit(c *gin.Context) (controller.Data, error) {
 // @Success 200
 // @param id path int true "id"
 // @Param json body backstagedto.UserEditPwdDTO true "json"
-// @Router /backstage/user/edit/{id} [put]
+// @Router /backstage/user/password/edit/{id} [put]
 func UserPwdEdit(c *gin.Context) (controller.Data, error) {
 	userInfo, err := validate.UserInfoValidate(c)
 	if err != nil {
@@ -114,7 +115,34 @@ func UserPwdEdit(c *gin.Context) (controller.Data, error) {
 		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
 	}
 	userService := backstage.GetUserService()
-	return userService.EditUserPwd(userInfo, id, UserEditPwdDTO)
+	return userService.EditUserPwd(userInfo, id, backstage.EDIT_TYPE, UserEditPwdDTO)
+}
+
+// @tags Backstage-User
+// @Summary User Passowrd Reset
+// @accept application/json
+// @Success 200
+// @param id path int true "id"
+// @Param json body backstagedto.UserEditPwdDTO true "json"
+// @Router /backstage/user/password/reset/{id} [put]
+func UserPwdReset(c *gin.Context) (controller.Data, error) {
+	userInfo, err := validate.UserInfoValidate(c)
+	if err != nil {
+		return nil, err
+	}
+
+	id := c.Param("id")
+
+	var UserEditPwdDTO *backstagedto.UserEditPwdDTO
+	err = c.Bind(&UserEditPwdDTO)
+	err = validator.Validate(UserEditPwdDTO)
+	if err != nil {
+		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
+	}
+	userService := backstage.GetUserService()
+	return userService.EditUserPwd(userInfo, id, backstage.RESET_TYPE, UserEditPwdDTO)
 }
 
 // @tags Backstage-User

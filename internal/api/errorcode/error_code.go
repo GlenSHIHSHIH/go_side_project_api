@@ -11,6 +11,7 @@ const (
 	PARAMETER_LOGIN_NAME_DUPLICATE = "登入帳號重複"
 	CREATE_LOGIN_NAME_DUPLICATE    = "帳號重複"
 	UNAUTHORIZED_ERROR             = "身份驗證錯誤"
+	PASSWORD_ERROR                 = "密碼錯誤"
 	REFRESH_AUTHORIZED_ERROR       = "刷新身份錯誤"
 	SERVER_ERROR                   = "程式錯誤"
 	GENERATE_JWT_ERROR             = "產生 jwt 錯誤"

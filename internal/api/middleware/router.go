@@ -81,6 +81,9 @@ func Router(r *gin.Engine) {
 				// 使用者密碼修改
 				user.PUT("/user/password/edit/:id", backstagectl.UserPwdUpdate)
 
+				// 使用者密碼重置
+				user.PUT("/user/password/reset/:id", backstagectl.UserPwdSet)
+
 				// 使用者刪除
 				user.DELETE("/user/delete/:id", backstagectl.UserDestory)
 			}

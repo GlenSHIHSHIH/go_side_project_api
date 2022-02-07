@@ -25,6 +25,11 @@ func GetUserService() *UserService {
 	return &UserService{}
 }
 
+const (
+	RESET_TYPE = 1
+	EDIT_TYPE  = 2
+)
+
 // get user data
 func (u *UserService) GetUserByLoginName(loginName string) *model.User {
 	var user *model.User
@@ -245,15 +250,27 @@ func storeUserRoleTable(id int, selected []string) {
 
 }
 
-func (u *UserService) EditUserPwd(userInfo *backstagedto.JwtUserInfoDTO, id string, userEditPwdDTO *backstagedto.UserEditPwdDTO) (interface{}, error) {
+func (u *UserService) EditUserPwd(userInfo *backstagedto.JwtUserInfoDTO, id string, setType int, userEditPwdDTO *backstagedto.UserEditPwdDTO) (interface{}, error) {
 
 	var user *model.User
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.User{})
 	sql.Where("id = ?", id).Find(&user)
 
-	samePws := u.CheckUserPwd(userEditPwdDTO.OrgPassword, user.Password)
+	samePws := false
+	if userEditPwdDTO.Type == RESET_TYPE { //重置密碼
+		samePws = true
+	} else if userEditPwdDTO.Type == EDIT_TYPE { // userEditPwdDTO.Type ==2  修改密碼
+		samePws = u.CheckUserPwd(userEditPwdDTO.OrgPassword, user.Password)
+	}
+
 	if !samePws {
+		errData := errors.New(errorcode.PASSWORD_ERROR)
+		log.Error(fmt.Sprintf("%+v", errData))
+		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PASSWORD_ERROR)
+	}
+
+	if samePws {
 		pwd, err := u.GenUserPwd(userEditPwdDTO.Password)
 		user.Password = pwd
 		user.PwdUpdateTime.Time = time.Now()

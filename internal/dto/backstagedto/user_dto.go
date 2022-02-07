@@ -7,8 +7,9 @@ import (
 
 type UserEditPwdDTO struct {
 	Id          int    `json:"id"`
-	OrgPassword string `validate:"min=6" json:"orgPassword"` //密碼
-	Password    string `validate:"min=6" json:"newPassword"` //密碼
+	Type        int    `json:"type"`                         //1.重置密碼 2.修改密碼
+	OrgPassword string `json:"orgPassword"`                  //原始密碼
+	Password    string `validate:"min=6" json:"newPassword"` //新密碼
 }
 
 type UserIdDTO struct {
