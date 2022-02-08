@@ -20,6 +20,9 @@ func Router(r *gin.Engine) {
 	//相關設定檔
 	r.GET("/forestage/config", forestagectl.BaseForestageConfig)
 
+	//顯示檔案或圖片
+	r.GET("/file/:fileName", backstagectl.ShowFile)
+
 	//產品相關資料
 	production := r.Group("/production")
 	{

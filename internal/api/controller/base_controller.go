@@ -12,6 +12,13 @@ import (
 type Data interface{}
 
 type HandlerFunc func(c *gin.Context) (Data, error)
+type WebHandlerFunc func(c *gin.Context)
+
+func WebHandler(hf WebHandlerFunc) func(*gin.Context) {
+	return func(c *gin.Context) {
+		hf(c)
+	}
+}
 
 func Handler(hf HandlerFunc) func(*gin.Context) {
 	return func(c *gin.Context) {
