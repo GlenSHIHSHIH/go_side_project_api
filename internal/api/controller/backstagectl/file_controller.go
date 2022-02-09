@@ -2,7 +2,7 @@ package backstagectl
 
 import (
 	"componentmod/internal/api/controller"
-	"componentmod/internal/services/api/forestage"
+	"componentmod/internal/services/api/backstage"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +18,6 @@ var (
 // @Router /file/{id} [get]
 func GetFile(c *gin.Context) {
 	fileName := c.Param("fileName")
-	fileService := forestage.GetFileService()
+	fileService := backstage.GetFileService()
 	fileService.GetFile(fileName, c)
 }
