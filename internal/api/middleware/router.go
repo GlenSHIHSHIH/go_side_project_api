@@ -128,6 +128,12 @@ func Router(r *gin.Engine) {
 				role.DELETE("/role/delete/:id", backstagectl.RoleDestory)
 			}
 
+			// 清除cache
+			cache := backstagePage.Use(validate.AuthorityMenuValidate())
+			{
+				cache.DELETE("/cache/delete/:cacheName", backstagectl.CacheDestory)
+			}
+
 		}
 
 	}
