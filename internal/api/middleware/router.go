@@ -11,7 +11,6 @@ import (
 )
 
 func Router(r *gin.Engine) {
-
 	//----------------前台---------------
 
 	//首頁輪播圖
@@ -131,6 +130,13 @@ func Router(r *gin.Engine) {
 			// 清除cache
 			cache := backstagePage.Use(validate.AuthorityMenuValidate())
 			{
+				// cache頁面
+				cache.GET("/cache", backstagectl.CacheShow)
+
+				// cache任意＊刪除
+				cache.DELETE("/cache/any/delete/:cacheName", backstagectl.CacheAnyDestory)
+
+				// cache特定刪除
 				cache.DELETE("/cache/delete/:cacheName", backstagectl.CacheDestory)
 			}
 

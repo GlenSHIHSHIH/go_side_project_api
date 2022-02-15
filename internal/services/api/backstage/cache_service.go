@@ -2,12 +2,14 @@ package backstage
 
 import (
 	errorcode "componentmod/internal/api/errorcode"
+	"componentmod/internal/dto/backstagedto"
 	"componentmod/internal/services/api/forestage"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/log"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -50,4 +52,30 @@ func (c *CacheService) DeleteCache(cacheName string) (interface{}, error) {
 	redisRDB.Del(redisRDB.Ctx, rmCacheName)
 
 	return nil, nil
+}
+
+func (c *CacheService) DeleteAnyCache(cacheName string) (interface{}, error) {
+
+	redisRDB := db.GetRedisDB()
+
+	if strings.Contains(cacheName, "*") {
+		keys := redisRDB.Keys(redisRDB.Ctx, cacheName).Val()
+		cacheNames := append([]interface{}{"unlink"}, utils.ChangeStringToInterfaceArr(keys)...)
+		redisRDB.Do(redisRDB.Ctx, cacheNames...)
+		return nil, nil
+	}
+
+	redisRDB.Del(redisRDB.Ctx, cacheName)
+	return nil, nil
+}
+
+func (c *CacheService) GetCacheViewList() (interface{}, error) {
+
+	redisRDB := db.GetRedisDB()
+	keys := redisRDB.Keys(redisRDB.Ctx, "*").Val()
+	cacheDTO := &backstagedto.CacheDTO{
+		CacheName: keys,
+	}
+
+	return cacheDTO, nil
 }

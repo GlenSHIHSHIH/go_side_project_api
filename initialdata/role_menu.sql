@@ -30,6 +30,7 @@ INSERT INTO `role_menu` (`role_id`,`menu_id`) VALUES (1,29);
 INSERT INTO `role_menu` (`role_id`,`menu_id`) VALUES (1,30);
 INSERT INTO `role_menu` (`role_id`,`menu_id`) VALUES (1,31);
 INSERT INTO `role_menu` (`role_id`,`menu_id`) VALUES (1,32);
+INSERT INTO `role_menu` (`role_id`,`menu_id`) VALUES (1,33);
 INSERT INTO `role_menu` (`role_id`,`menu_id`) VALUES (2,2);
 INSERT INTO `role_menu` (`role_id`,`menu_id`) VALUES (2,20);
 INSERT INTO `role_menu` (`role_id`,`menu_id`) VALUES (2,21);

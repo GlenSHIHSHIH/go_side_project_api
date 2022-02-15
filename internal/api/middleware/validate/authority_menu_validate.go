@@ -6,7 +6,6 @@ import (
 	"componentmod/internal/utils"
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -36,14 +35,9 @@ func AuthorityMenuValidate() gin.HandlerFunc {
 			r, _ := regexp.Compile(fmt.Sprintf("^%s[/]*", v.Url))
 			if r.MatchString(url) {
 				compareUrl := strings.Replace(url, r.FindString(url), "", 1)
-				parameter, err := strconv.Atoi(strings.ReplaceAll(compareUrl, ",", ""))
-				if compareUrl == "" || parameter > 0 {
+				if !strings.Contains(compareUrl, "/") {
 					menuIsInUrl = true
 					break
-				}
-
-				if err != nil {
-					continue
 				}
 
 			}
