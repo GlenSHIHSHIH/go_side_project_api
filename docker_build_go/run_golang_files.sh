@@ -26,5 +26,8 @@ export jwt_ref_token_time="1440"
 #gin setting
 export web_gin="release"
 
+#crontab
+#*/30 * * * * /opt/shopee_api/docker_build_go/compiler/golang_file shopee-data-to-db --db-host 172.21.0.2
+
 nohup ./golang_file shopee-data-to-db &
 nohup ./golang_file shopee-api &
