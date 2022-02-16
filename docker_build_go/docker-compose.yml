@@ -63,6 +63,12 @@ services:
               cd compiler
               ./run_golang_files.sh
               tail -f /dev/null
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.go_run_linux.rule=Host(`kumkum.ga`)&& PathPrefix(`/api`)"
+          - "traefik.http.services.go_run_linux.loadbalancer.server.port=8010"
+          - "traefik.http.routers.go_run_linux.entrypoints=websecure"
+          - "traefik.http.routers.go_run_linux.tls.certresolver=myresolver"
 
 networks:
     shopee-network:
