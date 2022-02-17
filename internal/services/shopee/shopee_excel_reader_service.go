@@ -75,9 +75,15 @@ func (sers *ShopeeExcelReaderService) WriteShopeeDataToDB(shopeeTempModelList []
 		if err := myDB.Exec(model.UPDATE_SQL_SAFE_CLOSE).Error; err != nil {
 			return err
 		}
+
 		if err := myDB.Exec(model.UPDATE_PRODUCTION).Error; err != nil {
 			return err
 		}
+
+		if err := myDB.Exec(model.NOT_SHOW_PRODUCTION).Error; err != nil {
+			return err
+		}
+
 		if err := myDB.Exec(model.UPDATE_SQL_SAFE_OPEN).Error; err != nil {
 			return err
 		}

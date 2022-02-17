@@ -23,17 +23,21 @@ const (
 							pd.attribute=temp.attribute,
 							pd.liked_count=temp.liked_count,
 							pd.historical_sold=temp.historical_sold,
-							pd.stock=temp.stock
+							pd.stock=temp.stock,
+							pd.status=temp.status
 							`
 
 	INSERT_PRODUCTION = `insert into productions(product_id,name,description,options,categories,image,images,url,price,price_min,
-						 create_time,update_time,create_user_id,attribute,liked_count,historical_sold,stock)
+						 create_time,update_time,create_user_id,attribute,liked_count,historical_sold,stock,status)
 							select
 								temp.product_id,temp.name,temp.description,temp.options,temp.categories,temp.image,temp.images,
 								temp.url,temp.price,temp.price_min,temp.create_time,temp.update_time,temp.create_user_id,
-								temp.attribute,temp.liked_count,temp.historical_sold,temp.stock
+								temp.attribute,temp.liked_count,temp.historical_sold,temp.stock,temp.status
 							from production_temps as temp left join productions as pd on pd.product_id = temp.product_id
 							where  pd.id is null`
+
+	NOT_SHOW_PRODUCTION = `update productions as pd left join production_temps as temp on temp.product_id = pd.product_id
+							set pd.status = 0 where temp.product_id is null`
 )
 
 type ProductionTemp struct {
@@ -52,6 +56,7 @@ type ProductionTemp struct {
 	LikedCount     int       `gorm:"comment:喜歡的人數;type:int" json:"likedCount"`                                        //喜歡的人數
 	HistoricalSold int       `gorm:"comment:銷售數量;type:int" json:"historicalSold"`                                     //銷售數量
 	Stock          int       `gorm:"comment:商品庫存;type:int" json:"stock"`                                              //商品庫存
+	Status         bool      `gorm:"comment:顯示狀態(false隱藏、true顯示);type:bool;default:true" json:"status"`               //顯示狀態(false隱藏、true顯示)
 	CreateTime     time.Time `gorm:"comment:新增時間;type:datetime;not null;default:CURRENT_TIMESTAMP" json:"createTime"` //新增時間
 	UpdateTime     time.Time `gorm:"comment:更新時間;type:datetime;not null;default:CURRENT_TIMESTAMP" json:"updateTime"` //更新時間
 	CreateUserId   int       `gorm:"comment:新增人員Id;type:int; json:"createUserId"`                                     //新增人員

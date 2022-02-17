@@ -40,6 +40,8 @@ func (PR *RankService) GetProductionRank(count int) (interface{}, error) {
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Production{})
 	sql = sql.Limit(count)
+	//顯示狀態 true
+	sql = sql.Where("status = ?", true)
 	sql = sql.Order("weight desc").Order("amount desc")
 	sql.Select("(liked_count+historical_sold) as amount,id,product_id,name,description,options,categories," +
 		"weight,liked_count,historical_sold,stock,image,images,url,price,price_min,create_time").Find(&productionRank)

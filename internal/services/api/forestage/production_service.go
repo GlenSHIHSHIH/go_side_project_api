@@ -68,6 +68,9 @@ func (p *ProductionService) getProductionData(shProduction *dto.PageDTO) ([]*for
 		sql = sql.Where("categories LIKE ?", "%"+PSearchOption+"%")
 	}
 
+	//顯示狀態 true
+	sql = sql.Where("status = ?", true)
+
 	//筆數 count
 	var count int64 = 0
 	sql.Count(&count)
@@ -112,6 +115,8 @@ func (p *ProductionService) GetProductionById(id string) (interface{}, error) {
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Production{})
 	sql = sql.Where("id = ?", id)
+	//顯示狀態 true
+	sql = sql.Where("status = ?", true)
 	// sql.First(&productionDetailData)
 	sql.Select("REPLACE(description, CHAR(10) , '<br>') as description,id,product_id,name,options,categories," +
 		"image,images,url,price,price_min,liked_count,historical_sold,attribute,stock,create_time").First(&productionDetailData)

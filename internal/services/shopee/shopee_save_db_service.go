@@ -33,6 +33,7 @@ func (sDB *ShopeeSaveDBService) ShopeeSaveDBService(ShopeeDataDTO []*dto.ShopeeD
 			LikedCount:     int(shopeeData.LikedCount),
 			HistoricalSold: int(shopeeData.HistoricalSold),
 			Stock:          int(shopeeData.Stock),
+			Status:         true,
 		}
 
 		shopeeModelList = append(shopeeModelList, shopeeMode)
