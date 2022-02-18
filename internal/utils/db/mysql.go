@@ -93,6 +93,7 @@ func initTableAndProcedure() {
 	mySqlDB.AutoMigrate(&model.Production{})
 	mySqlDB.AutoMigrate(&model.ProductionTemp{})
 	mySqlDB.AutoMigrate(&model.Carousel{})
+	mySqlDB.AutoMigrate(&model.Picture{})
 	mySqlDB.AutoMigrate(&model.User{})
 	mySqlDB.AutoMigrate(&model.Role{})
 	mySqlDB.AutoMigrate(&model.Menu{})
@@ -102,12 +103,14 @@ func initTableAndProcedure() {
 	mySqlDB.Exec(model.PROCEDURE_GET_PROD_CATEGORIES)
 
 	// create initial
-	initialData("carousels", "initialdata/carousels.sql")
-	initialData("users", "initialdata/users.sql")
-	initialData("roles", "initialdata/roles.sql")
-	initialData("menus", "initialdata/menus.sql")
-	initialData("role_menu", "initialdata/role_menu.sql")
-	initialData("user_role", "initialdata/user_role.sql")
+	initialData("carousels", "resources/initialdata/carousels.sql")
+	initialData("pictures", "resources/initialdata/pictures.sql")
+	initialData("carousel_picture", "resources/initialdata/carousel_picture.sql")
+	initialData("users", "resources/initialdata/users.sql")
+	initialData("roles", "resources/initialdata/roles.sql")
+	initialData("menus", "resources/initialdata/menus.sql")
+	initialData("role_menu", "resources/initialdata/role_menu.sql")
+	initialData("user_role", "resources/initialdata/user_role.sql")
 
 }
 

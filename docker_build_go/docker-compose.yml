@@ -28,7 +28,6 @@ services:
               mkdir -p ./${go_compiler_folder}
               mv golang_file ./${go_compiler_folder}
               cp -r ./resources ./${go_compiler_folder}/resources
-              cp -r ./internal/utils/db/initialdata ./${go_compiler_folder}/initialdata
               cp ./docker_build_go/run_golang_files.sh ./${go_compiler_folder}/run_golang_files.sh
         network_mode: "host"
         stdin_open: true
