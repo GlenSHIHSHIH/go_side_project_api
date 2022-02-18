@@ -7,6 +7,8 @@ import (
 	"componentmod/internal/utils/log"
 	"fmt"
 	"time"
+
+	"github.com/stroiman/go-automapper"
 )
 
 const (
@@ -24,7 +26,7 @@ func GetCarouselService() *CarouselService {
 func (c *CarouselService) GetCarouselList() (interface{}, error) {
 
 	//get Carousels 先從cache拿 看看有沒有資料
-	var carousel []*forestagedto.CarouselData
+	var carouselPicture []*forestagedto.CarouselPictureData
 	var carouselDTO *forestagedto.CarouselDTO
 	cacheRDB := db.GetCacheRDB()
 	err := cacheRDB.Get(cacheRDB.Ctx, CACHE_CAROUSEL, &carouselDTO)
@@ -39,12 +41,23 @@ func (c *CarouselService) GetCarouselList() (interface{}, error) {
 
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Carousel{})
-	sql = sql.Where("status = ?", true)
-	sql = sql.Order("weight desc")
-	sql.Select("id,name,image,url,weight").Scan(&carousel)
+	subQuery1 := sql.Where("status = ?", true).Where("start_time <= now()").Where("end_time >= now()").Order("weight desc").Limit(1)
+	sqlQuery := sqldb.Table("(?) as ca", subQuery1).Joins("join carousel_picture on carousel_id=ca.id ").Joins("join pictures on picture_id=pictures.id")
+	sqlQuery = sqlQuery.Order("pictures.weight desc").Select("ca.id,ca.name as CarouselName,ca.start_time,ca.end_time,pictures.name as PictureName,alt,url,pictures.weight")
+	sqlQuery.Scan(&carouselPicture)
+
+	pictureData := []forestagedto.PictureData{}
+
+	automapper.Map(carouselPicture, &pictureData)
 
 	carouselDTO = &forestagedto.CarouselDTO{
-		Carousel: carousel,
+		Carousel: forestagedto.CarouselData{
+			Id:           carouselPicture[0].Id,
+			CarouselName: carouselPicture[0].CarouselName,
+			StartTime:    carouselPicture[0].StartTime,
+			EndTime:      carouselPicture[0].EndTime,
+		},
+		Picture: pictureData,
 	}
 
 	err = cacheRDB.SetItemByCache(cacheRDB.Ctx, CACHE_CAROUSEL, carouselDTO, CACHE_CAROUSEL_TIME)
