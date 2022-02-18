@@ -26,7 +26,7 @@ services:
               go build -o golang_file main.go
               sleep 1
               mv golang_file ./${go_compiler_folder}
-              cp -r initialdata ./${go_compiler_folder}
+              cp -r ./internal/utils/db/initialdata ./${go_compiler_folder}
               cp ./docker_build_go/run_golang_files.sh ./${go_compiler_folder}/run_golang_files.sh
         network_mode: "host"
         stdin_open: true
