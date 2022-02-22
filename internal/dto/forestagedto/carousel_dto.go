@@ -5,8 +5,8 @@ import (
 )
 
 type CarouselDTO struct {
-	Carousel CarouselData  `json:"carousel"`
-	Picture  []PictureData `json:"Picture"`
+	Carousel CarouselData   `json:"carousel"`
+	Picture  []*PictureData `json:"Picture"`
 }
 
 type CarouselData struct {

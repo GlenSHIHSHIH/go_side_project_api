@@ -46,7 +46,7 @@ func (c *CarouselService) GetCarouselList() (interface{}, error) {
 	sqlQuery = sqlQuery.Order("pictures.weight desc").Select("ca.id,ca.name as CarouselName,ca.start_time,ca.end_time,pictures.name as PictureName,alt,url,pictures.weight")
 	sqlQuery.Scan(&carouselPicture)
 
-	pictureData := []forestagedto.PictureData{}
+	pictureData := []*forestagedto.PictureData{}
 
 	automapper.Map(carouselPicture, &pictureData)
 
