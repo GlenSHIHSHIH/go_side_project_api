@@ -4,7 +4,6 @@ import (
 	"componentmod/internal/api/errorcode"
 	"componentmod/internal/services/api/backstage"
 	"componentmod/internal/utils"
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -32,7 +31,10 @@ func AuthorityMenuValidate() gin.HandlerFunc {
 				continue
 			}
 
-			r, _ := regexp.Compile(fmt.Sprintf("^%s[/]*", v.Url))
+			reg, _ := regexp.Compile(":[\\w]*")
+			regUrl := reg.ReplaceAllString(v.Url, "[\\w]*")
+			r, _ := regexp.Compile(regUrl)
+			// r, _ := regexp.Compile(fmt.Sprintf( "^%s[/]*", v.Url))
 			if r.MatchString(url) {
 				compareUrl := strings.Replace(url, r.FindString(url), "", 1)
 				if !strings.Contains(compareUrl, "/") {
