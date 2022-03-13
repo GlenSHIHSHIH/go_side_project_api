@@ -66,7 +66,7 @@ func Router(r *gin.Engine) {
 			backstagePage.GET("/menu/parent/list", backstagectl.MenuParentList)
 
 			//jwt 與 頁面權限 驗證通過
-			user := backstagePage.Use(validate.AuthorityMenuValidate())
+			user := backstagePage.Use()
 			{
 				// 使用者頁面
 				user.GET("/user", backstagectl.UserShow)
@@ -91,7 +91,7 @@ func Router(r *gin.Engine) {
 			}
 
 			// 菜單
-			menu := backstagePage.Use(validate.AuthorityMenuValidate())
+			menu := backstagePage.Use()
 			{
 				// 菜單頁面
 				menu.GET("/menu", backstagectl.MenuShow)
@@ -109,7 +109,7 @@ func Router(r *gin.Engine) {
 				menu.DELETE("/menu/delete/:id", backstagectl.MenuDestory)
 			}
 			// 角色
-			role := backstagePage.Use(validate.AuthorityMenuValidate())
+			role := backstagePage.Use()
 			{
 				// 角色頁面
 				role.GET("/role", backstagectl.RoleShow)
@@ -128,7 +128,7 @@ func Router(r *gin.Engine) {
 			}
 
 			// 清除cache
-			cache := backstagePage.Use(validate.AuthorityMenuValidate())
+			cache := backstagePage.Use()
 			{
 				// cache頁面
 				cache.GET("/cache", backstagectl.CacheShow)
