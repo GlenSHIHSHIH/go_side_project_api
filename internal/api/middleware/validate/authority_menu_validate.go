@@ -58,3 +58,39 @@ func AuthorityMenuValidate() gin.HandlerFunc {
 		}
 	}
 }
+
+func AuthorityMenuValidateBYKey(key string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userInfo, err := UserInfoValidate(c)
+
+		if err != nil {
+			ErrHandler(c, nil, err)
+			return
+		}
+
+		menuService := backstage.GetMenuService()
+		menuData := menuService.GetMenuListByUserId(userInfo.Id)
+
+		menuIsInKey := false
+		// url := c.Request.URL.Path
+
+		for _, v := range menuData {
+			if v.Key == key {
+				menuIsInKey = true
+				break
+			}
+		}
+
+		if !menuIsInKey {
+			err = utils.CreateApiErr(errorcode.AUTHORITY_INSUFFICINET, errorcode.USER_AUTHORITY_INSUFFICINET)
+			ErrHandler(c, nil, err)
+			return
+		}
+
+		if err == nil && menuIsInKey {
+			c.Next()
+		} else {
+			ErrHandler(c, nil, err)
+		}
+	}
+}

@@ -68,76 +68,122 @@ func Router(r *gin.Engine) {
 			//jwt 與 頁面權限 驗證通過
 			user := backstagePage.Use()
 			{
-				// 使用者頁面
-				user.GET("/user", backstagectl.UserShow)
+				user.Use(validate.AuthorityMenuValidateBYKey("user"))
+				{
+					// 使用者頁面
+					user.GET("/user", backstagectl.UserShow)
+					// 使用者 id
+					user.GET("/user/:id", backstagectl.UserIndex)
+				}
 
-				// 使用者 id
-				user.GET("/user/:id", backstagectl.UserIndex)
+				user.Use(validate.AuthorityMenuValidateBYKey("user:create"))
+				{
+					// 使用者新增
+					user.POST("/user/create", backstagectl.UserStore)
+				}
 
-				// 使用者新增
-				user.POST("/user/create", backstagectl.UserStore)
+				user.Use(validate.AuthorityMenuValidateBYKey("user:edit"))
+				{
+					// 使用者修改
+					user.PUT("/user/edit/:id", backstagectl.UserUpdate)
+				}
 
-				// 使用者修改
-				user.PUT("/user/edit/:id", backstagectl.UserUpdate)
+				user.Use(validate.AuthorityMenuValidateBYKey("user:delete"))
+				{
+					// 使用者刪除
+					user.DELETE("/user/delete/:id", backstagectl.UserDestory)
+				}
 
-				// 使用者密碼修改
-				user.PUT("/user/password/edit/:id", backstagectl.UserPwdUpdate)
+				user.Use(validate.AuthorityMenuValidateBYKey("user:password:edit"))
+				{
+					// 使用者密碼修改
+					user.PUT("/user/password/edit/:id", backstagectl.UserPwdUpdate)
+				}
 
-				// 使用者密碼重置
-				user.PUT("/user/password/reset/:id", backstagectl.UserPwdSet)
-
-				// 使用者刪除
-				user.DELETE("/user/delete/:id", backstagectl.UserDestory)
+				user.Use(validate.AuthorityMenuValidateBYKey("user:password:reset"))
+				{
+					// 使用者密碼重置
+					user.PUT("/user/password/reset/:id", backstagectl.UserPwdSet)
+				}
 			}
 
 			// 菜單
 			menu := backstagePage.Use()
 			{
-				// 菜單頁面
-				menu.GET("/menu", backstagectl.MenuShow)
+				menu.Use(validate.AuthorityMenuValidateBYKey("menu"))
+				{
+					// 菜單頁面
+					menu.GET("/menu", backstagectl.MenuShow)
 
-				// 菜單 id
-				menu.GET("/menu/:id", backstagectl.MenuIndex)
+					// 菜單 id
+					menu.GET("/menu/:id", backstagectl.MenuIndex)
+				}
 
-				// // 菜單新增
-				menu.POST("/menu/create", backstagectl.MenuStore)
-
-				// // 菜單修改
-				menu.PUT("/menu/edit/:id", backstagectl.MenuUpdate)
-
-				// 菜單刪除
-				menu.DELETE("/menu/delete/:id", backstagectl.MenuDestory)
+				menu.Use(validate.AuthorityMenuValidateBYKey("menu:create"))
+				{
+					// // 菜單新增
+					menu.POST("/menu/create", backstagectl.MenuStore)
+				}
+				menu.Use(validate.AuthorityMenuValidateBYKey("menu:edit"))
+				{
+					// // 菜單修改
+					menu.PUT("/menu/edit/:id", backstagectl.MenuUpdate)
+				}
+				menu.Use(validate.AuthorityMenuValidateBYKey("menu:delete"))
+				{
+					// 菜單刪除
+					menu.DELETE("/menu/delete/:id", backstagectl.MenuDestory)
+				}
 			}
 			// 角色
 			role := backstagePage.Use()
 			{
-				// 角色頁面
-				role.GET("/role", backstagectl.RoleShow)
+				role.Use(validate.AuthorityMenuValidateBYKey("role"))
+				{
+					// 角色頁面
+					role.GET("/role", backstagectl.RoleShow)
 
-				// 角色 id
-				role.GET("/role/:id", backstagectl.RoleIndex)
+					// 角色 id
+					role.GET("/role/:id", backstagectl.RoleIndex)
+				}
 
-				// 角色新增
-				role.POST("/role/create", backstagectl.RoleStore)
-
-				// 角色修改
-				role.PUT("/role/edit/:id", backstagectl.RoleUpdate)
-
-				// 角色刪除
-				role.DELETE("/role/delete/:id", backstagectl.RoleDestory)
+				role.Use(validate.AuthorityMenuValidateBYKey("role:create"))
+				{
+					// 角色新增
+					role.POST("/role/create", backstagectl.RoleStore)
+				}
+				role.Use(validate.AuthorityMenuValidateBYKey("menu:edit"))
+				{
+					// 角色修改
+					role.PUT("/role/edit/:id", backstagectl.RoleUpdate)
+				}
+				role.Use(validate.AuthorityMenuValidateBYKey("menu:delete"))
+				{
+					// 角色刪除
+					role.DELETE("/role/delete/:id", backstagectl.RoleDestory)
+				}
 			}
 
 			// 清除cache
 			cache := backstagePage.Use()
 			{
-				// cache頁面
-				cache.GET("/cache", backstagectl.CacheShow)
+				role.Use(validate.AuthorityMenuValidateBYKey("cache"))
+				{
+					// cache頁面
+					cache.GET("/cache", backstagectl.CacheShow)
+				}
 
-				// cache任意＊刪除
-				cache.DELETE("/cache/any/delete/:cacheName", backstagectl.CacheAnyDestory)
+				role.Use(validate.AuthorityMenuValidateBYKey("cache:delete"))
+				{
+					// cache特定刪除
+					cache.DELETE("/cache/delete/:cacheName", backstagectl.CacheDestory)
+				}
 
-				// cache特定刪除
-				cache.DELETE("/cache/delete/:cacheName", backstagectl.CacheDestory)
+				role.Use(validate.AuthorityMenuValidateBYKey("cache:delete:any"))
+				{
+					// cache任意＊刪除
+					cache.DELETE("/cache/any/delete/:cacheName", backstagectl.CacheAnyDestory)
+				}
 			}
 
 		}
