@@ -152,12 +152,12 @@ func Router(r *gin.Engine) {
 					// 角色新增
 					role.POST("/role/create", backstagectl.RoleStore)
 				}
-				role.Use(validate.AuthorityMenuValidateBYKey("menu:edit"))
+				role.Use(validate.AuthorityMenuValidateBYKey("role:edit"))
 				{
 					// 角色修改
 					role.PUT("/role/edit/:id", backstagectl.RoleUpdate)
 				}
-				role.Use(validate.AuthorityMenuValidateBYKey("menu:delete"))
+				role.Use(validate.AuthorityMenuValidateBYKey("role:delete"))
 				{
 					// 角色刪除
 					role.DELETE("/role/delete/:id", backstagectl.RoleDestory)
@@ -183,6 +183,33 @@ func Router(r *gin.Engine) {
 				{
 					// cache任意＊刪除
 					cache.DELETE("/cache/any/delete/:cacheName", backstagectl.CacheAnyDestory)
+				}
+			}
+
+			//輪播圖
+			carousel := backstagePage.Use()
+			{
+				carousel.Use(validate.AuthorityMenuValidateBYKey("carousel"))
+				{
+					// 輪播圖頁面
+					carousel.GET("/carousel", backstagectl.CarouselShow)
+					carousel.GET("/carousel/:id", backstagectl.CarouselIndex)
+				}
+
+				carousel.Use(validate.AuthorityMenuValidateBYKey("carousel:create"))
+				{
+					// 角色新增
+					carousel.POST("/carousel/create", backstagectl.CarouselStore)
+				}
+				carousel.Use(validate.AuthorityMenuValidateBYKey("carousel:edit"))
+				{
+					// 角色修改
+					carousel.PUT("/carousel/edit/:id", backstagectl.CarouselUpdate)
+				}
+				carousel.Use(validate.AuthorityMenuValidateBYKey("carousel:delete"))
+				{
+					// 角色刪除
+					carousel.DELETE("/carousel/delete/:id", backstagectl.CarouselDestory)
 				}
 			}
 
