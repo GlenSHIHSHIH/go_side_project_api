@@ -3,7 +3,7 @@ package backstage
 import "github.com/gin-gonic/gin"
 
 const (
-	FILE_PATH = "./resources/"
+	FILE_PATH = "./resources/file/"
 )
 
 type FileService struct {
