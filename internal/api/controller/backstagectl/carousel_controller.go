@@ -48,8 +48,8 @@ func Carousels(c *gin.Context) (controller.Data, error) {
 		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
 	}
 
-	roleService := backstage.GetRoleService()
-	return roleService.GetRoleViewList(pageForMultSearchDTO)
+	CarouselService := backstage.GetCarouselService()
+	return CarouselService.GetCarouselViewList(pageForMultSearchDTO)
 }
 
 // @tags Backstage-Carousel
@@ -61,8 +61,8 @@ func Carousels(c *gin.Context) (controller.Data, error) {
 func CarouselById(c *gin.Context) (controller.Data, error) {
 	id := c.Param("id")
 
-	roleService := backstage.GetRoleService()
-	return roleService.GetRoleById(id)
+	CarouselService := backstage.GetCarouselService()
+	return CarouselService.GetCarouselById(id)
 }
 
 // @tags Backstage-Carousel

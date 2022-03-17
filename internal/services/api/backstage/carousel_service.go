@@ -4,6 +4,7 @@ import (
 	errorcode "componentmod/internal/api/errorcode"
 	"componentmod/internal/dto"
 	"componentmod/internal/dto/backstagedto"
+	"componentmod/internal/dto/forestagedto"
 	"componentmod/internal/services/api"
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db"
@@ -33,33 +34,29 @@ func (r *CarouselService) GetCarouselViewList(p *dto.PageForMultSearchDTO) (inte
 
 	p.Page = page
 	p.PageLimit = pageLimit
-	roleViewDTO, count, err := r.getCarouselData(p)
+	carouselData, count, err := r.getCarouselData(p)
 	if err != nil {
 		return nil, err
 	}
 
 	p.Count = count
 
-	data := &backstagedto.RoleListDTO{
-		RoleList: roleViewDTO,
+	data := &backstagedto.CarouselListDTO{
+		Carousel: carouselData,
 		PageData: p,
 	}
 
 	return data, nil
 }
 
-func (r *CarouselService) getCarouselData(p *dto.PageForMultSearchDTO) ([]*backstagedto.RoleViewData, int64, error) {
+func (r *CarouselService) getCarouselData(p *dto.PageForMultSearchDTO) ([]*backstagedto.CarouselData, int64, error) {
 
 	sqldb := db.GetMySqlDB()
-	sql := sqldb.Model(&model.Role{})
+	sql := sqldb.Model(&model.Carousel{})
 
 	//搜尋條件分類
 	if PSearch := p.Search["name"]; PSearch != "" {
-		sql = sql.Where("roles.name LIKE ?", "%"+PSearch+"%")
-	}
-
-	if PSearch := p.Search["key"]; PSearch != "" {
-		sql = sql.Where("roles.key LIKE ?", "%"+PSearch+"%")
+		sql = sql.Where("carousels.name LIKE ?", "%"+PSearch+"%")
 	}
 
 	//筆數 count
@@ -79,55 +76,28 @@ func (r *CarouselService) getCarouselData(p *dto.PageForMultSearchDTO) ([]*backs
 		sql = sql.Order(fmt.Sprintf("%v %v", p.SortColumn, p.Sort))
 	}
 
-	var roleViewDTO []*backstagedto.RoleViewData
+	var carouselData []*backstagedto.CarouselData
+	sql.Find(&carouselData)
 
-	sql = sql.Select("roles.*,users.name as CreateUser,u.name as UpdateUser")
-	sql = sql.Joins("left join users on users.id=roles.create_user_id")
-	sql = sql.Joins("left join users as u on u.id=roles.update_user_id")
-	sql.Find(&roleViewDTO)
-
-	return roleViewDTO, count, nil
-}
-
-func (r *CarouselService) GetCarouselList() (interface{}, error) {
-
-	var roleCreateOrEditDTO []*backstagedto.RoleOptionList
-	sqldb := db.GetMySqlDB()
-	sql := sqldb.Model(&model.Role{})
-	sql = sql.Order("weight desc")
-	sql.Find(&roleCreateOrEditDTO)
-
-	roleOptionListDTO := &backstagedto.RoleOptionListDTO{
-		RoleList: roleCreateOrEditDTO,
-	}
-
-	return roleOptionListDTO, nil
+	return carouselData, count, nil
 }
 
 func (r *CarouselService) GetCarouselById(id string) (interface{}, error) {
 
-	var roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO
-	sqldb := db.GetMySqlDB()
-	sql := sqldb.Model(&model.Role{})
-	sql = sql.Where("id = ?", id)
-	sql.Find(&roleCreateOrEditDTO)
+	var carouselData *backstagedto.CarouselData
+	var pictureData []*forestagedto.PictureData
+	sqldb := db.GetMySqlDB().Debug()
+	sql := sqldb.Model(&model.Carousel{})
+	sql = sql.Preload("pictures")
+	sql.Find(&carouselData, "carousels.id = ?", id)
+	sql.Find(&pictureData, "carousels.id = ?", id)
 
-	var menu_id []int
-	sql = sqldb.Table("role_menu")
-	sql = sql.Where("role_id = ?", id)
-	sql.Pluck("menu_id", &menu_id)
-
-	if roleCreateOrEditDTO.Id == 0 {
-		roleCreateOrEditDTO = nil
-	} else {
-		roleCreateOrEditDTO.Select = menu_id
+	carouselIdDTO := &backstagedto.CarouselIdDTO{
+		Carousel: carouselData,
+		Picture:  pictureData,
 	}
 
-	roleIdDTO := &backstagedto.RoleIdDTO{
-		RoleById: roleCreateOrEditDTO,
-	}
-
-	return roleIdDTO, nil
+	return carouselIdDTO, nil
 }
 
 func (r *CarouselService) DeleteCarousel(ids []string) (interface{}, error) {
