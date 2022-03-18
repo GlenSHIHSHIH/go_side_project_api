@@ -1,8 +1,9 @@
 package forestagedto
 
 type PictureData struct {
-	PictureName string `json:"pictureName"`
-	Alt         string `json:"alt"`
-	Url         string `json:"url"`
-	Weight      int    `json:"weight"`
+	Id     int    `json:"id"`
+	Name   string `json:"name"`
+	Alt    string `json:"alt"`
+	Url    string `json:"url"`
+	Weight int    `json:"weight"`
 }
