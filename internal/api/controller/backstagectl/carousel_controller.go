@@ -74,8 +74,8 @@ func CarouselById(c *gin.Context) (controller.Data, error) {
 func CarouselDelete(c *gin.Context) (controller.Data, error) {
 	ids := strings.Split(c.Param("id"), ",")
 
-	roleService := backstage.GetRoleService()
-	return roleService.DeleteRole(ids)
+	CarouselService := backstage.GetCarouselService()
+	return CarouselService.DeleteCarousel(ids)
 }
 
 // @tags Backstage-Carousel
@@ -91,16 +91,16 @@ func CarouselCreate(c *gin.Context) (controller.Data, error) {
 		return nil, err
 	}
 
-	var roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO
-	err = c.Bind(&roleCreateOrEditDTO)
+	var carouselCreateOrEditDTO *backstagedto.CarouselCreateOrEditDTO
+	err = c.Bind(&carouselCreateOrEditDTO)
 	if err != nil {
 		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
 		log.Error(fmt.Sprintf("%+v", errData))
 		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
 	}
 
-	roleService := backstage.GetRoleService()
-	return roleService.CreateRole(userInfo, roleCreateOrEditDTO)
+	CarouselService := backstage.GetCarouselService()
+	return CarouselService.CreateCarousel(userInfo, carouselCreateOrEditDTO)
 }
 
 // @tags Backstage-Carousel
@@ -118,13 +118,13 @@ func CarouselEdit(c *gin.Context) (controller.Data, error) {
 
 	id := c.Param("id")
 
-	var roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO
-	err = c.Bind(&roleCreateOrEditDTO)
+	var carouselCreateOrEditDTO *backstagedto.CarouselCreateOrEditDTO
+	err = c.Bind(&carouselCreateOrEditDTO)
 	if err != nil {
 		errData := errors.WithMessage(errors.WithStack(err), errorcode.PARAMETER_ERROR)
 		log.Error(fmt.Sprintf("%+v", errData))
 		return nil, utils.CreateApiErr(errorcode.PARAMETER_ERROR_CODE, errorcode.PARAMETER_ERROR)
 	}
-	roleService := backstage.GetRoleService()
-	return roleService.EditRole(userInfo, id, roleCreateOrEditDTO)
+	CarouselService := backstage.GetCarouselService()
+	return CarouselService.EditCarousel(userInfo, id, carouselCreateOrEditDTO)
 }

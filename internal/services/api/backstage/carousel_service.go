@@ -9,9 +9,9 @@ import (
 	"componentmod/internal/utils"
 	"componentmod/internal/utils/db"
 	"componentmod/internal/utils/db/model"
+	"componentmod/internal/utils/file"
 	"componentmod/internal/utils/log"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -85,16 +85,19 @@ func (r *CarouselService) getCarouselData(p *dto.PageForMultSearchDTO) ([]*backs
 func (r *CarouselService) GetCarouselById(id string) (interface{}, error) {
 
 	var carouselData *backstagedto.CarouselData
-	var pictureData []*forestagedto.PictureData
-	sqldb := db.GetMySqlDB().Debug()
+	var pictureListData []*forestagedto.PictureListData
+	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Carousel{})
-	sql = sql.Preload("pictures")
 	sql.Find(&carouselData, "carousels.id = ?", id)
-	sql.Find(&pictureData, "carousels.id = ?", id)
+
+	sqlPic := sqldb.Model(&model.Picture{}).Where("pictures.status = ?", true).Order("pictures.weight desc")
+	sqlPic = sqlPic.Joins("join carousel_picture on pictures.id=picture_id")
+	sqlPic = sqlPic.Joins("join carousels on carousels.id=carousel_id and carousels.id = ?", carouselData.Id)
+	sqlPic.Find(&pictureListData)
 
 	carouselIdDTO := &backstagedto.CarouselIdDTO{
 		Carousel: carouselData,
-		Picture:  pictureData,
+		Picture:  pictureListData,
 	}
 
 	return carouselIdDTO, nil
@@ -102,29 +105,42 @@ func (r *CarouselService) GetCarouselById(id string) (interface{}, error) {
 
 func (r *CarouselService) DeleteCarousel(ids []string) (interface{}, error) {
 
-	// 從菜單刪除
+	// 從輪詢圖任務中刪除
 	sqldb := db.GetMySqlDB()
 	err := sqldb.Transaction(func(tx *gorm.DB) error {
-		// 從菜單刪除
+		// 從輪詢任務刪除
 		// do some database operations in the transaction (use 'tx' from this point, not 'db')
-		if err := tx.Where("id in ?", ids).Delete(&model.Role{}).Error; err != nil {
+		if err := tx.Where("id in ?", ids).Delete(&model.Carousel{}).Error; err != nil {
 			// return any error will rollback
 			return err
 		}
 
-		// 從菜單、權限中繼表單 刪除
-		if err := tx.Unscoped().Table("role_menu").Where("role_id in ?", ids).Delete(&model.Role{}).Error; err != nil {
-			return err
-		}
-		if err := tx.Unscoped().Table("user_role").Where("role_id in ?", ids).Delete(&model.Role{}).Error; err != nil {
+		//從輪詢任務、圖片中繼表單 id搜尋
+		var pictureData *[]forestagedto.PictureData
+		if err := tx.Table("pictures").Joins("join carousel_picture on picture_id = pictures.id and carousel_id in ?", ids).Distinct("picture_id", "pictures.*").Find(&pictureData).Error; err != nil {
+			// return any error will rollback
 			return err
 		}
 
-		//移除全部人的菜單cache
-		menuService := GetMenuService()
-		menuService.RemoveCacheMenuNameByAllUser()
+		// 從輪詢任務、圖片中繼表單 刪除
+		var pictureId []int
+		fileRoot := FILE_PATH
+		for _, v := range *pictureData {
+			pictureId = append(pictureId, v.Id)
+			if err := file.FileRemove(fileRoot + v.Name); err != nil {
+				return err
+			}
+		}
+		// 刪除 中繼表單
+		if err := tx.Unscoped().Table("carousel_picture").Where("carousel_id in ?", ids).Delete(&model.Picture{}).Error; err != nil {
+			return err
+		}
+		// 刪除 picture 資料
+		if err := tx.Unscoped().Table("pictures").Where("id in ?", pictureId).Delete(&model.Picture{}).Error; err != nil {
+			return err
+		}
 
-		// return nil will commit the whole transaction
+		// // return nil will commit the whole transaction
 		return nil
 	})
 
@@ -137,14 +153,14 @@ func (r *CarouselService) DeleteCarousel(ids []string) (interface{}, error) {
 	return nil, nil
 }
 
-func (r *CarouselService) CreateCarousel(userInfo *backstagedto.JwtUserInfoDTO, roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO) (interface{}, error) {
+func (r *CarouselService) CreateCarousel(userInfo *backstagedto.JwtUserInfoDTO, carouselCreateOrEditDTO *backstagedto.CarouselCreateOrEditDTO) (interface{}, error) {
 
-	role := model.Role{
-		Name:         roleCreateOrEditDTO.Name,
-		Key:          roleCreateOrEditDTO.Key,
-		Weight:       roleCreateOrEditDTO.Weight,
-		Status:       roleCreateOrEditDTO.Status,
-		Remark:       roleCreateOrEditDTO.Remark,
+	carousel := model.Carousel{
+		Name:         carouselCreateOrEditDTO.Name,
+		Weight:       carouselCreateOrEditDTO.Weight,
+		Status:       carouselCreateOrEditDTO.Status,
+		StartTime:    carouselCreateOrEditDTO.StartTime,
+		EndTime:      carouselCreateOrEditDTO.EndTime,
 		CreateTime:   time.Now(),
 		CreateUserId: userInfo.Id,
 	}
@@ -152,22 +168,25 @@ func (r *CarouselService) CreateCarousel(userInfo *backstagedto.JwtUserInfoDTO, 
 	sqldb := db.GetMySqlDB()
 	err := sqldb.Transaction(func(tx *gorm.DB) error {
 
+		// 從輪詢圖新增
 		// do some database operations in the transaction (use 'tx' from this point, not 'db')
-		if err := tx.Create(&role).Error; err != nil {
+		if err := tx.Create(&carousel).Error; err != nil {
 			// return any error will rollback
 			return err
 		}
 
-		//儲存 role_menu list
-		storeRoleMenuTable(role.Id, roleCreateOrEditDTO.Select)
-		//移除全部人的菜單cache
-		menuService := GetMenuService()
-		menuService.RemoveCacheMenuNameByAllUser()
+		// 新增picture
+		if err := tx.Create(carouselCreateOrEditDTO.Picture).Error; err != nil {
+			// return any error will rollback
+			return err
+		}
+
 		// return nil will commit the whole transaction
 		return nil
 	})
 
 	if err != nil {
+		//刪除檔案
 
 		errData := errors.WithMessage(errors.WithStack(err), errorcode.SQL_INSERT_ERROR)
 		log.Error(fmt.Sprintf("%+v", errData))
@@ -178,39 +197,55 @@ func (r *CarouselService) CreateCarousel(userInfo *backstagedto.JwtUserInfoDTO, 
 
 		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_INSERT_ERROR)
 	}
+	//儲存檔案
 
 	return nil, nil
 }
 
-func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id string, roleCreateOrEditDTO *backstagedto.RoleCreateOrEditDTO) (interface{}, error) {
+func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id string, carouselCreateOrEditDTO *backstagedto.CarouselCreateOrEditDTO) (interface{}, error) {
 
-	var role *model.Role
+	var carousel *model.Carousel
 	sqldb := db.GetMySqlDB()
 	sql := sqldb.Model(&model.Role{})
-	sql.Where("id = ?", id).Find(&role)
+	sql.Where("id = ?", id).Find(&carousel)
 
-	role.Name = roleCreateOrEditDTO.Name
-	role.Key = roleCreateOrEditDTO.Key
-	role.Weight = roleCreateOrEditDTO.Weight
-	role.Status = roleCreateOrEditDTO.Status
-	role.Remark = roleCreateOrEditDTO.Remark
-	role.UpdateTime = time.Now()
-	role.UpdateUserId = userInfo.Id
+	carousel.Name = carouselCreateOrEditDTO.Name
+	carousel.Weight = carouselCreateOrEditDTO.Weight
+	carousel.Status = carouselCreateOrEditDTO.Status
+	carousel.StartTime = carouselCreateOrEditDTO.StartTime
+	carousel.EndTime = carouselCreateOrEditDTO.EndTime
+	carousel.UpdateTime = time.Now()
+	carousel.UpdateUserId = userInfo.Id
 
 	err := sqldb.Transaction(func(tx *gorm.DB) error {
 
+		// 從輪詢圖修改
 		// do some database operations in the transaction (use 'tx' from this point, not 'db')
-		if err := tx.Save(role).Error; err != nil {
+		if err := tx.Save(carousel).Error; err != nil {
 			// return any error will rollback
 			return err
 		}
 
-		//儲存 role_menu list
-		roleId, _ := strconv.Atoi(id)
-		storeRoleMenuTable(roleId, roleCreateOrEditDTO.Select)
-		//移除全部人的菜單cache
-		menuService := GetMenuService()
-		menuService.RemoveCacheMenuNameByAllUser()
+		for _, v := range carouselCreateOrEditDTO.Picture {
+			var picture *model.Picture
+			if err := tx.Table("pictures").Where("id = ?", v.Id).Find(&picture).Error; err != nil {
+				// return any error will rollback
+				return err
+			}
+
+			picture.Alt = v.Alt
+			picture.Url = v.Url
+			picture.Name = v.Name
+			picture.Weight = v.Weight
+			picture.Status = v.Status
+
+			// 修改picture
+			if err := tx.Save(picture).Error; err != nil {
+				// return any error will rollback
+				return err
+			}
+		}
+
 		// return nil will commit the whole transaction
 		return nil
 	})
@@ -228,63 +263,4 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 	}
 
 	return nil, nil
-}
-
-func storeCarouselMenuTable(id int, selected []int) {
-
-	menuService := GetMenuService()
-	menu := menuService.GetMenuAll()
-
-	sqldb := db.GetMySqlDB()
-	sqldb.Unscoped().Table("role_menu").Where("role_id = ?", id).Delete(&model.Role{})
-
-	if len(selected) == 0 {
-		return
-	}
-
-	var nodes, addParentNode []int
-	nodes = append(nodes, selected...)
-	addParentNode = append(addParentNode, selected...)
-
-	//搜尋父節點
-	for {
-		if len(nodes) == 0 {
-			break
-		}
-
-		fmt.Println("default nodes:")
-		fmt.Println(nodes)
-		for i := len(nodes) - 1; i >= 0; i-- {
-			for _, v := range menu {
-				if nodes[i] == v.Id {
-
-					if v.Parent == 0 {
-						break
-					}
-
-					if !utils.ValueIsInIntArray(addParentNode, v.Parent) {
-						addParentNode = append(addParentNode, v.Parent)
-					}
-
-					if !utils.ValueIsInIntArray(nodes, v.Parent) {
-						nodes = append(nodes, v.Parent)
-					}
-
-					break
-				}
-			}
-			nodes = append(nodes[0:i], nodes[i+1:]...)
-		}
-
-	}
-
-	var roleMenuArr []map[string]interface{}
-	for _, v := range addParentNode {
-		roleMenu := map[string]interface{}{"role_id": id, "menu_id": v}
-		roleMenuArr = append(roleMenuArr, roleMenu)
-	}
-
-	sql := sqldb.Table("role_menu")
-	sql.Create(roleMenuArr)
-
 }

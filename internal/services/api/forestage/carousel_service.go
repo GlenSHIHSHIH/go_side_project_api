@@ -44,10 +44,9 @@ func (c *CarouselService) GetCarouselList() (interface{}, error) {
 	sqlQuery := sqldb.Table("(?) as ca", subQuery1)
 	sqlQuery.Find(&carouselData)
 
-	sqlPic := sqldb.Model(&model.Picture{}).Where("pictures.status = ?", true).Order("pictures.weight desc").Debug()
+	sqlPic := sqldb.Model(&model.Picture{}).Where("pictures.status = ?", true).Order("pictures.weight desc")
 	sqlPic = sqlPic.Joins("join carousel_picture on pictures.id=picture_id")
-	sqlPic = sqlPic.Joins("join carousels on carousels.id=carousel_id")
-	sqlPic = sqlPic.Where("carousels.id = ?", carouselData.Id)
+	sqlPic = sqlPic.Joins("join carousels on carousels.id=carousel_id and carousels.id = ?", carouselData.Id)
 	sqlPic.Find(&pictureData)
 
 	carouselDTO = &forestagedto.CarouselDTO{
