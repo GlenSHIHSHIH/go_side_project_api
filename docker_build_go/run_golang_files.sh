@@ -15,7 +15,7 @@ export redis_password="1qaz@WSX"
 export redis_db="0"
 
 #web setting
-export web_host="kumkum.com"
+export web_host="https://kumkum.ga"
 export web_port="8010"
 export web_imgUrl="https://cf.shopee.tw/file/"
 export web_env="production"

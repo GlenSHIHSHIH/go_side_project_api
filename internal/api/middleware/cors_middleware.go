@@ -20,6 +20,7 @@ func CorsConfig() cors.Config {
 		corsConf.AllowMethods = []string{"GET", "POST", "DELETE", "OPTIONS", "PUT"}
 		corsConf.AllowHeaders = []string{"Authorization", "Content-Type", "Upgrade", "Origin",
 			"Connection", "Accept-Encoding", "Accept-Language", "Host"}
+		config.WebHost = "http://localhost"
 	} else {
 		// 在正式環境時則根據設定檔調整
 		corsConf.AllowMethods = []string{"GET", "POST", "DELETE", "OPTIONS", "PUT"}
