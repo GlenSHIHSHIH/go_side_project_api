@@ -3,7 +3,8 @@ package backstage
 import "github.com/gin-gonic/gin"
 
 const (
-	FILE_PATH = "./resources/file/"
+	FIXED_FILE_PATH = "./resources/file/"
+	FILE_PATH       = "/file/"
 )
 
 type FileService struct {
@@ -14,5 +15,5 @@ func GetFileService() *FileService {
 }
 
 func (f *FileService) GetFile(fileName string, c *gin.Context) {
-	c.File(FILE_PATH + fileName)
+	c.File(FIXED_FILE_PATH + fileName)
 }

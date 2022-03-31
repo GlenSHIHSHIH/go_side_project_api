@@ -1,6 +1,7 @@
 package backstage
 
 import (
+	"componentmod/internal/api/config"
 	errorcode "componentmod/internal/api/errorcode"
 	"componentmod/internal/dto"
 	"componentmod/internal/dto/backstagedto"
@@ -95,6 +96,12 @@ func (r *CarouselService) GetCarouselById(id string) (interface{}, error) {
 	sqlPic = sqlPic.Joins("join carousels on carousels.id=carousel_id and carousels.id = ?", carouselData.Id)
 	sqlPic.Find(&pictureListData)
 
+	for _, v := range pictureListData {
+		if v.Name != "" {
+			v.PictureUrl = config.WebHost + FILE_PATH + v.Name
+		}
+	}
+
 	carouselIdDTO := &backstagedto.CarouselIdDTO{
 		Carousel: carouselData,
 		Picture:  pictureListData,
@@ -124,7 +131,7 @@ func (r *CarouselService) DeleteCarousel(ids []string) (interface{}, error) {
 
 		// 從輪詢任務、圖片中繼表單 刪除
 		var pictureId []int
-		fileRoot := FILE_PATH
+		fileRoot := FIXED_FILE_PATH
 		for _, v := range *pictureData {
 			pictureId = append(pictureId, v.Id)
 			if err := file.FileRemove(fileRoot + v.Name); err != nil {
