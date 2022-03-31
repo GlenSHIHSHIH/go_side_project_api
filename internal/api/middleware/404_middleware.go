@@ -7,5 +7,6 @@ import (
 )
 
 func Direction404(c *gin.Context) {
-	c.JSON(http.StatusNotFound, "")
+	//使用系統預設 404
+	c.JSON(http.StatusNotFound, http.StatusText(http.StatusNotFound))
 }
