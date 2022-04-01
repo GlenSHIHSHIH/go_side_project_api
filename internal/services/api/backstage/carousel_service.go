@@ -228,6 +228,7 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 
 	var addPicture []model.Picture
 	var updatePicture []model.Picture
+	var deletePicture []model.Picture
 	err := sqldb.Transaction(func(tx *gorm.DB) error {
 
 		// 從輪詢圖修改
@@ -290,6 +291,9 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 			}
 		}
 
+		//deletePicture data
+		automapper.Map(picture, &deletePicture)
+
 		//批次新增 picture
 		if err := tx.Save(addPicture).Error; err != nil {
 			return err
@@ -328,13 +332,18 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 	})
 
 	//delete picture file
-	if err == nil {
-		picFile := append(addPicture, updatePicture...)
-		for _, v := range picFile {
-			filePath := FIXED_FILE_PATH + v.Name
-			if file.FileIsExist(filePath) && !file.FileSizeOver(2*file.MBytes, filePath) {
-				file.FileRemove(filePath)
-			}
+	var picFile []model.Picture
+	if err != nil {
+		picFile = append(addPicture, updatePicture...)
+
+	} else {
+		picFile = deletePicture
+	}
+
+	for _, v := range picFile {
+		filePath := FIXED_FILE_PATH + v.Name
+		if file.FileIsExist(filePath) && !file.FileSizeOver(2*file.MBytes, filePath) {
+			file.FileRemove(filePath)
 		}
 	}
 
