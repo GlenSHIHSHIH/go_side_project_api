@@ -2,12 +2,16 @@ package utils
 
 import (
 	"componentmod/internal/utils/log"
+	"encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/tidwall/gjson"
@@ -99,4 +103,22 @@ func GetLocalIP() string {
 		}
 	}
 	return ""
+}
+
+//file name (uuid + timestamp)
+func GetUuidAndTimestamp() string {
+
+	uuid := uuid.New()
+	key := uuid.String()
+
+	now := time.Now()
+	timestamp := strconv.FormatInt(now.Unix(), 10)
+
+	return key + timestamp
+}
+
+// save picture
+func SavePicture(fileName, buffer string) error {
+	picData, _ := base64.StdEncoding.DecodeString(buffer) //成图片文件并把文件写入到buffer
+	return ioutil.WriteFile(fileName, picData, 0666)      //buffer输出到jpg文件中（不做处理，直接写到文件）
 }

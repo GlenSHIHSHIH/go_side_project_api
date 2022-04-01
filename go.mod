@@ -13,6 +13,7 @@ require (
 	github.com/go-redis/cache/v8 v8.4.3
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/golang-module/carbon v1.5.3
+	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.4.0
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect

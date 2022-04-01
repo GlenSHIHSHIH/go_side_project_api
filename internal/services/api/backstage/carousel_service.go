@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/stroiman/go-automapper"
 	"gorm.io/gorm"
 )
 
@@ -213,7 +214,7 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 
 	var carousel *model.Carousel
 	sqldb := db.GetMySqlDB()
-	sql := sqldb.Model(&model.Role{})
+	sql := sqldb.Model(&model.Carousel{})
 	sql.Where("id = ?", id).Find(&carousel)
 
 	carousel.Name = carouselCreateOrEditDTO.Name
@@ -221,41 +222,121 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 	carousel.Status = carouselCreateOrEditDTO.Status
 	carousel.StartTime = carouselCreateOrEditDTO.StartTime
 	carousel.EndTime = carouselCreateOrEditDTO.EndTime
+
 	carousel.UpdateTime = time.Now()
 	carousel.UpdateUserId = userInfo.Id
 
+	var addPicture []model.Picture
+	var updatePicture []model.Picture
 	err := sqldb.Transaction(func(tx *gorm.DB) error {
 
 		// 從輪詢圖修改
 		// do some database operations in the transaction (use 'tx' from this point, not 'db')
+		// return any error will rollback
+
+		//修改 carousel
 		if err := tx.Save(carousel).Error; err != nil {
-			// return any error will rollback
 			return err
 		}
 
-		for _, v := range carouselCreateOrEditDTO.Picture {
-			var picture *model.Picture
-			if err := tx.Table("pictures").Where("id = ?", v.Id).Find(&picture).Error; err != nil {
-				// return any error will rollback
-				return err
+		//刪除 carousel_picture many 2 many
+		if err := tx.Table("carousel_picture").Where("carousel_id = ?", id).Delete(carousel).Error; err != nil {
+			return err
+		}
+
+		var picture []*model.Picture
+		if err := tx.Table("pictures").Joins("join carousel_picture on picture_id = pictures.id and carousel_id =?", id).Find(&picture).Error; err != nil {
+			return err
+		}
+
+		for _, value := range carouselCreateOrEditDTO.Picture {
+
+			//新增 picture array
+			if value.Id == 0 {
+				pic := model.Picture{}
+				automapper.Map(value, &pic)
+				//名稱修改
+				pic.Name = utils.GetUuidAndTimestamp()
+				//存圖片 todo
+				utils.SavePicture(FIXED_FILE_PATH+pic.Name, value.PictureUrl)
+				addPicture = append(addPicture, pic)
+				continue
 			}
 
-			picture.Alt = v.Alt
-			picture.Url = v.Url
-			picture.Name = v.Name
-			picture.Weight = v.Weight
-			picture.Status = v.Status
+			for i := 0; i < len(picture); i++ {
+				p := picture[i]
+				if p.Id != value.Id {
+					continue
+				}
 
-			// 修改picture
-			if err := tx.Save(picture).Error; err != nil {
-				// return any error will rollback
-				return err
+				//圖片修改
+				if value.Name == "" {
+					//名稱修改
+					p.Name = utils.GetUuidAndTimestamp()
+					//圖片儲存 todo
+					utils.SavePicture(FIXED_FILE_PATH+p.Name, value.PictureUrl)
+				}
+				//其他項目修改
+				automapper.Map(value, &p)
+
+				// 修改picture
+				if err := tx.Save(p).Error; err != nil {
+					return err
+				} else {
+					updatePicture = append(updatePicture, *p)
+					picture = append(picture[:i], picture[i+1:]...)
+					break
+				}
 			}
+		}
+
+		//批次新增 picture
+		if err := tx.Save(addPicture).Error; err != nil {
+			return err
+		}
+
+		//add picture array
+		var addPictureById []int
+		for _, v := range addPicture {
+			addPictureById = append(addPictureById, v.Id)
+		}
+		//delete picture array
+		var deletePictureById []int
+		for _, v := range picture {
+			deletePictureById = append(deletePictureById, v.Id)
+		}
+
+		//批次刪除 picture
+		if err := tx.Delete(&model.Picture{}, deletePictureById).Error; err != nil {
+			return err
+		}
+
+		//新增 carousel_picture many2many
+		var carouselAndPicture []map[string]interface{}
+		carouselAndPictureById := append(deletePictureById, addPictureById...)
+		for _, v := range carouselAndPictureById {
+			cp := map[string]interface{}{"role_id": id, "menu_id": v}
+			carouselAndPicture = append(carouselAndPicture, cp)
+		}
+
+		if err := tx.Table("carousel_picture").Save(carouselAndPicture).Error; err != nil {
+			return err
 		}
 
 		// return nil will commit the whole transaction
 		return nil
 	})
+
+	//delete picture file
+	if err == nil {
+		picFile := append(addPicture, updatePicture...)
+		for _, v := range picFile {
+			filePath := FIXED_FILE_PATH + v.Name
+			if file.FileIsExist(filePath) && !file.FileSizeOver(2*file.MBytes, filePath) {
+				file.FileRemove(filePath)
+			}
+		}
+	}
 
 	if err != nil {
 
@@ -263,7 +344,7 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 		log.Error(fmt.Sprintf("%+v", errData))
 
 		if strings.Contains(err.Error(), "Duplicate") {
-			return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_UPDATE_ERROR+": 識別碼(key) 重複,請重新輸入")
+			return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_UPDATE_ERROR)
 		}
 
 		return nil, utils.CreateApiErr(errorcode.SERVER_ERROR_CODE, errorcode.SQL_UPDATE_ERROR)

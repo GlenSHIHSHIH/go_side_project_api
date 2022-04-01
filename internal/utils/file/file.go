@@ -12,6 +12,8 @@ import (
 var (
 	rwLock    sync.RWMutex
 	sizeBytes = 1024 * 1024 * 500 //500 M
+	KBytes    = 1024
+	MBytes    = 1024 * 1024
 )
 
 func CreateFile(folderPath, fileName string, count int) *os.File {
