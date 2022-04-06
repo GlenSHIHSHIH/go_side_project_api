@@ -117,8 +117,33 @@ func GetUuidAndTimestamp() string {
 	return key + timestamp
 }
 
+func filterBase64(buffer string) string {
+	filter := "base64,"
+	return buffer[strings.Index(buffer, filter)+len(filter):]
+}
+
 // save picture
 func SavePicture(fileName, buffer string) error {
-	picData, _ := base64.StdEncoding.DecodeString(buffer) //成图片文件并把文件写入到buffer
-	return ioutil.WriteFile(fileName, picData, 0666)      //buffer输出到jpg文件中（不做处理，直接写到文件）
+	data := filterBase64(buffer)
+	picData, _ := base64.StdEncoding.DecodeString(data) //成图片文件并把文件写入到buffer
+	return ioutil.WriteFile(fileName, picData, 0666)    //buffer输出到jpg文件中（不做处理，直接写到文件）
+}
+
+//判断图片base64流字节大小
+
+//如何使用java判断图片base64字节流的大小，以及计算后是多少KB。
+
+/**
+ *通过图片base64流判断图片等于多少字节
+ *image 图片流
+ */
+func GetImageSize(image string) int {
+	str := filterBase64(image)             // 1.需要计算文件流大小，首先把头部的data:image/png;base64,（注意有逗号）去掉。
+	equalIndex := strings.Index(str, "==") //2.找到等号，把等号也去掉
+	if equalIndex >= 0 {
+		str = str[0:equalIndex]
+	}
+	strLength := len(str)     //3.原来的字符流大小，单位为字节
+	size := strLength * 6 / 8 //4.计算后得到的文件流大小，单位为字节
+	return size
 }
