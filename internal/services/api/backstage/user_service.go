@@ -192,11 +192,11 @@ func (u *UserService) CreateUser(userInfo *backstagedto.JwtUserInfoDTO, userCrea
 	user := model.User{
 		Name:         userCreateOrEditDTO.Name,
 		LoginName:    userCreateOrEditDTO.LoginName,
-		Status:       userCreateOrEditDTO.Status,
+		Status:       &userCreateOrEditDTO.Status,
 		Remark:       userCreateOrEditDTO.Remark,
 		Password:     userCreateOrEditDTO.Password,
 		Email:        userCreateOrEditDTO.Email,
-		UserType:     userCreateOrEditDTO.UserType,
+		UserType:     &userCreateOrEditDTO.UserType,
 		CreateTime:   time.Now(),
 		CreateUserId: userInfo.Id,
 	}
@@ -307,10 +307,10 @@ func (u *UserService) EditUser(userInfo *backstagedto.JwtUserInfoDTO, id string,
 
 	user.Name = userCreateOrEditDTO.Name
 	user.LoginName = userCreateOrEditDTO.LoginName
-	user.Status = userCreateOrEditDTO.Status
+	user.Status = &userCreateOrEditDTO.Status
 	user.Remark = userCreateOrEditDTO.Remark
 	user.Email = userCreateOrEditDTO.Email
-	user.UserType = userCreateOrEditDTO.UserType
+	user.UserType = &userCreateOrEditDTO.UserType
 	user.UpdateTime = time.Now()
 	user.UpdateUserId = userInfo.Id
 	// sql = sqldb.Debug()

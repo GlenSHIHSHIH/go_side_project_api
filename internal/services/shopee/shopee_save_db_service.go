@@ -16,6 +16,7 @@ func NewShopeeSaveDBService() *ShopeeSaveDBService {
 func (sDB *ShopeeSaveDBService) ShopeeSaveDBService(ShopeeDataDTO []*dto.ShopeeDataDTO) error {
 
 	var shopeeModelList []*model.ProductionTemp
+	defaultStatus := true
 	for _, shopeeData := range ShopeeDataDTO {
 		option, _ := json.Marshal(shopeeData.Options)
 		shopeeMode := &model.ProductionTemp{
@@ -33,7 +34,7 @@ func (sDB *ShopeeSaveDBService) ShopeeSaveDBService(ShopeeDataDTO []*dto.ShopeeD
 			LikedCount:     int(shopeeData.LikedCount),
 			HistoricalSold: int(shopeeData.HistoricalSold),
 			Stock:          int(shopeeData.Stock),
-			Status:         true,
+			Status:         &defaultStatus,
 		}
 
 		shopeeModelList = append(shopeeModelList, shopeeMode)

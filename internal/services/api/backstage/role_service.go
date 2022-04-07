@@ -173,7 +173,7 @@ func (r *RoleService) CreateRole(userInfo *backstagedto.JwtUserInfoDTO, roleCrea
 		Name:         roleCreateOrEditDTO.Name,
 		Key:          roleCreateOrEditDTO.Key,
 		Weight:       roleCreateOrEditDTO.Weight,
-		Status:       roleCreateOrEditDTO.Status,
+		Status:       &roleCreateOrEditDTO.Status,
 		Remark:       roleCreateOrEditDTO.Remark,
 		CreateTime:   time.Now(),
 		CreateUserId: userInfo.Id,
@@ -222,7 +222,7 @@ func (r *RoleService) EditRole(userInfo *backstagedto.JwtUserInfoDTO, id string,
 	role.Name = roleCreateOrEditDTO.Name
 	role.Key = roleCreateOrEditDTO.Key
 	role.Weight = roleCreateOrEditDTO.Weight
-	role.Status = roleCreateOrEditDTO.Status
+	role.Status = &roleCreateOrEditDTO.Status
 	role.Remark = roleCreateOrEditDTO.Remark
 	role.UpdateTime = time.Now()
 	role.UpdateUserId = userInfo.Id

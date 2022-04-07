@@ -13,8 +13,8 @@ type User struct {
 	LoginName     string         `validate:"min=4" gorm:"comment:登入帳號;type:varchar(30);uniqueIndex" json:"loginName"`     //登入帳號
 	Password      string         `validate:"min=6" gorm:"comment:密碼;type:varchar(100)" json:"password"`                   //密碼
 	Email         string         `gorm:"comment:Email;type:varchar(50)" json:"email"`                                     //Email
-	Status        bool           `gorm:"comment:帳號狀態(false停用 true正常);type:bool;default:true" json:"status"`               //帳號狀態(false停用 true正常)
-	UserType      bool           `gorm:"comment:是否為系統用戶;type:bool;default:true" json:"userType"`                          //是否為系統用戶
+	Status        *bool          `gorm:"comment:帳號狀態(false停用 true正常);type:bool;default:true" json:"status"`               //帳號狀態(false停用 true正常)
+	UserType      *bool          `gorm:"comment:是否為系統用戶;type:bool;default:true" json:"userType"`                          //是否為系統用戶
 	LoginIP       string         `gorm:"comment:ip;type:varchar(20)" json:"loginIP"`                                      //loginIP
 	PwdUpdateTime sql.NullTime   `gorm:"comment:密碼最後更新時間;type:TIMESTAMP NULL;default:NULL" json:"pwdUpdateTime"`          //密碼最後更新時間
 	LoginTime     sql.NullTime   `gorm:"comment:最後登入時間;type:TIMESTAMP NULL;default:NULL" json:"loginTime"`                //最後登入時間

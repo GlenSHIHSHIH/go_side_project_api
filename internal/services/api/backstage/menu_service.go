@@ -152,7 +152,7 @@ func (m *MenuService) CreateMenu(userInfo *backstagedto.JwtUserInfoDTO, menuCrea
 		Feature:      menuCreateOrEditDTO.Feature,
 		Weight:       menuCreateOrEditDTO.Weight,
 		Parent:       parent,
-		Status:       menuCreateOrEditDTO.Status,
+		Status:       &menuCreateOrEditDTO.Status,
 		Remark:       menuCreateOrEditDTO.Remark,
 		CreateTime:   time.Now(),
 		CreateUserId: userInfo.Id,
@@ -186,7 +186,7 @@ func (m *MenuService) EditMenu(userInfo *backstagedto.JwtUserInfoDTO, id string,
 	menu.Weight = menuCreateOrEditDTO.Weight
 	parent, _ := strconv.Atoi(menuCreateOrEditDTO.Parent)
 	menu.Parent = parent
-	menu.Status = menuCreateOrEditDTO.Status
+	menu.Status = &menuCreateOrEditDTO.Status
 	menu.Remark = menuCreateOrEditDTO.Remark
 	menu.UpdateTime = time.Now()
 	menu.UpdateUserId = userInfo.Id
