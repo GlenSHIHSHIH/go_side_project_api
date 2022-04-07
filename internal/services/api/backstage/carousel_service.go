@@ -224,6 +224,11 @@ func (r *CarouselService) CreateCarousel(userInfo *backstagedto.JwtUserInfoDTO, 
 		// return nil will commit the whole transaction
 		return nil
 	})
+	if err != nil {
+		for _, v := range addPicture {
+			file.FileRemove(FIXED_FILE_PATH + v.Name)
+		}
+	}
 
 	if err != nil {
 
