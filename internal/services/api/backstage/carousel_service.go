@@ -92,7 +92,7 @@ func (r *CarouselService) GetCarouselById(id string) (interface{}, error) {
 	sql := sqldb.Model(&model.Carousel{})
 	sql.Find(&carouselData, "carousels.id = ?", id)
 
-	sqlPic := sqldb.Model(&model.Picture{}).Where("pictures.status = ?", true).Order("pictures.weight desc")
+	sqlPic := sqldb.Model(&model.Picture{}).Order("pictures.weight desc")
 	sqlPic = sqlPic.Joins("join carousel_picture on pictures.id=picture_id")
 	sqlPic = sqlPic.Joins("join carousels on carousels.id=carousel_id and carousels.id = ?", carouselData.Id)
 	sqlPic.Find(&pictureListData)
@@ -124,31 +124,29 @@ func (r *CarouselService) DeleteCarousel(ids []string) (interface{}, error) {
 		}
 
 		//從輪詢任務、圖片中繼表單 id搜尋
-		var pictureData *[]forestagedto.PictureData
-		if err := tx.Table("pictures").Joins("join carousel_picture on picture_id = pictures.id and carousel_id in ?", ids).Distinct("picture_id", "pictures.*").Find(&pictureData).Error; err != nil {
+		var picture *[]model.Picture
+		if err := tx.Table("pictures").Joins("join carousel_picture on picture_id = pictures.id and carousel_id in ?", ids).Distinct("picture_id", "pictures.*").Find(&picture).Error; err != nil {
 			// return any error will rollback
 			return err
 		}
 
-		// 從輪詢任務、圖片中繼表單 刪除
-		var pictureId []int
-		fileRoot := FIXED_FILE_PATH
-		for _, v := range *pictureData {
-			pictureId = append(pictureId, v.Id)
-			if err := file.FileRemove(fileRoot + v.Name); err != nil {
-				return err
-			}
-		}
 		// 刪除 中繼表單
 		if err := tx.Unscoped().Table("carousel_picture").Where("carousel_id in ?", ids).Delete(&model.Picture{}).Error; err != nil {
 			return err
 		}
 		// 刪除 picture 資料
+		pictureId := setPictureToIntArray(*picture)
 		if err := tx.Unscoped().Table("pictures").Where("id in ?", pictureId).Delete(&model.Picture{}).Error; err != nil {
 			return err
 		}
 
-		// // return nil will commit the whole transaction
+		// 從輪詢任務、圖片中繼表單 刪除
+		for _, v := range *picture {
+			if err := file.FileRemove(FIXED_FILE_PATH + v.Name); err != nil {
+				return err
+			}
+		}
+
 		return nil
 	})
 
@@ -166,7 +164,7 @@ func (r *CarouselService) CreateCarousel(userInfo *backstagedto.JwtUserInfoDTO, 
 	carousel := model.Carousel{
 		Name:         carouselCreateOrEditDTO.Name,
 		Weight:       carouselCreateOrEditDTO.Weight,
-		Status:       carouselCreateOrEditDTO.Status,
+		Status:       &carouselCreateOrEditDTO.Status,
 		StartTime:    carouselCreateOrEditDTO.StartTime,
 		EndTime:      carouselCreateOrEditDTO.EndTime,
 		CreateTime:   time.Now(),
@@ -174,19 +172,53 @@ func (r *CarouselService) CreateCarousel(userInfo *backstagedto.JwtUserInfoDTO, 
 	}
 
 	sqldb := db.GetMySqlDB()
+	var addPicture []model.Picture
 	err := sqldb.Transaction(func(tx *gorm.DB) error {
 
 		// 從輪詢圖新增
 		// do some database operations in the transaction (use 'tx' from this point, not 'db')
-		if err := tx.Create(&carousel).Error; err != nil {
+		if err := tx.Debug().Select("*").Create(&carousel).Error; err != nil {
 			// return any error will rollback
 			return err
 		}
 
 		// 新增picture
-		if err := tx.Create(carouselCreateOrEditDTO.Picture).Error; err != nil {
-			// return any error will rollback
-			return err
+		for _, value := range carouselCreateOrEditDTO.Picture {
+
+			//新增 picture array
+			if value.Id == 0 {
+				pic := model.Picture{}
+				automapper.Map(value, &pic)
+				//名稱修改
+				pic.Name = utils.GetUuidAndTimestamp()
+				//存圖片
+				filePath := FIXED_FILE_PATH + pic.Name
+				if len(value.PictureUrl) > 0 && utils.GetImageSize(value.PictureUrl) < 5*file.MBytes {
+					utils.SavePicture(filePath, value.PictureUrl)
+				} else {
+					pic.Name = ""
+				}
+				addPicture = append(addPicture, pic)
+				continue
+			}
+		}
+
+		//批次新增 picture
+		if len(addPicture) > 0 {
+			if err := tx.Debug().Select("*").Create(addPicture).Error; err != nil {
+				return err
+			}
+		}
+
+		//add picture array
+		addPictureById := setPictureToIntArray(addPicture)
+		//新增 carousel_picture many2many
+		carouselAndPicture := setPictureToInterface(addPictureById, carousel.Id)
+
+		if len(carouselAndPicture) > 0 {
+			if err := tx.Table("carousel_picture").Create(carouselAndPicture).Error; err != nil {
+				return err
+			}
 		}
 
 		// return nil will commit the whole transaction
@@ -194,7 +226,6 @@ func (r *CarouselService) CreateCarousel(userInfo *backstagedto.JwtUserInfoDTO, 
 	})
 
 	if err != nil {
-		//刪除檔案
 
 		errData := errors.WithMessage(errors.WithStack(err), errorcode.SQL_INSERT_ERROR)
 		log.Error(fmt.Sprintf("%+v", errData))
@@ -213,7 +244,7 @@ func (r *CarouselService) CreateCarousel(userInfo *backstagedto.JwtUserInfoDTO, 
 func setCarouselFromEditDTO(carousel *model.Carousel, carouselCreateOrEditDTO *backstagedto.CarouselCreateOrEditDTO, userId int) *model.Carousel {
 	carousel.Name = carouselCreateOrEditDTO.Name
 	carousel.Weight = carouselCreateOrEditDTO.Weight
-	carousel.Status = carouselCreateOrEditDTO.Status
+	carousel.Status = &carouselCreateOrEditDTO.Status
 	carousel.StartTime = carouselCreateOrEditDTO.StartTime
 	carousel.EndTime = carouselCreateOrEditDTO.EndTime
 
@@ -229,6 +260,15 @@ func setPictureToIntArray(pic []model.Picture) []int {
 		data = append(data, v.Id)
 	}
 	return data
+}
+
+func setPictureToInterface(carouselAndPictureById []int, id int) []map[string]interface{} {
+	var carouselAndPicture []map[string]interface{}
+	for _, v := range carouselAndPictureById {
+		cp := map[string]interface{}{"carousel_id": id, "picture_id": v}
+		carouselAndPicture = append(carouselAndPicture, cp)
+	}
+	return carouselAndPicture
 }
 
 func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id string, carouselCreateOrEditDTO *backstagedto.CarouselCreateOrEditDTO) (interface{}, error) {
@@ -255,13 +295,16 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 			return err
 		}
 
+		var picture *[]model.Picture
+		if err := tx.Table("pictures").Joins("join carousel_picture on picture_id = pictures.id and carousel_id = ?", id).Distinct("picture_id", "pictures.*").Find(&picture).Error; err != nil {
+			// return any error will rollback
+			return err
+		}
+
 		//刪除 carousel_picture many 2 many
 		if err := tx.Table("carousel_picture").Unscoped().Where("carousel_id = ?", id).Delete(&model.Carousel{}).Error; err != nil {
 			return err
 		}
-
-		var picture []*model.Picture
-		sqldb.Table("pictures").Joins("join carousel_picture on picture_id = pictures.id and carousel_id =?", id).Find(&picture)
 
 		for _, value := range carouselCreateOrEditDTO.Picture {
 
@@ -282,8 +325,8 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 				continue
 			}
 
-			for i := 0; i < len(picture); i++ {
-				p := picture[i]
+			for i := 0; i < len(*picture); i++ {
+				p := (*picture)[i]
 				if p.Id != value.Id {
 					continue
 				}
@@ -299,7 +342,7 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 					filePath := FIXED_FILE_PATH + p.Name
 					if len(value.PictureUrl) > 0 && utils.GetImageSize(value.PictureUrl) < 5*file.MBytes {
 						utils.SavePicture(filePath, value.PictureUrl)
-						updateChangePicture = append(updateChangePicture, *p)
+						updateChangePicture = append(updateChangePicture, p)
 					} else {
 						p.Name = ""
 					}
@@ -309,19 +352,19 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 				if err := tx.Save(p).Error; err != nil {
 					return err
 				} else {
-					updatePicture = append(updatePicture, *p)
-					picture = append(picture[:i], picture[i+1:]...)
+					updatePicture = append(updatePicture, p)
+					*picture = append((*picture)[:i], (*picture)[i+1:]...)
 					break
 				}
 			}
 		}
 
 		//deletePicture data
-		automapper.Map(picture, &deletePicture)
+		automapper.Map(*picture, &deletePicture)
 
 		//批次新增 picture
 		if len(addPicture) > 0 {
-			if err := tx.Save(addPicture).Error; err != nil {
+			if err := tx.Create(addPicture).Error; err != nil {
 				return err
 			}
 		}
@@ -334,7 +377,7 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 
 		//delete picture array
 		var deletePictureById []int
-		for _, v := range picture {
+		for _, v := range *picture {
 			deletePictureById = append(deletePictureById, v.Id)
 		}
 
@@ -346,12 +389,8 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 		}
 
 		//新增 carousel_picture many2many
-		var carouselAndPicture []map[string]interface{}
 		carouselAndPictureById := append(updatePictureById, addPictureById...)
-		for _, v := range carouselAndPictureById {
-			cp := map[string]interface{}{"carousel_id": carousel.Id, "picture_id": v}
-			carouselAndPicture = append(carouselAndPicture, cp)
-		}
+		carouselAndPicture := setPictureToInterface(carouselAndPictureById, carousel.Id)
 
 		if len(carouselAndPicture) > 0 {
 			if err := tx.Table("carousel_picture").Create(carouselAndPicture).Error; err != nil {
@@ -373,10 +412,7 @@ func (r *CarouselService) EditCarousel(userInfo *backstagedto.JwtUserInfoDTO, id
 	}
 
 	for _, v := range picFile {
-		filePath := FIXED_FILE_PATH + v.Name
-		if file.FileIsExist(filePath) {
-			file.FileRemove(filePath)
-		}
+		file.FileRemove(FIXED_FILE_PATH + v.Name)
 	}
 
 	if err != nil {

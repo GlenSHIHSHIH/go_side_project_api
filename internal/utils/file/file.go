@@ -100,9 +100,11 @@ func FileSizeOver(sizeBytes int, filePath string) bool {
 }
 
 func FileRemove(filePath string) error {
-	err := os.Remove(filePath) //删除文件filePath
-	if err != nil {
-		return err
+	if FileIsExist(filePath) {
+		err := os.Remove(filePath) //删除文件filePath
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
