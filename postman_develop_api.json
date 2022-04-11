@@ -1,0 +1,810 @@
+{
+	"info": {
+		"_postman_id": "988cfc60-26ea-446e-8d72-0ffdb5d1df12",
+		"name": "develop_api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost/backstage/admin/login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"loginName\": \"admin\",\n    \"password\": \"admin123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/backstage/admin/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"admin",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/admin/logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/admin/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"admin",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/jwt/refreshtoken",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDAyMjg1OTcsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDAxNDIxOTcsInN1YiI6InJlZnJlc2hUb2tlbiJ9.fowChrN-QmquR3P4proYHonHAFzx2jYQDY24I5fB7Yo\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/backstage/jwt/refreshtoken",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"jwt",
+						"refreshtoken"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/jwt/check",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDAxODA3NTMsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDAxNTE5NTMsInN1YiI6InRva2VuIn0.d3ncCtZqxIGp8YTA2g6NaxSFPsR44YRtpevb4ngi154",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/jwt/check",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"jwt",
+						"check"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/production/list?page=1&pageLimit=25&sort=asc&sortColumn=PId&search=果&searchCategory=",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost/production/list?page=1&pageLimit=25&sort=asc&sortColumn=PId&search=果&searchCategory=",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"production",
+						"list"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "pageLimit",
+							"value": "25"
+						},
+						{
+							"key": "sort",
+							"value": "asc"
+						},
+						{
+							"key": "sortColumn",
+							"value": "PId"
+						},
+						{
+							"key": "search",
+							"value": "果"
+						},
+						{
+							"key": "searchCategory",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/menu/list",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDc4NzM0ODEsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDc4NDQ2ODEsInN1YiI6InRva2VuIn0.S0qZR3fwP4ABXVj66wc8S1BUbt-okG-H-iyDGKuTLFw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/menu/list",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"menu",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/menu?page=1&pageLimit=20&sort=asc&sortColumn=key",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDI0NDIwMTYsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDI0MTMyMTYsInN1YiI6InRva2VuIn0.i0Knz5yZvuyq5DXa7UAiMvl4r0VQic9d1wgDtMgjvs4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/backstage/menu?page=1&pageLimit=20&sort=asc&sortColumn=key",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"menu"
+					],
+					"query": [
+						{
+							"key": "search[feature]",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "search[name]",
+							"value": "菜單",
+							"disabled": true
+						},
+						{
+							"key": "search[url]",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "pageLimit",
+							"value": "20"
+						},
+						{
+							"key": "sort",
+							"value": "asc"
+						},
+						{
+							"key": "sortColumn",
+							"value": "key"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/menu/delete/100000",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDIxNzA5ODgsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDIxNDIxODgsInN1YiI6InRva2VuIn0.gUyZhlnYBdUjbuvPzv1BuWsquFzcpGRdrzofNl5tDn0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/menu/delete/100000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"menu",
+						"delete",
+						"100000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/menu/parent/list",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDIwODQyMzMsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDIwNTU0MzMsInN1YiI6InRva2VuIn0.sX8BmB8ymPGWlFLArhzIyuoQdqPJCSlFDatd7X8HWZg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/menu/parent/list",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"menu",
+						"parent",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/role?search[name]=u&search[key]=user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDI2MTQ1MzIsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDI1ODU3MzIsInN1YiI6InRva2VuIn0.rS6krKw_qLafyVG28n41uehalwzKw46bFxv00WGrEM4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/role?search[name]=u&search[key]=user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"role"
+					],
+					"query": [
+						{
+							"key": "search[name]",
+							"value": "u"
+						},
+						{
+							"key": "search[key]",
+							"value": "user"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/role/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDI2MDA1NDMsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDI1NzE3NDMsInN1YiI6InRva2VuIn0.q6qbX9c4-wCgT8gdEQVIBbvhmmqLV3XX9OuVJ68uZe0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/role/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"role",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/role/delete/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDI2MDA1NDMsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDI1NzE3NDMsInN1YiI6InRva2VuIn0.q6qbX9c4-wCgT8gdEQVIBbvhmmqLV3XX9OuVJ68uZe0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/role/delete/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"role",
+						"delete",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/role_menu/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDI3NTgyNzMsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDI3Mjk0NzMsInN1YiI6InRva2VuIn0.Bs_rfGWAwH1hzSarKpjFVenzMJpFJ5-RUWQcnRjWlsY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/role_menu/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"role_menu",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/role/create",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDI4NzMyNTAsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDI4NDQ0NTAsInN1YiI6InRva2VuIn0.PRUPnUKQl-K2_ezH9kRSItGMoFRtl6mVGYFCO05vsL0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 0,\n    \"name\": \"ewwe\",\n    \"key\": \"we\",\n    \"weight\": 0,\n    \"status\": true,\n    \"remark\": \"\",\n    \"select\": [\n        23,\n        24,\n        25,\n        26,\n        27\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/backstage/role/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"role",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/user/create",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDMyMTA5NTMsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDMxODIxNTMsInN1YiI6InRva2VuIn0.nNL64oj6DuL_ou6DWWZaf4-A9QpkSalwqQi6m7RgQ7U",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 0,\n    \"name\": \"testw123\",\n    \"loginName\": \"tasdewsgdst123\",\n    \"password\": \"test123\",\n    \"email\": \"\",\n    \"userType\": true,\n    \"status\": true,\n    \"remark\": \"\",\n    \"select\": [1,2]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/backstage/user/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"user",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/role/all",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDMyMTA5NTMsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDMxODIxNTMsInN1YiI6InRva2VuIn0.nNL64oj6DuL_ou6DWWZaf4-A9QpkSalwqQi6m7RgQ7U",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/role/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"role",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/user/edit/15",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDMyMTA5NTMsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDMxODIxNTMsInN1YiI6InRva2VuIn0.nNL64oj6DuL_ou6DWWZaf4-A9QpkSalwqQi6m7RgQ7U",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 15,\n    \"name\": \"ds\",\n    \"loginName\": \"admin1234\",\n    \"password\": \"\",\n    \"email\": \"test123\",\n    \"status\": false,\n    \"userType\": false,\n    \"remark\": \"\",\n    \"select\": [\n        \"2\",\n        \"1\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/backstage/user/edit/15",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"user",
+						"edit",
+						"15"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://kumkum.ga/production/category/list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://kumkum.ga/production/category/list",
+					"protocol": "https",
+					"host": [
+						"kumkum",
+						"ga"
+					],
+					"path": [
+						"production",
+						"category",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/production/category/list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/production/category/list",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"production",
+						"category",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/cache/delete/category",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/cache/delete/category",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"cache",
+						"delete",
+						"category"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/cache/any/delete/test",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/cache/any/delete/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"cache",
+						"any",
+						"delete",
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/carousel/list",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost/carousel/list",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"carousel",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/user",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDcyNTY0NjEsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDcyMjc2NjEsInN1YiI6InRva2VuIn0.gW_KbUiVcP4VKVEfQKx4VEBkwP2OI12eoaU3j-Jqb_Y",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/carousel/1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDc4NjM0OTYsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDc4MzQ2OTYsInN1YiI6InRva2VuIn0.pTtzQo8vSTyxHZCei72tG0jxd0ki-TJQtgxq2SO1mic",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/carousel/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"carousel",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost/backstage/carousel",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDc4NjM0OTYsImlkIjoxLCJuYW1lIjoiYWRtaW4iLCJuYmYiOjE2NDc4MzQ2OTYsInN1YiI6InRva2VuIn0.pTtzQo8vSTyxHZCei72tG0jxd0ki-TJQtgxq2SO1mic",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/backstage/carousel",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"backstage",
+						"carousel"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
