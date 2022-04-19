@@ -11,7 +11,7 @@ var WebConfig = []cli.Flag{
 	&cli.StringFlag{
 		Name:        "web-host",
 		Usage:       "web host",
-		Value:       "https://kumkum.ga",
+		Value:       "https://kumkum.ga/api",
 		Destination: &WebHost,
 		EnvVars:     []string{"web_host"},
 	},
