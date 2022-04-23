@@ -16,6 +16,7 @@ var (
 // @tags Forestage
 // @Summary Cache Delete
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @Router /backstage/cache/delete/{cacheName} [delete]
 func CacheDelete(c *gin.Context) (controller.Data, error) {
@@ -27,6 +28,7 @@ func CacheDelete(c *gin.Context) (controller.Data, error) {
 // @tags Forestage
 // @Summary Cache Any Delete
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @Router /backstage/cache/delete/{cacheName} [delete]
 func CacheAnyDelete(c *gin.Context) (controller.Data, error) {
@@ -38,6 +40,7 @@ func CacheAnyDelete(c *gin.Context) (controller.Data, error) {
 // @tags Forestage
 // @Summary Cache View
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @Router /backstage/cache [get]]
 func Caches(c *gin.Context) (controller.Data, error) {

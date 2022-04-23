@@ -14,6 +14,7 @@ var (
 // @tags Forestage
 // @Summary Forestage config
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} forestagedto.BaseForestageConfigDTO
 // @Router /forestage/config [get]
 func GetConfig(c *gin.Context) (controller.Data, error) {

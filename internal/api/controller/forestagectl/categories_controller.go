@@ -14,6 +14,7 @@ var (
 // @tags Forestage
 // @Summary Category
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} forestagedto.CategoryDTO
 // @Router /category/list [get]
 func GetCategory(c *gin.Context) (controller.Data, error) {

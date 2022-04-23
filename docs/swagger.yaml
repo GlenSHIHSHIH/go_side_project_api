@@ -1,4 +1,78 @@
 definitions:
+  backstagedto.CarouselCreateOrEditDTO:
+    properties:
+      endTime:
+        description: 結束時間
+        type: string
+      id:
+        type: integer
+      name:
+        description: 圖片名稱
+        type: string
+      picture:
+        items:
+          $ref: '#/definitions/forestagedto.PictureListData'
+        type: array
+      startTime:
+        description: 開始時間
+        type: string
+      status:
+        description: 狀態(開關)
+        type: boolean
+      weight:
+        description: 權重
+        type: integer
+    type: object
+  backstagedto.CarouselData:
+    properties:
+      createTime:
+        description: 新增時間
+        type: string
+      createUserId:
+        description: 新增人員
+        type: integer
+      endTime:
+        description: 結束時間
+        type: string
+      id:
+        type: integer
+      name:
+        description: 圖片名稱
+        type: string
+      startTime:
+        description: 開始時間
+        type: string
+      status:
+        description: 狀態(開關)
+        type: boolean
+      updateTime:
+        description: 更新時間
+        type: string
+      updateUserId:
+        description: 修改人員
+        type: integer
+      weight:
+        description: 權重
+        type: integer
+    type: object
+  backstagedto.CarouselIdDTO:
+    properties:
+      carousel:
+        $ref: '#/definitions/backstagedto.CarouselData'
+      picture:
+        items:
+          $ref: '#/definitions/forestagedto.PictureListData'
+        type: array
+    type: object
+  backstagedto.CarouselListDTO:
+    properties:
+      carousel:
+        items:
+          $ref: '#/definitions/backstagedto.CarouselData'
+        type: array
+      pageData:
+        $ref: '#/definitions/dto.PageForMultSearchDTO'
+    type: object
   backstagedto.JwtRefTokenDTO:
     properties:
       refreshToken:
@@ -81,6 +155,8 @@ definitions:
         type: string
       parent:
         type: integer
+      status:
+        type: boolean
       url:
         type: string
     type: object
@@ -170,14 +246,13 @@ definitions:
       weight:
         type: integer
     type: object
-  backstagedto.UserDTO:
+  backstagedto.UserCreateOrEditDTO:
     properties:
-      UserType:
-        description: 是否為系統用戶
-        type: boolean
       email:
         description: Email
         type: string
+      id:
+        type: integer
       loginName:
         description: 登入帳號
         minLength: 4
@@ -193,15 +268,81 @@ definitions:
       remark:
         description: 備註
         type: string
+      select:
+        description: 選的role
+        items:
+          type: string
+        type: array
       status:
         description: 帳號狀態(false停用 true正常)
         type: boolean
+      userType:
+        description: 是否為系統用戶
+        type: boolean
     type: object
-  dto.BaseResponseDTO:
+  backstagedto.UserEditPwdDTO:
     properties:
-      data: {}
-      msg:
+      id:
+        type: integer
+      newPassword:
+        description: 新密碼
+        minLength: 6
         type: string
+      orgPassword:
+        description: 原始密碼
+        type: string
+      type:
+        description: 1.重置密碼 2.修改密碼
+        type: integer
+    type: object
+  backstagedto.UserIdDTO:
+    properties:
+      userById:
+        $ref: '#/definitions/backstagedto.UserCreateOrEditDTO'
+    type: object
+  backstagedto.UserListDTO:
+    properties:
+      pageData:
+        $ref: '#/definitions/dto.PageForMultSearchDTO'
+      userList:
+        items:
+          $ref: '#/definitions/backstagedto.UserViewData'
+        type: array
+    type: object
+  backstagedto.UserViewData:
+    properties:
+      createTime:
+        type: string
+      createUser:
+        type: string
+      email:
+        description: Email
+        type: string
+      id:
+        type: integer
+      loginName:
+        description: 登入帳號
+        minLength: 4
+        type: string
+      name:
+        description: 使用者名稱
+        minLength: 4
+        type: string
+      remark:
+        description: 備註
+        type: string
+      role:
+        type: string
+      status:
+        description: 帳號狀態(false停用 true正常)
+        type: boolean
+      updateTime:
+        type: string
+      updateUser:
+        type: string
+      userType:
+        description: 是否為系統用戶
+        type: boolean
     type: object
   dto.PageDTO:
     properties:
@@ -249,23 +390,23 @@ definitions:
     type: object
   forestagedto.CarouselDTO:
     properties:
-      carousels:
+      carousel:
+        $ref: '#/definitions/forestagedto.CarouselData'
+      picture:
         items:
-          $ref: '#/definitions/forestagedto.CarouselData'
+          $ref: '#/definitions/forestagedto.PictureData'
         type: array
     type: object
   forestagedto.CarouselData:
     properties:
+      endTime:
+        type: string
       id:
         type: integer
-      image:
-        type: string
       name:
         type: string
-      url:
+      startTime:
         type: string
-      weight:
-        type: integer
     type: object
   forestagedto.CategoryDTO:
     properties:
@@ -273,6 +414,36 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  forestagedto.PictureData:
+    properties:
+      alt:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      url:
+        type: string
+      weight:
+        type: integer
+    type: object
+  forestagedto.PictureListData:
+    properties:
+      alt:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      pictureUrl:
+        type: string
+      status:
+        type: boolean
+      url:
+        type: string
+      weight:
+        type: integer
     type: object
   forestagedto.ProductionDTO:
     properties:
@@ -415,9 +586,174 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/backstagedto.LoginResponseDTO'
+      security:
+      - BearerAuth: []
       summary: Backstage login
       tags:
       - Backstage
+  /backstage/cache:
+    get:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      security:
+      - BearerAuth: []
+      summary: Cache View
+      tags:
+      - Forestage
+  /backstage/cache/delete/{cacheName}:
+    delete:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      security:
+      - BearerAuth: []
+      summary: Cache Any Delete
+      tags:
+      - Forestage
+  /backstage/carousel:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 1
+        description: int default
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: int enums
+        enum:
+        - 15
+        - 20
+        - 30
+        - 40
+        - 50
+        in: query
+        name: pageLimit
+        required: true
+        type: integer
+      - description: string enums
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        required: true
+        type: string
+      - description: string enums
+        enum:
+        - id
+        - key
+        in: query
+        name: sortColumn
+        required: true
+        type: string
+      - default: ""
+        description: string default
+        in: query
+        name: search
+        type: string
+      - default: ""
+        description: string default
+        in: query
+        name: searchCategory
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.CarouselListDTO'
+      security:
+      - BearerAuth: []
+      summary: Carousel View
+      tags:
+      - Backstage-Carousel
+  /backstage/carousel/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.CarouselIdDTO'
+      security:
+      - BearerAuth: []
+      summary: Carousel By Id
+      tags:
+      - Backstage-Carousel
+  /backstage/carousel/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/backstagedto.CarouselCreateOrEditDTO'
+      responses:
+        "200":
+          description: ""
+      security:
+      - BearerAuth: []
+      summary: Carousel Create
+      tags:
+      - Backstage-Carousel
+  /backstage/carousel/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: ""
+      security:
+      - BearerAuth: []
+      summary: Carousel Delete
+      tags:
+      - Backstage-Carousel
+  /backstage/carousel/edit/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/backstagedto.CarouselCreateOrEditDTO'
+      responses:
+        "200":
+          description: ""
+      security:
+      - BearerAuth: []
+      summary: Carousel Edit
+      tags:
+      - Backstage-Carousel
   /backstage/jwt/check:
     post:
       consumes:
@@ -435,6 +771,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/backstagedto.JwtUserInfoDTO'
+      security:
+      - BearerAuth: []
       summary: Backstage CheckToken
       tags:
       - Backstage
@@ -456,6 +794,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/backstagedto.LoginResponseDTO'
+      security:
+      - BearerAuth: []
       summary: Backstage RefreshToken
       tags:
       - Backstage
@@ -513,6 +853,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/backstagedto.MenuViewListDTO'
+      security:
+      - BearerAuth: []
       summary: Menu View
       tags:
       - Backstage-Menu
@@ -531,6 +873,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/backstagedto.MenuIdDTO'
+      security:
+      - BearerAuth: []
       summary: Menu By Id
       tags:
       - Backstage-Menu
@@ -548,6 +892,8 @@ paths:
       responses:
         "200":
           description: ""
+      security:
+      - BearerAuth: []
       summary: Menu Create
       tags:
       - Backstage-Menu
@@ -564,6 +910,8 @@ paths:
       responses:
         "200":
           description: ""
+      security:
+      - BearerAuth: []
       summary: Menu Delete
       tags:
       - Backstage-Menu
@@ -586,6 +934,8 @@ paths:
       responses:
         "200":
           description: ""
+      security:
+      - BearerAuth: []
       summary: Menu Edit
       tags:
       - Backstage-Menu
@@ -598,6 +948,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/backstagedto.MenuDTO'
+      security:
+      - BearerAuth: []
       summary: Menu List
       tags:
       - Backstage-Menu
@@ -610,6 +962,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/backstagedto.MenuDTO'
+      security:
+      - BearerAuth: []
       summary: Menu Parent List
       tags:
       - Backstage-Menu
@@ -666,6 +1020,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/backstagedto.RoleListDTO'
+      security:
+      - BearerAuth: []
       summary: Role View
       tags:
       - Backstage-Role
@@ -684,6 +1040,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/backstagedto.RoleIdDTO'
+      security:
+      - BearerAuth: []
       summary: Role By Id
       tags:
       - Backstage-Role
@@ -701,6 +1059,8 @@ paths:
       responses:
         "200":
           description: ""
+      security:
+      - BearerAuth: []
       summary: Role Create
       tags:
       - Backstage-Role
@@ -717,6 +1077,8 @@ paths:
       responses:
         "200":
           description: ""
+      security:
+      - BearerAuth: []
       summary: Role Delete
       tags:
       - Backstage-Role
@@ -739,9 +1101,90 @@ paths:
       responses:
         "200":
           description: ""
+      security:
+      - BearerAuth: []
       summary: Role Edit
       tags:
       - Backstage-Role
+  /backstage/user:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 1
+        description: int default
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: int enums
+        enum:
+        - 15
+        - 20
+        - 30
+        - 40
+        - 50
+        in: query
+        name: pageLimit
+        required: true
+        type: integer
+      - description: string enums
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sort
+        required: true
+        type: string
+      - description: string enums
+        enum:
+        - id
+        - name
+        - login_name
+        in: query
+        name: sortColumn
+        required: true
+        type: string
+      - default: ""
+        description: string default
+        in: query
+        name: search
+        type: string
+      - default: ""
+        description: string default
+        in: query
+        name: searchCategory
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.UserListDTO'
+      security:
+      - BearerAuth: []
+      summary: User View
+      tags:
+      - Backstage-User
+  /backstage/user/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/backstagedto.UserIdDTO'
+      security:
+      - BearerAuth: []
+      summary: User By Id
+      tags:
+      - Backstage-User
   /backstage/user/create:
     post:
       consumes:
@@ -752,17 +1195,105 @@ paths:
         name: json
         required: true
         schema:
-          $ref: '#/definitions/backstagedto.UserDTO'
-      produces:
-      - application/json
+          $ref: '#/definitions/backstagedto.UserCreateOrEditDTO'
       responses:
         "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.BaseResponseDTO'
-      summary: Backstage UserLogin
+          description: ""
+      security:
+      - BearerAuth: []
+      summary: User Create
       tags:
-      - Backstage
+      - Backstage-User
+  /backstage/user/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: ""
+      security:
+      - BearerAuth: []
+      summary: User Delete
+      tags:
+      - Backstage-User
+  /backstage/user/edit/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/backstagedto.UserCreateOrEditDTO'
+      responses:
+        "200":
+          description: ""
+      security:
+      - BearerAuth: []
+      summary: User Edit
+      tags:
+      - Backstage-User
+  /backstage/user/password/edit/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/backstagedto.UserEditPwdDTO'
+      responses:
+        "200":
+          description: ""
+      security:
+      - BearerAuth: []
+      summary: User Passowrd Edit
+      tags:
+      - Backstage-User
+  /backstage/user/password/reset/{id}:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: json
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/backstagedto.UserEditPwdDTO'
+      responses:
+        "200":
+          description: ""
+      security:
+      - BearerAuth: []
+      summary: User Passowrd Reset
+      tags:
+      - Backstage-User
   /carousel/list:
     get:
       consumes:
@@ -772,6 +1303,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/forestagedto.CarouselDTO'
+      security:
+      - BearerAuth: []
       summary: Carousel
       tags:
       - Forestage
@@ -784,7 +1317,21 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/forestagedto.CategoryDTO'
+      security:
+      - BearerAuth: []
       summary: Category
+      tags:
+      - Forestage
+  /file/{id}:
+    get:
+      consumes:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      security:
+      - BearerAuth: []
+      summary: Get File (image...)
       tags:
       - Forestage
   /forestage/config:
@@ -796,6 +1343,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/forestagedto.BaseForestageConfigDTO'
+      security:
+      - BearerAuth: []
       summary: Forestage config
       tags:
       - Forestage
@@ -815,6 +1364,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/forestagedto.ProductionDetailDTO'
+      security:
+      - BearerAuth: []
       summary: Production detail
       tags:
       - Forestage
@@ -873,6 +1424,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/forestagedto.ProductionDTO'
+      security:
+      - BearerAuth: []
       summary: Production list
       tags:
       - Forestage
@@ -892,7 +1445,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/forestagedto.ProductionRankDTO'
+      security:
+      - BearerAuth: []
       summary: Production rank
       tags:
       - Forestage
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

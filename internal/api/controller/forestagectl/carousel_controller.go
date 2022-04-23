@@ -14,6 +14,7 @@ var (
 // @tags Forestage
 // @Summary Carousel
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} forestagedto.CarouselDTO
 // @Router /carousel/list [get]
 func GetCarousel(c *gin.Context) (controller.Data, error) {

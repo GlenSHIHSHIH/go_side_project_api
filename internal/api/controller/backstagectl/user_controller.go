@@ -29,6 +29,7 @@ var (
 // @tags Backstage-User
 // @Summary User Create
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @Param json body backstagedto.UserCreateOrEditDTO true "json"
 // @Router /backstage/user/create [post]
@@ -55,6 +56,7 @@ func UserCreate(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-User
 // @Summary User Delete
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @param id path int true "id"
 // @Router /backstage/user/delete/{id} [delete]
@@ -68,6 +70,7 @@ func UserDelete(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-User
 // @Summary User Edit
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @param id path int true "id"
 // @Param json body backstagedto.UserCreateOrEditDTO true "json"
@@ -94,6 +97,7 @@ func UserEdit(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-User
 // @Summary User Passowrd Edit
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @param id path int true "id"
 // @Param json body backstagedto.UserEditPwdDTO true "json"
@@ -121,6 +125,7 @@ func UserPwdEdit(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-User
 // @Summary User Passowrd Reset
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @param id path int true "id"
 // @Param json body backstagedto.UserEditPwdDTO true "json"
@@ -148,6 +153,7 @@ func UserPwdReset(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-User
 // @Summary User By Id
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} backstagedto.UserIdDTO
 // @param id path int true "id"
 // @Router /backstage/user/{id} [get]
@@ -161,7 +167,8 @@ func UserById(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-User
 // @Summary User View
 // @accept application/json
-// @Success 200 {object} backstagedto.UserViewListDTO
+// @Security BearerAuth
+// @Success 200 {object} backstagedto.UserListDTO
 // @Param page query int true "int default" default(1)
 // @Param pageLimit query int true "int enums" Enums(15,20,30,40,50)
 // @Param sort query string true "string enums" Enums(asc,desc)

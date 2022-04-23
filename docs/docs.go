@@ -25,6 +25,11 @@ var doc = `{
     "paths": {
         "/backstage/admin/login": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -56,8 +61,273 @@ var doc = `{
                 }
             }
         },
+        "/backstage/cache": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forestage"
+                ],
+                "summary": "Cache View",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/cache/delete/{cacheName}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forestage"
+                ],
+                "summary": "Cache Any Delete",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/carousel": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Carousel"
+                ],
+                "summary": "Carousel View",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "int default",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            15,
+                            20,
+                            30,
+                            40,
+                            50
+                        ],
+                        "type": "integer",
+                        "description": "int enums",
+                        "name": "pageLimit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "description": "string enums",
+                        "name": "sort",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "key"
+                        ],
+                        "type": "string",
+                        "description": "string enums",
+                        "name": "sortColumn",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "",
+                        "description": "string default",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "",
+                        "description": "string default",
+                        "name": "searchCategory",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.CarouselListDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/backstage/carousel/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Carousel"
+                ],
+                "summary": "Carousel Create",
+                "parameters": [
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.CarouselCreateOrEditDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/carousel/delete/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Carousel"
+                ],
+                "summary": "Carousel Delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/carousel/edit/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Carousel"
+                ],
+                "summary": "Carousel Edit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.CarouselCreateOrEditDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/carousel/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-Carousel"
+                ],
+                "summary": "Carousel By Id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.CarouselIdDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/backstage/jwt/check": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -89,6 +359,11 @@ var doc = `{
         },
         "/backstage/jwt/refreshtoken": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -122,6 +397,11 @@ var doc = `{
         },
         "/backstage/menu": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -202,6 +482,11 @@ var doc = `{
         },
         "/backstage/menu/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -229,6 +514,11 @@ var doc = `{
         },
         "/backstage/menu/delete/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -254,6 +544,11 @@ var doc = `{
         },
         "/backstage/menu/edit/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -288,6 +583,11 @@ var doc = `{
         },
         "/backstage/menu/list": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -307,6 +607,11 @@ var doc = `{
         },
         "/backstage/menu/parent/list": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -326,6 +631,11 @@ var doc = `{
         },
         "/backstage/menu/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -354,6 +664,11 @@ var doc = `{
         },
         "/backstage/role": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -433,6 +748,11 @@ var doc = `{
         },
         "/backstage/role/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -460,6 +780,11 @@ var doc = `{
         },
         "/backstage/role/delete/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -485,6 +810,11 @@ var doc = `{
         },
         "/backstage/role/edit/{id}": {
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -519,6 +849,11 @@ var doc = `{
         },
         "/backstage/role/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -545,18 +880,105 @@ var doc = `{
                 }
             }
         },
-        "/backstage/user/create": {
-            "post": {
+        "/backstage/user": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
-                "produces": [
+                "tags": [
+                    "Backstage-User"
+                ],
+                "summary": "User View",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "int default",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            15,
+                            20,
+                            30,
+                            40,
+                            50
+                        ],
+                        "type": "integer",
+                        "description": "int enums",
+                        "name": "pageLimit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "description": "string enums",
+                        "name": "sort",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "name",
+                            "login_name"
+                        ],
+                        "type": "string",
+                        "description": "string enums",
+                        "name": "sortColumn",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "",
+                        "description": "string default",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "",
+                        "description": "string default",
+                        "name": "searchCategory",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.UserListDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/backstage/user/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
                     "application/json"
                 ],
                 "tags": [
-                    "Backstage"
+                    "Backstage-User"
                 ],
-                "summary": "Backstage UserLogin",
+                "summary": "User Create",
                 "parameters": [
                     {
                         "description": "json",
@@ -564,15 +986,192 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/backstagedto.UserDTO"
+                            "$ref": "#/definitions/backstagedto.UserCreateOrEditDTO"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/user/delete/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-User"
+                ],
+                "summary": "User Delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/user/edit/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-User"
+                ],
+                "summary": "User Edit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.UserCreateOrEditDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/user/password/edit/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-User"
+                ],
+                "summary": "User Passowrd Edit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.UserEditPwdDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/user/password/reset/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-User"
+                ],
+                "summary": "User Passowrd Reset",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "json",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/backstagedto.UserEditPwdDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/backstage/user/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Backstage-User"
+                ],
+                "summary": "User By Id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.BaseResponseDTO"
+                            "$ref": "#/definitions/backstagedto.UserIdDTO"
                         }
                     }
                 }
@@ -580,6 +1179,11 @@ var doc = `{
         },
         "/carousel/list": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -599,6 +1203,11 @@ var doc = `{
         },
         "/category/list": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -616,8 +1225,34 @@ var doc = `{
                 }
             }
         },
+        "/file/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Forestage"
+                ],
+                "summary": "Get File (image...)",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/forestage/config": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -637,6 +1272,11 @@ var doc = `{
         },
         "/production/list": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -718,6 +1358,11 @@ var doc = `{
         },
         "/production/rank/{count}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -747,6 +1392,11 @@ var doc = `{
         },
         "/production/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -776,6 +1426,112 @@ var doc = `{
         }
     },
     "definitions": {
+        "backstagedto.CarouselCreateOrEditDTO": {
+            "type": "object",
+            "properties": {
+                "endTime": {
+                    "description": "結束時間",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "圖片名稱",
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/forestagedto.PictureListData"
+                    }
+                },
+                "startTime": {
+                    "description": "開始時間",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "狀態(開關)",
+                    "type": "boolean"
+                },
+                "weight": {
+                    "description": "權重",
+                    "type": "integer"
+                }
+            }
+        },
+        "backstagedto.CarouselData": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "description": "新增時間",
+                    "type": "string"
+                },
+                "createUserId": {
+                    "description": "新增人員",
+                    "type": "integer"
+                },
+                "endTime": {
+                    "description": "結束時間",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "圖片名稱",
+                    "type": "string"
+                },
+                "startTime": {
+                    "description": "開始時間",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "狀態(開關)",
+                    "type": "boolean"
+                },
+                "updateTime": {
+                    "description": "更新時間",
+                    "type": "string"
+                },
+                "updateUserId": {
+                    "description": "修改人員",
+                    "type": "integer"
+                },
+                "weight": {
+                    "description": "權重",
+                    "type": "integer"
+                }
+            }
+        },
+        "backstagedto.CarouselIdDTO": {
+            "type": "object",
+            "properties": {
+                "carousel": {
+                    "$ref": "#/definitions/backstagedto.CarouselData"
+                },
+                "picture": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/forestagedto.PictureListData"
+                    }
+                }
+            }
+        },
+        "backstagedto.CarouselListDTO": {
+            "type": "object",
+            "properties": {
+                "carousel": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/backstagedto.CarouselData"
+                    }
+                },
+                "pageData": {
+                    "$ref": "#/definitions/dto.PageForMultSearchDTO"
+                }
+            }
+        },
         "backstagedto.JwtRefTokenDTO": {
             "type": "object",
             "properties": {
@@ -901,6 +1657,9 @@ var doc = `{
                 },
                 "parent": {
                     "type": "integer"
+                },
+                "status": {
+                    "type": "boolean"
                 },
                 "url": {
                     "type": "string"
@@ -1039,16 +1798,15 @@ var doc = `{
                 }
             }
         },
-        "backstagedto.UserDTO": {
+        "backstagedto.UserCreateOrEditDTO": {
             "type": "object",
             "properties": {
-                "UserType": {
-                    "description": "是否為系統用戶",
-                    "type": "boolean"
-                },
                 "email": {
                     "description": "Email",
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "loginName": {
                     "description": "登入帳號",
@@ -1069,18 +1827,112 @@ var doc = `{
                     "description": "備註",
                     "type": "string"
                 },
+                "select": {
+                    "description": "選的role",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "status": {
                     "description": "帳號狀態(false停用 true正常)",
+                    "type": "boolean"
+                },
+                "userType": {
+                    "description": "是否為系統用戶",
                     "type": "boolean"
                 }
             }
         },
-        "dto.BaseResponseDTO": {
+        "backstagedto.UserEditPwdDTO": {
             "type": "object",
             "properties": {
-                "data": {},
-                "msg": {
+                "id": {
+                    "type": "integer"
+                },
+                "newPassword": {
+                    "description": "新密碼",
+                    "type": "string",
+                    "minLength": 6
+                },
+                "orgPassword": {
+                    "description": "原始密碼",
                     "type": "string"
+                },
+                "type": {
+                    "description": "1.重置密碼 2.修改密碼",
+                    "type": "integer"
+                }
+            }
+        },
+        "backstagedto.UserIdDTO": {
+            "type": "object",
+            "properties": {
+                "userById": {
+                    "$ref": "#/definitions/backstagedto.UserCreateOrEditDTO"
+                }
+            }
+        },
+        "backstagedto.UserListDTO": {
+            "type": "object",
+            "properties": {
+                "pageData": {
+                    "$ref": "#/definitions/dto.PageForMultSearchDTO"
+                },
+                "userList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/backstagedto.UserViewData"
+                    }
+                }
+            }
+        },
+        "backstagedto.UserViewData": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "type": "string"
+                },
+                "createUser": {
+                    "type": "string"
+                },
+                "email": {
+                    "description": "Email",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "loginName": {
+                    "description": "登入帳號",
+                    "type": "string",
+                    "minLength": 4
+                },
+                "name": {
+                    "description": "使用者名稱",
+                    "type": "string",
+                    "minLength": 4
+                },
+                "remark": {
+                    "description": "備註",
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "帳號狀態(false停用 true正常)",
+                    "type": "boolean"
+                },
+                "updateTime": {
+                    "type": "string"
+                },
+                "updateUser": {
+                    "type": "string"
+                },
+                "userType": {
+                    "description": "是否為系統用戶",
+                    "type": "boolean"
                 }
             }
         },
@@ -1155,10 +2007,13 @@ var doc = `{
         "forestagedto.CarouselDTO": {
             "type": "object",
             "properties": {
-                "carousels": {
+                "carousel": {
+                    "$ref": "#/definitions/forestagedto.CarouselData"
+                },
+                "picture": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/forestagedto.CarouselData"
+                        "$ref": "#/definitions/forestagedto.PictureData"
                     }
                 }
             }
@@ -1166,11 +2021,39 @@ var doc = `{
         "forestagedto.CarouselData": {
             "type": "object",
             "properties": {
+                "endTime": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
-                "image": {
+                "name": {
                     "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                }
+            }
+        },
+        "forestagedto.CategoryDTO": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "forestagedto.PictureData": {
+            "type": "object",
+            "properties": {
+                "alt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -1183,14 +2066,29 @@ var doc = `{
                 }
             }
         },
-        "forestagedto.CategoryDTO": {
+        "forestagedto.PictureListData": {
             "type": "object",
             "properties": {
-                "category": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "alt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pictureUrl": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
                 }
             }
         },
@@ -1376,6 +2274,13 @@ var doc = `{
                     "type": "integer"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

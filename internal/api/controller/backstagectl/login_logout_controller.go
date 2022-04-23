@@ -23,6 +23,7 @@ var (
 // @tags Backstage
 // @Summary Backstage login
 // @accept application/json
+// @Security BearerAuth
 // @produce application/json
 // @Success 200 {object} backstagedto.LoginResponseDTO
 // @Param json body backstagedto.LoginDTO true "json"

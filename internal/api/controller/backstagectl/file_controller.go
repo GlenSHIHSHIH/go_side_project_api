@@ -14,6 +14,7 @@ var (
 // @tags Forestage
 // @Summary Get File (image...)
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @Router /file/{id} [get]
 func GetFile(c *gin.Context) {

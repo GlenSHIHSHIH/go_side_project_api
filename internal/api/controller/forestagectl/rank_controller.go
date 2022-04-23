@@ -19,6 +19,7 @@ var (
 // @tags Forestage
 // @Summary Production rank
 // @accept application/json
+// @Security BearerAuth
 // @Id 10
 // @Success 200 {object} forestagedto.ProductionRankDTO
 // @param count path int true "count"

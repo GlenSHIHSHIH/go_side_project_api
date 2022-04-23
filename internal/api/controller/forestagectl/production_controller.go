@@ -21,6 +21,7 @@ var (
 // @tags Forestage
 // @Summary Production list
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} forestagedto.ProductionDTO
 // @Param page query int true "int default" default(1)
 // @Param pageLimit query int true "int enums" Enums(15,20,30,40,50)
@@ -52,6 +53,7 @@ func GetProduction(c *gin.Context) (controller.Data, error) {
 // @tags Forestage
 // @Summary Production detail
 // @accept application/json
+// @Security BearerAuth
 // @Id 1
 // @Success 200 {object} forestagedto.ProductionDetailDTO
 // @param id path int true "id"

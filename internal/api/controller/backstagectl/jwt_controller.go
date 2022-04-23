@@ -22,6 +22,7 @@ var (
 // @tags Backstage
 // @Summary Backstage RefreshToken
 // @accept application/json
+// @Security BearerAuth
 // @produce application/json
 // @Success 200 {object} backstagedto.LoginResponseDTO
 // @Param json body backstagedto.JwtRefTokenDTO true "json"
@@ -43,6 +44,7 @@ func RefreshToken(c *gin.Context) (controller.Data, error) {
 // @tags Backstage
 // @Summary Backstage CheckToken
 // @accept application/json
+// @Security BearerAuth
 // @produce application/json
 // @Success 200 {object} backstagedto.JwtUserInfoDTO
 // @Param string header string true "Authorization"

@@ -13,6 +13,9 @@ import (
 
 func main() {
 
+	//@securityDefinitions.apikey BearerAuth
+	//@in header
+	//@name Authorization
 	//－－－－－－－－－－主程式－－－－－－－－－－
 	app := cli.NewApp()
 	app.Name = "Shopee"

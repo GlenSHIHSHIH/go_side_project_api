@@ -29,6 +29,7 @@ var (
 // @tags Backstage-Menu
 // @Summary Menu Create
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @Param json body backstagedto.MenuCreateOrEditDTO true "json"
 // @Router /backstage/menu/create [post]
@@ -54,6 +55,7 @@ func MenuCreate(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Menu
 // @Summary Menu Edit
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @param id path int true "id"
 // @Param json body backstagedto.MenuCreateOrEditDTO true "json"
@@ -80,6 +82,7 @@ func MenuEdit(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Menu
 // @Summary Menu Delete
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @param id path int true "id"
 // @Router /backstage/menu/delete/{id} [delete]
@@ -93,6 +96,7 @@ func MenuDelete(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Menu
 // @Summary Menu By Id
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} backstagedto.MenuIdDTO
 // @param id path int true "id"
 // @Router /backstage/menu/{id} [get]
@@ -106,6 +110,7 @@ func MenuById(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Menu
 // @Summary Menu View
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} backstagedto.MenuViewListDTO
 // @Param page query int true "int default" default(1)
 // @Param pageLimit query int true "int enums" Enums(15,20,30,40,50)
@@ -133,6 +138,7 @@ func Menus(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Menu
 // @Summary Menu List
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} backstagedto.MenuDTO
 // @Router /backstage/menu/list [get]
 func Menu(c *gin.Context) (controller.Data, error) {
@@ -148,6 +154,7 @@ func Menu(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Menu
 // @Summary Menu Tree List
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} backstagedto.MenuDTO
 // @Router /backstage/menu/parent/list [get]
 func MenuTree(c *gin.Context) (controller.Data, error) {
@@ -158,6 +165,7 @@ func MenuTree(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Menu
 // @Summary Menu Parent List
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} backstagedto.MenuDTO
 // @Router /backstage/menu/parent/list [get]
 func MenuParent(c *gin.Context) (controller.Data, error) {

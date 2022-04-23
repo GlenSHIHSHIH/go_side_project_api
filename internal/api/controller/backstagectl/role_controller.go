@@ -29,6 +29,7 @@ var (
 // @tags Backstage-Role
 // @Summary Role View
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} backstagedto.RoleListDTO
 // @Param page query int true "int default" default(1)
 // @Param pageLimit query int true "int enums" Enums(15,20,30,40,50)
@@ -56,6 +57,7 @@ func Roles(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Role
 // @Summary Role List
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} backstagedto.RoleIdDTO
 // @param id path int true "id"
 // @Router /backstage/role/{id} [get]
@@ -68,6 +70,7 @@ func RolesList(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Role
 // @Summary Role By Id
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} backstagedto.RoleIdDTO
 // @param id path int true "id"
 // @Router /backstage/role/{id} [get]
@@ -81,6 +84,7 @@ func RoleById(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Role
 // @Summary Role Delete
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @param id path int true "id"
 // @Router /backstage/role/delete/{id} [delete]
@@ -94,6 +98,7 @@ func RoleDelete(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Role
 // @Summary Role Create
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @Param json body backstagedto.RoleCreateOrEditDTO true "json"
 // @Router /backstage/role/create [post]
@@ -119,6 +124,7 @@ func RoleCreate(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Role
 // @Summary Role Edit
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @param id path int true "id"
 // @Param json body backstagedto.RoleCreateOrEditDTO true "json"

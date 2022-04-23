@@ -28,6 +28,7 @@ var (
 // @tags Backstage-Carousel
 // @Summary Carousel View
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} backstagedto.CarouselListDTO
 // @Param page query int true "int default" default(1)
 // @Param pageLimit query int true "int enums" Enums(15,20,30,40,50)
@@ -55,6 +56,7 @@ func Carousels(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Carousel
 // @Summary Carousel By Id
 // @accept application/json
+// @Security BearerAuth
 // @Success 200 {object} backstagedto.CarouselIdDTO
 // @param id path int true "id"
 // @Router /backstage/carousel/{id} [get]
@@ -68,6 +70,7 @@ func CarouselById(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Carousel
 // @Summary Carousel Delete
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @param id path int true "id"
 // @Router /backstage/carousel/delete/{id} [delete]
@@ -81,6 +84,7 @@ func CarouselDelete(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Carousel
 // @Summary Carousel Create
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @Param json body backstagedto.CarouselCreateOrEditDTO true "json"
 // @Router /backstage/carousel/create [post]
@@ -106,6 +110,7 @@ func CarouselCreate(c *gin.Context) (controller.Data, error) {
 // @tags Backstage-Carousel
 // @Summary Carousel Edit
 // @accept application/json
+// @Security BearerAuth
 // @Success 200
 // @param id path int true "id"
 // @Param json body backstagedto.CarouselCreateOrEditDTO true "json"
