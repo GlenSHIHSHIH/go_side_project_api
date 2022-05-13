@@ -14,7 +14,7 @@ func CorsConfig() cors.Config {
 		AllowBrowserExtensions: true,
 	}
 
-	if config.WebEnv == "develop" {
+	if !config.IsProduction() {
 		// 在開發環境時，允許所有 origins、所有 methods 和多數的 headers
 		corsConf.AllowAllOrigins = true
 		corsConf.AllowMethods = []string{"GET", "POST", "DELETE", "OPTIONS", "PUT"}

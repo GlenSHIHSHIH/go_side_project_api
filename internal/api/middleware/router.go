@@ -1,9 +1,11 @@
 package middleware
 
 import (
+	"componentmod/internal/api/config"
 	backstage "componentmod/internal/api/controller/backstagectl"
 	forestages "componentmod/internal/api/controller/forestagectl"
 	"componentmod/internal/api/middleware/validate"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -223,6 +225,6 @@ func Router(r *gin.Engine) {
 	// @description Swagger API.
 	// @host localhost:80
 	//swagger   http://localhost:80/swagger/index.html
-	url := ginSwagger.URL("http://localhost:80/swagger/doc.json") // The url pointing to API definition
+	url := ginSwagger.URL(fmt.Sprintf("http://localhost:%s/swagger/doc.json", config.WebPort)) // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 }

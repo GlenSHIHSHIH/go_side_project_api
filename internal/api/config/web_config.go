@@ -1,9 +1,12 @@
 package config
 
-import "github.com/urfave/cli/v2"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/urfave/cli/v2"
+)
 
 var (
-	WebHost, WebPort, ImgUrl, WebEnv, WebGin string
+	WebHost, WebPort, ImgUrl, WebGin string
 )
 
 //web 參數設定
@@ -30,17 +33,14 @@ var WebConfig = []cli.Flag{
 		EnvVars:     []string{"web_imgUrl"},
 	},
 	&cli.StringFlag{
-		Name:        "web-env",
-		Usage:       "web env",
-		Value:       "develop",
-		Destination: &WebEnv,
-		EnvVars:     []string{"web_env"},
-	},
-	&cli.StringFlag{
 		Name:        "web-gin",
 		Usage:       "web gin",
-		Value:       "debug",
+		Value:       gin.DebugMode,
 		Destination: &WebGin,
 		EnvVars:     []string{"web_gin"},
 	},
+}
+
+func IsProduction() bool {
+	return gin.ReleaseMode == WebGin
 }
