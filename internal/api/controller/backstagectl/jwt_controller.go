@@ -47,8 +47,8 @@ func RefreshToken(c *gin.Context) (controller.Data, error) {
 // @Security BearerAuth
 // @produce application/json
 // @Success 200 {object} backstagedto.JwtUserInfoDTO
-// @Param string header string true "Authorization"
-// @Router /backstage/jwt/check [post]
+// @Param Authorization header string true "Authorization"
+// @Router /backstage/jwt/check [get]
 func CheckToken(c *gin.Context) (controller.Data, error) {
 	bearerToken := c.GetHeader("Authorization")
 	token := strings.Replace(bearerToken, "Bearer ", "", 1)
